@@ -55,6 +55,7 @@ export default function FuncionariosClient({
   const [obraFilter, setObraFilter] = useState("");
   const [mesFilter, setMesFilter] = useState("");
   const [statusPeriodoFilter, setStatusPeriodoFilter] = useState("");
+  const [mostrarInativos, setMostrarInativos] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("nome");
   const [sortDir, setSortDir] = useState<1 | -1>(1);
   const [selected, setSelected] = useState<Funcionario | null>(null);
@@ -116,9 +117,25 @@ export default function FuncionariosClient({
     }
   }
 
+  // Filtro de cliente por texto livre — aceita vários clientes de uma vez
+  // separados por vírgula (ex.: "GEOSONDA, DRV"), cada termo casando por
+  // substring (case-insensitive) em vez de exigir o nome exato.
+  const clienteFilterTerms = useMemo(
+    () =>
+      clienteFilter
+        .split(",")
+        .map((c) => c.trim().toUpperCase())
+        .filter(Boolean),
+    [clienteFilter]
+  );
+
   const filtered = useMemo(() => {
     return allRows.filter((r) => {
-      if (clienteFilter && r.f.cliente_razao_social !== clienteFilter) return false;
+      if (!mostrarInativos && r.f.status === "INATIVO") return false;
+      if (clienteFilterTerms.length > 0) {
+        const cliente = (r.f.cliente_razao_social || "").toUpperCase();
+        if (!clienteFilterTerms.some((term) => cliente.includes(term))) return false;
+      }
       if (obraFilter && r.f.obra !== obraFilter) return false;
       if (busca.trim()) {
         const q = busca.trim().toUpperCase();
@@ -132,7 +149,15 @@ export default function FuncionariosClient({
       }
       return true;
     });
-  }, [allRows, clienteFilter, obraFilter, busca, mesFilter, statusPeriodoFilter]);
+  }, [
+    allRows,
+    mostrarInativos,
+    clienteFilterTerms,
+    obraFilter,
+    busca,
+    mesFilter,
+    statusPeriodoFilter,
+  ]);
 
   const sorted = useMemo(() => {
     const dir = sortDir;
@@ -279,20 +304,30 @@ export default function FuncionariosClient({
       </div>
 
       <div className="flex flex-wrap items-end gap-2">
-        <Field label="Cliente">
-          <select
-            value={clienteFilter}
-            onChange={(e) => setClienteFilter(e.target.value)}
-            className="input min-w-[150px]"
-          >
-            <option value="">Todos</option>
-            {clientes.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </Field>
+        <div className="flex flex-col gap-2">
+          <Field label="Cliente">
+            <input
+              list="clientes-list"
+              value={clienteFilter}
+              onChange={(e) => setClienteFilter(e.target.value)}
+              placeholder="Digite um ou mais clientes, separados por vírgula"
+              className="input min-w-[260px]"
+            />
+            <datalist id="clientes-list">
+              {clientes.map((c) => (
+                <option key={c} value={c} />
+              ))}
+            </datalist>
+          </Field>
+          <Field label="Buscar nome">
+            <input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Digite um nome..."
+              className="input w-full"
+            />
+          </Field>
+        </div>
         <Field label="Obra / projeto">
           <select
             value={obraFilter}
@@ -338,14 +373,14 @@ export default function FuncionariosClient({
             ))}
           </select>
         </Field>
-        <Field label="Buscar nome">
+        <label className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 pb-2">
           <input
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Digite um nome..."
-            className="input w-56"
+            type="checkbox"
+            checked={mostrarInativos}
+            onChange={(e) => setMostrarInativos(e.target.checked)}
           />
-        </Field>
+          Mostrar inativos
+        </label>
 
         <div className="flex gap-2 ml-auto">
           <button
@@ -777,6 +812,31 @@ function FuncionarioModal({
     if (data) onUpdated(data as Funcionario);
   }
 
+  async function handleDeleteLancamento(periodoId: string, lancamentoId: string) {
+    if (
+      !window.confirm(
+        "Excluir este lançamento de gozo de férias? Essa ação não pode ser desfeita."
+      )
+    )
+      return;
+    const { error } = await supabase
+      .from("rh_lancamentos_ferias")
+      .delete()
+      .eq("id", lancamentoId);
+    if (error) {
+      alert("Erro ao excluir: " + error.message);
+      return;
+    }
+    await loadLancamentos(periodoId);
+    const { data: refreshed } = await supabase
+      .from("v_rh_periodos")
+      .select(
+        "id, funcionario_id, inicio, fim, dias_direito, data_limite, dias_gozados, saldo, status"
+      )
+      .eq("funcionario_id", funcionario.id);
+    onPeriodosChanged((refreshed as VPeriodo[]) ?? []);
+  }
+
   async function handleAddPeriodo() {
     const hoje = new Date();
     const inicioStr = window.prompt(
@@ -978,19 +1038,28 @@ function FuncionarioModal({
                         {(lancamentos[p.id] ?? []).map((l) => (
                           <div
                             key={l.id}
-                            className="text-xs text-slate-600 dark:text-slate-400 flex justify-between"
+                            className="text-xs text-slate-600 dark:text-slate-400 flex items-center justify-between gap-2"
                           >
                             <span>
                               {l.inicio} → {l.fim} ({l.dias} dias)
                             </span>
-                            <span
-                              className={
-                                l.status_pagamento === "PAGO"
-                                  ? "text-emerald-600 dark:text-emerald-400"
-                                  : "text-amber-600 dark:text-amber-400"
-                              }
-                            >
-                              {l.status_pagamento}
+                            <span className="flex items-center gap-2">
+                              <span
+                                className={
+                                  l.status_pagamento === "PAGO"
+                                    ? "text-emerald-600 dark:text-emerald-400"
+                                    : "text-amber-600 dark:text-amber-400"
+                                }
+                              >
+                                {l.status_pagamento}
+                              </span>
+                              <button
+                                onClick={() => handleDeleteLancamento(p.id, l.id)}
+                                title="Excluir lançamento"
+                                className="text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400"
+                              >
+                                ✕
+                              </button>
                             </span>
                           </div>
                         ))}
