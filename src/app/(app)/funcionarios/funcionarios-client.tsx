@@ -186,6 +186,14 @@ export default function FuncionariosClient({
     [sorted]
   );
 
+  // `sorted` includes one row per funcionário even when no período matched
+  // (r.p === null), so counting sorted.length overstates "período(s)" — it
+  // was counting rendered table rows, not periods actually found.
+  const periodosContados = useMemo(
+    () => sorted.filter((r) => r.p !== null).length,
+    [sorted]
+  );
+
 
   async function handleExportXlsx() {
     const XLSX = await import("xlsx");
@@ -372,7 +380,7 @@ export default function FuncionariosClient({
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
         <div className="px-4 pt-3 text-xs text-slate-500 dark:text-slate-400">
           {funcionariosUnicos.toLocaleString("pt-BR")} funcionário(s) ·{" "}
-          {sorted.length.toLocaleString("pt-BR")} período(s) — um mesmo
+          {periodosContados.toLocaleString("pt-BR")} período(s) — um mesmo
           funcionário pode ter até 2 períodos aquisitivos abertos ao mesmo
           tempo
         </div>

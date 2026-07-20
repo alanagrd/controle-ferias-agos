@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import {
   DIVERGENCIA_SIMILARITY_THRESHOLD,
   nameSimilarity,
@@ -11,7 +12,7 @@ import {
   type LinhaFerias,
 } from "@/lib/importacao";
 
-type FuncionarioBasico = {
+export type FuncionarioBasico = {
   id: string;
   codigo: string | null;
   nome: string;
@@ -24,7 +25,7 @@ type FuncionarioBasico = {
   cliente_razao_social: string | null;
 };
 
-type PeriodoBasico = {
+export type PeriodoBasico = {
   id: string;
   funcionario_id: string;
   inicio: string;
@@ -483,14 +484,22 @@ export default function ImportacaoClient({
     // refresh local state so the lists recompute without a full reload
     const [{ data: refreshedFuncionarios }, { data: refreshedPeriodos }] =
       await Promise.all([
-        supabase
-          .from("rh_funcionarios")
-          .select(
-            "id, codigo, nome, status, empresa_id, obra, setor, cargo, cliente_codigo, cliente_razao_social"
-          ),
-        supabase
-          .from("rh_periodos_aquisitivos")
-          .select("id, funcionario_id, inicio, fim, dias_direito, data_limite"),
+        fetchAllRows<FuncionarioBasico>((from, to) =>
+          supabase
+            .from("rh_funcionarios")
+            .select(
+              "id, codigo, nome, status, empresa_id, obra, setor, cargo, cliente_codigo, cliente_razao_social"
+            )
+            .order("id")
+            .range(from, to)
+        ),
+        fetchAllRows<PeriodoBasico>((from, to) =>
+          supabase
+            .from("rh_periodos_aquisitivos")
+            .select("id, funcionario_id, inicio, fim, dias_direito, data_limite")
+            .order("id")
+            .range(from, to)
+        ),
       ]);
     if (refreshedFuncionarios) setDbFuncionarios(refreshedFuncionarios);
     if (refreshedPeriodos) setDbPeriodos(refreshedPeriodos);
