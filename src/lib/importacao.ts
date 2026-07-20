@@ -87,6 +87,75 @@ export function nameSimilarity(a: string, b: string): number {
   return 1 - dist / maxLen;
 }
 
+export type LinhaFerias = {
+  codigo: string;
+  nome: string;
+  cargo: string;
+  admissao: string | null;
+  periodoInicio: string | null;
+  periodoFim: string | null;
+  dataLimite: string | null;
+  proxPeriodoInicio: string | null;
+  proxPeriodoFim: string | null;
+  clienteRaw: string | null;
+  empresa: string | null;
+  obra: string | null;
+  nomeChave: string;
+};
+
+/**
+ * Parses the monthly "Férias" export — the file now used for the entire
+ * monthly import flow (replaces the old "Funcionários Ativos Geral" file).
+ * ";"-delimitado, header row, colunas (todas com padding em espaços, que é
+ * removido): CÓDIGO(0) NOME(1) FUNÇÃO(2) ADMISSÃO(3) PER.AQUI.INICIAL(4)
+ * PER.AQUI.FINAL(5) DT.LIMITE(6) PROX.PER.INICIAL(7) PROX.PER.FINAL(8)
+ * CLIENTE(9). PROX.PER.INICIAL/FINAL são apenas informativos (a projeção do
+ * próximo período aquisitivo feita pela planilha) — não usados para criar
+ * nada, mas mantidos no tipo para eventual uso futuro. CLIENTE vem como
+ * "EMPRESA - OBRA" ou apenas "EMPRESA SA"/"EMPRESA LTDA" (sem obra).
+ */
+export function parseFeriasCsv(text: string): LinhaFerias[] {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+  const rows: LinhaFerias[] = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(";");
+    const nome = (cols[1] ?? "").trim();
+    if (!nome) continue;
+    const codigo = (cols[0] ?? "").trim();
+    const cargo = (cols[2] ?? "").trim();
+    const admissao = toDateISO(cols[3]);
+    const periodoInicio = toDateISO(cols[4]);
+    const periodoFim = toDateISO(cols[5]);
+    const dataLimite = toDateISO(cols[6]);
+    const proxPeriodoInicio = toDateISO(cols[7]);
+    const proxPeriodoFim = toDateISO(cols[8]);
+    const clienteRaw = (cols[9] ?? "").trim() || null;
+    let empresa: string | null = null;
+    let obra: string | null = null;
+    if (clienteRaw) {
+      const split = splitEmpresaObra(clienteRaw);
+      empresa = split.empresa;
+      obra = split.obra;
+    }
+    rows.push({
+      codigo,
+      nome,
+      cargo,
+      admissao,
+      periodoInicio,
+      periodoFim,
+      dataLimite,
+      proxPeriodoInicio,
+      proxPeriodoFim,
+      clienteRaw,
+      empresa,
+      obra,
+      nomeChave: normName(nome, true),
+    });
+  }
+  return rows;
+}
+
 export type LinhaAtivosGeral = {
   codigo: string;
   nome: string;
