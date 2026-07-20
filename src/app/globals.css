@@ -2,8 +2,27 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Paleta de marca AGOS Serviços — mesma usada no site institucional, no
+ * gerador de propostas e nos posts de Instagram. Definida aqui como tokens
+ * do Tailwind v4 (`@theme`), o que gera automaticamente as classes utilitárias
+ * `bg-agos-*` / `text-agos-*` / `border-agos-*` / `ring-agos-*` etc. — não usar
+ * os valores hex soltos em componentes, sempre via essas classes.
+ */
+@theme {
+  --color-agos-green: #8bab3e; /* verde principal */
+  --color-agos-green-dark: #6a8a2e; /* verde escuro / hover */
+  --color-agos-green-light: #c2d48a; /* verde claro / detalhes */
+  --color-agos-orange: #e87722; /* laranja destaque */
+  --color-agos-orange-dark: #c85e10; /* laranja escuro / hover */
+  --color-agos-charcoal: #2c2c2c; /* carvão */
+  --color-agos-charcoal-dark: #1a1a1a; /* carvão escuro / navbar */
+  --color-agos-white: #ffffff;
+  --color-agos-gray-light: #f4f5f1; /* cinza claro */
+}
+
 :root {
-  --background: #ffffff;
+  --background: #f4f5f1;
   --foreground: #171717;
 }
 
@@ -38,5 +57,5 @@ body {
 
 .input:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #94a3b8;
+  box-shadow: 0 0 0 2px rgba(139, 171, 62, 0.55); /* agos-green */
 }

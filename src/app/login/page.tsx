@@ -30,7 +30,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4 transition-colors">
+    <div className="min-h-screen flex items-center justify-center bg-agos-gray-light dark:bg-slate-950 px-4 transition-colors">
       <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
         <div className="mb-6 text-center">
           <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
@@ -50,7 +50,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-agos-green"
               placeholder="voce@agos.com.br"
             />
           </div>
@@ -63,7 +63,7 @@ export default function LoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-agos-green"
               placeholder="••••••••"
             />
           </div>
@@ -75,7 +75,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-lg py-2 text-sm font-medium hover:bg-slate-800 dark:hover:bg-white disabled:opacity-50 transition"
+            className="w-full bg-agos-green text-white rounded-lg py-2 text-sm font-medium hover:bg-agos-green-dark disabled:opacity-50 transition"
           >
             {loading ? "Entrando..." : "Entrar"}
           </button>

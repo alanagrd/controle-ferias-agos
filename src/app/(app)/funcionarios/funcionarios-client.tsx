@@ -385,7 +385,7 @@ export default function FuncionariosClient({
         <div className="flex gap-2 ml-auto">
           <button
             onClick={() => setShowNovoFuncionario(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg px-3.5 py-2"
+            className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-3.5 py-2"
           >
             + Novo funcionário
           </button>
@@ -589,7 +589,7 @@ function Arrow({
   sortDir: 1 | -1;
 }) {
   if (sortKey !== col) return null;
-  return <span className="ml-1 text-blue-500">{sortDir === 1 ? "▲" : "▼"}</span>;
+  return <span className="ml-1 text-agos-green">{sortDir === 1 ? "▲" : "▼"}</span>;
 }
 
 function Th({
@@ -725,7 +725,7 @@ function NovoFuncionarioModal({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg px-4 py-1.5 disabled:opacity-50"
+              className="bg-agos-green hover:bg-agos-green-dark text-white text-sm rounded-lg px-4 py-1.5 disabled:opacity-50"
             >
               {saving ? "Salvando..." : "Salvar funcionário"}
             </button>
@@ -989,7 +989,7 @@ function FuncionarioModal({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm rounded-lg px-4 py-1.5 hover:bg-slate-800 dark:hover:bg-white disabled:opacity-50"
+              className="bg-agos-green text-white text-sm rounded-lg px-4 py-1.5 hover:bg-agos-green-dark disabled:opacity-50"
             >
               {saving ? "Salvando..." : "Salvar alterações"}
             </button>
@@ -1177,7 +1177,7 @@ function NovoLancamentoForm({
       <button
         onClick={handleSave}
         disabled={saving}
-        className="text-xs bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded px-2 py-1 disabled:opacity-50"
+        className="text-xs bg-agos-green text-white rounded px-2 py-1 disabled:opacity-50"
       >
         Salvar
       </button>

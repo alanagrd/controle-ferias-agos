@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import {
@@ -235,7 +235,7 @@ export default function DashboardClient({
                     <td className="py-1.5">
                       <Link
                         href={`/funcionarios?q=${encodeURIComponent(p.nome)}`}
-                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                        className="text-agos-green-dark dark:text-agos-green-light hover:underline"
                       >
                         {p.nome}
                       </Link>
@@ -290,16 +290,10 @@ function Kpi({
   );
 }
 
-const emptySubscribe = () => () => {};
-
 function useChartTheme() {
   const { theme } = useTheme();
-  // Detecta hidratação sem setState em effect (evita mismatch de SSR do next-themes).
-  const mounted = useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  );
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const isDark = theme === "dark";
   return {
     mounted,

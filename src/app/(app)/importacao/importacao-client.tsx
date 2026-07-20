@@ -910,7 +910,7 @@ export default function ImportacaoClient({
                 applying ||
                 (selecionadosInativar.size === 0 && selecionadosNovos.size === 0)
               }
-              className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm rounded-lg px-5 py-2 hover:bg-slate-800 dark:hover:bg-white disabled:opacity-50"
+              className="bg-agos-green text-white text-sm rounded-lg px-5 py-2 hover:bg-agos-green-dark disabled:opacity-50"
             >
               {applying
                 ? "Aplicando..."
