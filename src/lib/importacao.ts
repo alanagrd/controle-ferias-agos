@@ -114,6 +114,21 @@ export type LinhaFerias = {
  * nada, mas mantidos no tipo para eventual uso futuro. CLIENTE vem como
  * "EMPRESA - OBRA" ou apenas "EMPRESA SA"/"EMPRESA LTDA" (sem obra).
  */
+/**
+ * Algumas exportações desse relatório inserem uma quebra de página no meio
+ * do arquivo (form feed \x0c) seguida da linha de cabeçalho repetida, sem um
+ * \r\n antes dela — o que faz ela ficar grudada no final da linha de dados
+ * anterior (ex.: "...;GEOSONDA SA;\x0cCÓDIGO;NOME;FUNÇÃO;..."). Como só lemos
+ * as 10 primeiras colunas, isso normalmente já é inofensivo, mas se algum dia
+ * a quebra vier como uma linha própria (com \r\n antes), ela vira uma linha
+ * "fantasma" cujo código é literalmente "CÓDIGO" — isValidCodigo() barra esse
+ * caso e qualquer outro código não-numérico.
+ */
+function isValidCodigo(raw: string): boolean {
+  const codigo = raw.replace(/[\r\x0c]/g, "").trim();
+  return /^\d+$/.test(codigo);
+}
+
 export function parseFeriasCsv(text: string): LinhaFerias[] {
   const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
   const rows: LinhaFerias[] = [];
@@ -122,6 +137,7 @@ export function parseFeriasCsv(text: string): LinhaFerias[] {
     const nome = (cols[1] ?? "").trim();
     if (!nome) continue;
     const codigo = (cols[0] ?? "").trim();
+    if (!isValidCodigo(codigo)) continue;
     const cargo = (cols[2] ?? "").trim();
     const admissao = toDateISO(cols[3]);
     const periodoInicio = toDateISO(cols[4]);
