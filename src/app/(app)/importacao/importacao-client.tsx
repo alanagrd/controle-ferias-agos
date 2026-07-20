@@ -191,18 +191,18 @@ export default function ImportacaoClient({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
           Importação mensal
         </h1>
-        <p className="text-sm text-slate-500 max-w-2xl">
+        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
           Envie o export atualizado de &quot;Funcionários Ativos Geral&quot;
           (CSV, mesmo layout de sempre) para comparar com o cadastro atual.
           Nada é alterado no banco até você revisar e confirmar abaixo.
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-5">
-        <label className="block text-sm font-medium text-slate-700 mb-2">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Arquivo CSV
         </label>
         <input
@@ -215,13 +215,13 @@ export default function ImportacaoClient({
           className="text-sm"
         />
         {parsing && (
-          <p className="text-sm text-slate-500 mt-2">Lendo arquivo...</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Lendo arquivo...</p>
         )}
         {parseError && (
-          <p className="text-sm text-red-600 mt-2">{parseError}</p>
+          <p className="text-sm text-red-600 dark:text-red-400 mt-2">{parseError}</p>
         )}
         {ativosGeral && !parseError && (
-          <p className="text-sm text-emerald-700 mt-2">
+          <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-2">
             {fileName}: {ativosGeral.length.toLocaleString("pt-BR")} funcionários
             lidos.
           </p>
@@ -231,7 +231,7 @@ export default function ImportacaoClient({
       {analise && (
         <>
           {resultado && (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-sm text-emerald-800">
+            <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 rounded-xl p-4 text-sm text-emerald-800 dark:text-emerald-300">
               Aplicado: {resultado.inativados} funcionário(s) inativado(s) e{" "}
               {resultado.criados} novo(s) cadastrado(s).
             </div>
@@ -248,14 +248,14 @@ export default function ImportacaoClient({
             }
           >
             {analise.candidatosInativacao.length === 0 ? (
-              <p className="text-sm text-slate-500 px-4 py-3">
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-4 py-3">
                 Nenhum candidato a inativação.
               </p>
             ) : (
               <table className="w-full text-sm">
                 <tbody>
                   {analise.candidatosInativacao.map((f) => (
-                    <tr key={f.id} className="border-t border-slate-100">
+                    <tr key={f.id} className="border-t border-slate-100 dark:border-slate-800">
                       <td className="w-8 py-1.5 px-3">
                         <input
                           type="checkbox"
@@ -268,10 +268,10 @@ export default function ImportacaoClient({
                           }}
                         />
                       </td>
-                      <td className="py-1.5 px-3 text-slate-500">
+                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
                         {f.codigo || "–"}
                       </td>
-                      <td className="py-1.5 px-3 text-slate-900">{f.nome}</td>
+                      <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">{f.nome}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -290,13 +290,13 @@ export default function ImportacaoClient({
             }
           >
             {analise.novosACadastrar.length === 0 ? (
-              <p className="text-sm text-slate-500 px-4 py-3">
+              <p className="text-sm text-slate-500 dark:text-slate-400 px-4 py-3">
                 Nenhum funcionário novo identificado.
               </p>
             ) : (
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs text-slate-500 border-t border-slate-100">
+                  <tr className="text-left text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800">
                     <th className="py-1.5 px-3 font-medium"></th>
                     <th className="py-1.5 px-3 font-medium">Código</th>
                     <th className="py-1.5 px-3 font-medium">Nome</th>
@@ -307,7 +307,7 @@ export default function ImportacaoClient({
                 </thead>
                 <tbody>
                   {analise.novosACadastrar.map((r, i) => (
-                    <tr key={i} className="border-t border-slate-100">
+                    <tr key={i} className="border-t border-slate-100 dark:border-slate-800">
                       <td className="w-8 py-1.5 px-3">
                         <input
                           type="checkbox"
@@ -320,21 +320,23 @@ export default function ImportacaoClient({
                           }}
                         />
                       </td>
-                      <td className="py-1.5 px-3 text-slate-500">
+                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
                         {r.codigo || "–"}
                       </td>
-                      <td className="py-1.5 px-3 text-slate-900">{r.nome}</td>
-                      <td className="py-1.5 px-3">
+                      <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">
+                        {r.nome}
+                      </td>
+                      <td className="py-1.5 px-3 text-slate-700 dark:text-slate-300">
                         {r.empresa || (
-                          <span className="text-slate-400">
+                          <span className="text-slate-400 dark:text-slate-500">
                             não identificada
                           </span>
                         )}
                       </td>
-                      <td className="py-1.5 px-3 text-slate-500">
+                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
                         {r.obra || "–"}
                       </td>
-                      <td className="py-1.5 px-3 text-slate-500">
+                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
                         {r.cargo || "–"}
                       </td>
                     </tr>
@@ -351,7 +353,7 @@ export default function ImportacaoClient({
                 applying ||
                 (selecionadosInativar.size === 0 && selecionadosNovos.size === 0)
               }
-              className="bg-slate-900 text-white text-sm rounded-lg px-5 py-2 hover:bg-slate-800 disabled:opacity-50"
+              className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm rounded-lg px-5 py-2 hover:bg-slate-800 dark:hover:bg-white disabled:opacity-50"
             >
               {applying
                 ? "Aplicando..."
@@ -380,19 +382,19 @@ function Secao({
   allChecked: boolean;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800">
         <div>
-          <h2 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             {titulo}
-            <span className="text-xs font-normal bg-slate-100 text-slate-600 rounded-full px-2 py-0.5">
+            <span className="text-xs font-normal bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full px-2 py-0.5">
               {total}
             </span>
           </h2>
-          <p className="text-xs text-slate-500">{subtitulo}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{subtitulo}</p>
         </div>
         {total > 0 && (
-          <label className="text-xs text-slate-500 flex items-center gap-1.5">
+          <label className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <input
               type="checkbox"
               checked={allChecked}

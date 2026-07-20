@@ -14,9 +14,9 @@ const STATUS_LABEL: Record<StatusFuncionario, string> = {
 };
 
 const STATUS_TONE: Record<StatusFuncionario, string> = {
-  ATIVO: "bg-emerald-50 text-emerald-700",
-  INATIVO: "bg-slate-100 text-slate-500",
-  REVISAR: "bg-amber-50 text-amber-700",
+  ATIVO: "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400",
+  INATIVO: "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400",
+  REVISAR: "bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400",
 };
 
 export default function FuncionariosClient({
@@ -98,8 +98,10 @@ export default function FuncionariosClient({
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">Funcionários</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          Funcionários
+        </h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {filtered.length.toLocaleString("pt-BR")} de{" "}
           {funcionarios.length.toLocaleString("pt-BR")} registros
         </p>
@@ -110,12 +112,12 @@ export default function FuncionariosClient({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar por nome ou código..."
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-slate-400"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+          className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-3 py-1.5 text-sm"
         >
           <option value="">Todos os status</option>
           <option value="ATIVO">Ativo</option>
@@ -125,7 +127,7 @@ export default function FuncionariosClient({
         <select
           value={empresaFilter}
           onChange={(e) => setEmpresaFilter(e.target.value)}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm"
+          className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-3 py-1.5 text-sm"
         >
           <option value="">Todas as empresas</option>
           {empresas.map((e) => (
@@ -136,11 +138,11 @@ export default function FuncionariosClient({
         </select>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
         <div className="overflow-x-auto max-h-[70vh]">
           <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-slate-50 z-[1]">
-              <tr className="text-left text-xs text-slate-500 border-b border-slate-200">
+            <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800 z-[1]">
+              <tr className="text-left text-xs text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
                 <Th onClick={() => toggleSort("codigo")}>
                   Código <Arrow col="codigo" />
                 </Th>
@@ -169,22 +171,30 @@ export default function FuncionariosClient({
                 <tr
                   key={f.id}
                   onClick={() => setSelected(f)}
-                  className="border-b border-slate-50 hover:bg-slate-50 cursor-pointer"
+                  className="border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer"
                 >
-                  <td className="py-2 px-3 text-slate-500">{f.codigo || "–"}</td>
-                  <td className="py-2 px-3 font-medium text-slate-900">
+                  <td className="py-2 px-3 text-slate-500 dark:text-slate-400">
+                    {f.codigo || "–"}
+                  </td>
+                  <td className="py-2 px-3 font-medium text-slate-900 dark:text-slate-100">
                     {f.nome}
                   </td>
-                  <td className="py-2 px-3">
+                  <td className="py-2 px-3 text-slate-700 dark:text-slate-300">
                     {f.empresa_id ? (
                       empresaById[f.empresa_id]
                     ) : (
-                      <span className="text-slate-400">sem empresa</span>
+                      <span className="text-slate-400 dark:text-slate-500">
+                        sem empresa
+                      </span>
                     )}
                   </td>
-                  <td className="py-2 px-3 text-slate-500">{f.obra || "–"}</td>
-                  <td className="py-2 px-3 text-slate-500">{f.cargo || "–"}</td>
-                  <td className="py-2 px-3 text-slate-500">
+                  <td className="py-2 px-3 text-slate-500 dark:text-slate-400">
+                    {f.obra || "–"}
+                  </td>
+                  <td className="py-2 px-3 text-slate-500 dark:text-slate-400">
+                    {f.cargo || "–"}
+                  </td>
+                  <td className="py-2 px-3 text-slate-500 dark:text-slate-400">
                     {f.admissao || "–"}
                   </td>
                   <td className="py-2 px-3">
@@ -235,7 +245,7 @@ function Th({
   return (
     <th
       onClick={onClick}
-      className="py-2.5 px-3 font-medium select-none cursor-pointer hover:text-slate-900 whitespace-nowrap"
+      className="py-2.5 px-3 font-medium select-none cursor-pointer hover:text-slate-900 dark:hover:text-slate-100 whitespace-nowrap"
     >
       {children}
     </th>
@@ -367,13 +377,15 @@ function FuncionarioModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto"
+        className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-5 py-4">
           <div>
-            <h2 className="font-semibold text-slate-900">{funcionario.nome}</h2>
-            <p className="text-xs text-slate-500">
+            <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+              {funcionario.nome}
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Código: {funcionario.codigo || "não identificado"}
               {funcionario.cliente_razao_social && (
                 <> · Cliente: {funcionario.cliente_razao_social}</>
@@ -382,7 +394,7 @@ function FuncionarioModal({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 text-lg leading-none"
+            className="text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 text-lg leading-none"
           >
             ✕
           </button>
@@ -448,7 +460,7 @@ function FuncionarioModal({
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+            <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
@@ -457,26 +469,26 @@ function FuncionarioModal({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="bg-slate-900 text-white text-sm rounded-lg px-4 py-1.5 hover:bg-slate-800 disabled:opacity-50"
+              className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-sm rounded-lg px-4 py-1.5 hover:bg-slate-800 dark:hover:bg-white disabled:opacity-50"
             >
               {saving ? "Salvando..." : "Salvar alterações"}
             </button>
           </div>
 
-          <div className="border-t border-slate-100 pt-4">
+          <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-slate-900">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Períodos aquisitivos
               </h3>
               <button
                 onClick={handleAddPeriodo}
-                className="text-xs text-slate-600 hover:text-slate-900 border border-slate-200 rounded-md px-2 py-1"
+                className="text-xs text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-md px-2 py-1"
               >
                 + Novo período
               </button>
             </div>
             {periodos.length === 0 ? (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 Nenhum período aquisitivo cadastrado ainda.
               </p>
             ) : (
@@ -484,35 +496,35 @@ function FuncionarioModal({
                 {periodos.map((p) => (
                   <div
                     key={p.id}
-                    className="border border-slate-200 rounded-lg p-3"
+                    className="border border-slate-200 dark:border-slate-700 rounded-lg p-3"
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-                      <span className="text-slate-700">
+                      <span className="text-slate-700 dark:text-slate-300">
                         {p.inicio} → {p.fim}
                       </span>
-                      <span className="text-xs text-slate-500">
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
                         Limite: {p.data_limite}
                       </span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${
                           p.status === "vencido"
-                            ? "bg-red-50 text-red-700"
+                            ? "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-400"
                             : p.status === "integral"
-                            ? "bg-emerald-50 text-emerald-700"
+                            ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400"
                             : p.status === "parcial"
-                            ? "bg-amber-50 text-amber-700"
-                            : "bg-slate-100 text-slate-600"
+                            ? "bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                         }`}
                       >
                         Saldo: {p.saldo} dias ({p.status})
                       </span>
                     </div>
 
-                    <div className="mt-2 pl-2 border-l-2 border-slate-100 space-y-1">
+                    <div className="mt-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 space-y-1">
                       {(lancamentos[p.id] ?? []).map((l) => (
                         <div
                           key={l.id}
-                          className="text-xs text-slate-600 flex justify-between"
+                          className="text-xs text-slate-600 dark:text-slate-400 flex justify-between"
                         >
                           <span>
                             {l.inicio} → {l.fim} ({l.dias} dias)
@@ -520,8 +532,8 @@ function FuncionarioModal({
                           <span
                             className={
                               l.status_pagamento === "PAGO"
-                                ? "text-emerald-600"
-                                : "text-amber-600"
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-amber-600 dark:text-amber-400"
                             }
                           >
                             {l.status_pagamento}
@@ -547,7 +559,7 @@ function FuncionarioModal({
                       ) : (
                         <button
                           onClick={() => setShowNovoLancamento(p.id)}
-                          className="text-xs text-slate-500 hover:text-slate-900 mt-1"
+                          className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 mt-1"
                         >
                           + lançar gozo de férias
                         </button>
@@ -602,31 +614,37 @@ function NovoLancamentoForm({
   }
 
   return (
-    <div className="flex flex-wrap items-end gap-2 mt-2 bg-slate-50 rounded-lg p-2">
+    <div className="flex flex-wrap items-end gap-2 mt-2 bg-slate-50 dark:bg-slate-800 rounded-lg p-2">
       <div>
-        <label className="block text-[10px] text-slate-500">Início</label>
+        <label className="block text-[10px] text-slate-500 dark:text-slate-400">
+          Início
+        </label>
         <input
           type="date"
           value={inicio}
           onChange={(e) => setInicio(e.target.value)}
-          className="text-xs border border-slate-300 rounded px-1.5 py-1"
+          className="text-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded px-1.5 py-1"
         />
       </div>
       <div>
-        <label className="block text-[10px] text-slate-500">Fim</label>
+        <label className="block text-[10px] text-slate-500 dark:text-slate-400">
+          Fim
+        </label>
         <input
           type="date"
           value={fim}
           onChange={(e) => setFim(e.target.value)}
-          className="text-xs border border-slate-300 rounded px-1.5 py-1"
+          className="text-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded px-1.5 py-1"
         />
       </div>
       <div>
-        <label className="block text-[10px] text-slate-500">Pagamento</label>
+        <label className="block text-[10px] text-slate-500 dark:text-slate-400">
+          Pagamento
+        </label>
         <select
           value={statusPagamento}
           onChange={(e) => setStatusPagamento(e.target.value)}
-          className="text-xs border border-slate-300 rounded px-1.5 py-1"
+          className="text-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded px-1.5 py-1"
         >
           <option value="PENDENTE">Pendente</option>
           <option value="PAGO">Pago</option>
@@ -635,17 +653,19 @@ function NovoLancamentoForm({
       <button
         onClick={handleSave}
         disabled={saving}
-        className="text-xs bg-slate-900 text-white rounded px-2 py-1 disabled:opacity-50"
+        className="text-xs bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded px-2 py-1 disabled:opacity-50"
       >
         Salvar
       </button>
       <button
         onClick={onCancel}
-        className="text-xs text-slate-500 hover:text-slate-800"
+        className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
       >
         Cancelar
       </button>
-      {error && <p className="text-xs text-red-600 w-full">{error}</p>}
+      {error && (
+        <p className="text-xs text-red-600 dark:text-red-400 w-full">{error}</p>
+      )}
     </div>
   );
 }
@@ -653,7 +673,7 @@ function NovoLancamentoForm({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-xs font-medium text-slate-500 mb-1">
+      <span className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
         {label}
       </span>
       {children}

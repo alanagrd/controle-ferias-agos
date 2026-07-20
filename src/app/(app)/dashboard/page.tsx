@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import { EmpresaBarChart, StatusDoughnutChart } from "./dashboard-charts";
 
 export const dynamic = "force-dynamic";
 
@@ -83,10 +84,10 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-lg font-semibold text-slate-900">
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
           Visão geral
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           Dados em tempo real do cadastro de funcionários e férias.
         </p>
       </div>
@@ -102,42 +103,49 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <h2 className="text-sm font-semibold text-slate-900 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 lg:col-span-2">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
             Funcionários ativos por empresa
           </h2>
           {porEmpresa.length === 0 ? (
-            <p className="text-sm text-slate-500">Nenhum dado disponível.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Nenhum dado disponível.
+            </p>
           ) : (
-            <ul className="space-y-2">
-              {porEmpresa.map((e) => (
-                <li
-                  key={e.nome}
-                  className="flex items-center justify-between text-sm"
-                >
-                  <span className="text-slate-700">{e.nome}</span>
-                  <span className="font-medium text-slate-900">
-                    {e.total}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <div style={{ height: Math.max(180, porEmpresa.length * 34) }}>
+              <EmpresaBarChart data={porEmpresa} />
+            </div>
           )}
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5">
-          <h2 className="text-sm font-semibold text-slate-900 mb-1 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-4">
+            Distribuição por status
+          </h2>
+          <div style={{ height: 220 }}>
+            <StatusDoughnutChart
+              ativos={ativos ?? 0}
+              inativos={inativos ?? 0}
+              revisar={revisar ?? 0}
+            />
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
             Períodos vencidos
-            <span className="text-xs font-normal bg-red-50 text-red-700 rounded-full px-2 py-0.5">
+            <span className="text-xs font-normal bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-400 rounded-full px-2 py-0.5">
               {vencidos?.length ?? 0}
             </span>
           </h2>
-          <p className="text-xs text-slate-500 mb-3">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
             Já passaram da data limite (fim do período + 12 meses).
           </p>
           {!vencidos || vencidos.length === 0 ? (
-            <p className="text-sm text-slate-500">Nenhum período vencido.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Nenhum período vencido.
+            </p>
           ) : (
             <ul className="space-y-1.5 max-h-64 overflow-y-auto">
               {vencidos.slice(0, 20).map((p) => (
@@ -146,11 +154,11 @@ export default async function DashboardPage() {
                     href={`/funcionarios?q=${encodeURIComponent(
                       nomesPorId[p.funcionario_id] ?? ""
                     )}`}
-                    className="text-slate-700 hover:text-slate-900 hover:underline truncate max-w-[70%]"
+                    className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:underline truncate max-w-[70%]"
                   >
                     {nomesPorId[p.funcionario_id] ?? "—"}
                   </Link>
-                  <span className="text-red-600 text-xs shrink-0">
+                  <span className="text-red-600 dark:text-red-400 text-xs shrink-0">
                     {p.data_limite}
                   </span>
                 </li>
@@ -159,22 +167,22 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 lg:col-span-2">
-          <h2 className="text-sm font-semibold text-slate-900 mb-1 flex items-center gap-2">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 lg:col-span-2">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
             Vencendo nos próximos 60 dias
-            <span className="text-xs font-normal bg-amber-50 text-amber-700 rounded-full px-2 py-0.5">
+            <span className="text-xs font-normal bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 rounded-full px-2 py-0.5">
               {proximos?.length ?? 0}
             </span>
           </h2>
           {!proximos || proximos.length === 0 ? (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Nenhum período vencendo em breve.
             </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs text-slate-500 border-b border-slate-100">
+                  <tr className="text-left text-xs text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
                     <th className="py-2 font-medium">Funcionário</th>
                     <th className="py-2 font-medium">Data limite</th>
                     <th className="py-2 font-medium">Saldo (dias)</th>
@@ -185,21 +193,26 @@ export default async function DashboardPage() {
                     .sort((a, b) => a.data_limite.localeCompare(b.data_limite))
                     .slice(0, 30)
                     .map((p) => (
-                      <tr key={p.id} className="border-b border-slate-50">
+                      <tr
+                        key={p.id}
+                        className="border-b border-slate-50 dark:border-slate-800/60"
+                      >
                         <td className="py-1.5">
                           <Link
                             href={`/funcionarios?q=${encodeURIComponent(
                               nomesPorId[p.funcionario_id] ?? ""
                             )}`}
-                            className="hover:underline"
+                            className="text-slate-700 dark:text-slate-300 hover:underline"
                           >
                             {nomesPorId[p.funcionario_id] ?? "—"}
                           </Link>
                         </td>
-                        <td className="py-1.5 text-amber-700">
+                        <td className="py-1.5 text-amber-700 dark:text-amber-400">
                           {p.data_limite}
                         </td>
-                        <td className="py-1.5">{p.saldo}</td>
+                        <td className="py-1.5 text-slate-700 dark:text-slate-300">
+                          {p.saldo}
+                        </td>
                       </tr>
                     ))}
                 </tbody>
@@ -222,11 +235,13 @@ function Kpi({
   tone: "slate" | "amber";
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4">
-      <p className="text-xs text-slate-500">{label}</p>
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+      <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
       <p
         className={`text-2xl font-semibold mt-1 ${
-          tone === "amber" ? "text-amber-600" : "text-slate-900"
+          tone === "amber"
+            ? "text-amber-600 dark:text-amber-400"
+            : "text-slate-900 dark:text-slate-100"
         }`}
       >
         {value.toLocaleString("pt-BR")}
