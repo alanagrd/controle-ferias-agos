@@ -39,6 +39,54 @@ export function splitEmpresaObra(
   return { empresa: razaoSocial.trim().split(" ")[0].toUpperCase(), obra: null };
 }
 
+/**
+ * Classic Levenshtein edit distance (single-row DP, O(min(m,n)) memory).
+ */
+export function levenshteinDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  const prev = new Array(n + 1);
+  const curr = new Array(n + 1);
+  for (let j = 0; j <= n; j++) prev[j] = j;
+  for (let i = 1; i <= m; i++) {
+    curr[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      curr[j] = Math.min(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost);
+    }
+    for (let j = 0; j <= n; j++) prev[j] = curr[j];
+  }
+  return prev[n];
+}
+
+/**
+ * Threshold picked to catch accent/typo/abbreviation-level differences
+ * ("JOSÉ DA SILVA" vs "JOSE SILVA") without pairing genuinely different
+ * names — anything scoring below this is treated as unrelated.
+ */
+export const DIVERGENCIA_SIMILARITY_THRESHOLD = 0.82;
+
+/**
+ * Similarity between two (unnormalized) names, in [0, 1]. Uses normName to
+ * strip accents/punctuation/casing, then a length-normalized Levenshtein
+ * distance. Names whose normalized lengths differ too much are treated as
+ * unrelated (score 0) — a same-person typo rarely changes name length by
+ * more than half.
+ */
+export function nameSimilarity(a: string, b: string): number {
+  const na = normName(a);
+  const nb = normName(b);
+  if (!na || !nb) return 0;
+  if (na === nb) return 1;
+  const maxLen = Math.max(na.length, nb.length);
+  const minLen = Math.min(na.length, nb.length);
+  if (minLen / maxLen < 0.5) return 0;
+  const dist = levenshteinDistance(na, nb);
+  return 1 - dist / maxLen;
+}
+
 export type LinhaAtivosGeral = {
   codigo: string;
   nome: string;

@@ -4,8 +4,25 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Funcionario, Empresa, VPeriodo, StatusFuncionario } from "@/lib/types";
+import {
+  PERIODO_STATUS_BADGE_CLASS,
+  PERIODO_STATUS_LABEL,
+  PERIODO_STATUS_LABEL_LONG,
+  PERIODO_STATUS_MAP,
+  PERIODO_STATUS_ORDER,
+  fmtDate,
+} from "@/lib/status";
 
-type SortKey = "nome" | "codigo" | "empresa" | "obra" | "cargo" | "admissao" | "status";
+type SortKey =
+  | "nome"
+  | "cliente"
+  | "status"
+  | "periodo_inicio"
+  | "saldo"
+  | "data_limite"
+  | "status_periodo";
+
+const FUNCIONARIO_LEVEL_KEYS = new Set<SortKey>(["nome", "cliente", "status"]);
 
 const STATUS_LABEL: Record<StatusFuncionario, string> = {
   ATIVO: "Ativo",
@@ -19,6 +36,8 @@ const STATUS_TONE: Record<StatusFuncionario, string> = {
   REVISAR: "bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400",
 };
 
+type Row = { f: Funcionario; p: VPeriodo | null };
+
 export default function FuncionariosClient({
   initialFuncionarios,
   empresas,
@@ -31,17 +50,63 @@ export default function FuncionariosClient({
   const searchParams = useSearchParams();
   const [funcionarios, setFuncionarios] = useState(initialFuncionarios);
   const [periodosState, setPeriodosState] = useState(periodos);
-  const [query, setQuery] = useState(searchParams.get("q") ?? "");
-  const [statusFilter, setStatusFilter] = useState<string>("ATIVO");
-  const [empresaFilter, setEmpresaFilter] = useState<string>("");
+  const [busca, setBusca] = useState(searchParams.get("q") ?? "");
+  const [clienteFilter, setClienteFilter] = useState("");
+  const [obraFilter, setObraFilter] = useState("");
+  const [mesFilter, setMesFilter] = useState("");
+  const [statusPeriodoFilter, setStatusPeriodoFilter] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("nome");
   const [sortDir, setSortDir] = useState<1 | -1>(1);
   const [selected, setSelected] = useState<Funcionario | null>(null);
+  const [showNovoFuncionario, setShowNovoFuncionario] = useState(false);
 
-  const empresaById = useMemo(
-    () => Object.fromEntries(empresas.map((e) => [e.id, e.nome])),
-    [empresas]
+  const periodosPorFuncionario = useMemo(() => {
+    const map: Record<string, VPeriodo[]> = {};
+    periodosState.forEach((p) => {
+      if (!map[p.funcionario_id]) map[p.funcionario_id] = [];
+      map[p.funcionario_id].push(p);
+    });
+    return map;
+  }, [periodosState]);
+
+  const allRows = useMemo<Row[]>(() => {
+    const rows: Row[] = [];
+    funcionarios.forEach((f) => {
+      const fPeriodos = periodosPorFuncionario[f.id] ?? [];
+      if (fPeriodos.length === 0) {
+        rows.push({ f, p: null });
+      } else {
+        fPeriodos.forEach((p) => rows.push({ f, p }));
+      }
+    });
+    return rows;
+  }, [funcionarios, periodosPorFuncionario]);
+
+  const clientes = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          funcionarios
+            .map((f) => f.cliente_razao_social)
+            .filter((c): c is string => !!c)
+        )
+      ).sort((a, b) => a.localeCompare(b, "pt-BR")),
+    [funcionarios]
   );
+
+  const obras = useMemo(
+    () =>
+      Array.from(
+        new Set(funcionarios.map((f) => f.obra).filter((o): o is string => !!o))
+      ).sort((a, b) => a.localeCompare(b, "pt-BR")),
+    [funcionarios]
+  );
+
+  const meses = useMemo(() => {
+    const set = new Set<string>();
+    periodosState.forEach((p) => set.add(p.data_limite.slice(0, 7)));
+    return Array.from(set).sort();
+  }, [periodosState]);
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) setSortDir((d) => (d === 1 ? -1 : 1));
@@ -52,47 +117,149 @@ export default function FuncionariosClient({
   }
 
   const filtered = useMemo(() => {
-    let rows = funcionarios;
-    if (statusFilter) rows = rows.filter((f) => f.status === statusFilter);
-    if (empresaFilter)
-      rows = rows.filter((f) => f.empresa_id === empresaFilter);
-    if (query.trim()) {
-      const q = query.trim().toLowerCase();
-      rows = rows.filter(
-        (f) =>
-          f.nome.toLowerCase().includes(q) ||
-          (f.codigo ?? "").toLowerCase().includes(q)
-      );
-    }
+    return allRows.filter((r) => {
+      if (clienteFilter && r.f.cliente_razao_social !== clienteFilter) return false;
+      if (obraFilter && r.f.obra !== obraFilter) return false;
+      if (busca.trim()) {
+        const q = busca.trim().toUpperCase();
+        if (!r.f.nome.toUpperCase().includes(q)) return false;
+      }
+      if (mesFilter) {
+        if (!r.p || r.p.data_limite.slice(0, 7) !== mesFilter) return false;
+      }
+      if (statusPeriodoFilter) {
+        if (!r.p || PERIODO_STATUS_MAP[r.p.status] !== statusPeriodoFilter) return false;
+      }
+      return true;
+    });
+  }, [allRows, clienteFilter, obraFilter, busca, mesFilter, statusPeriodoFilter]);
+
+  const sorted = useMemo(() => {
     const dir = sortDir;
-    const get = (f: Funcionario) => {
+    const getter = (r: Row): string | number => {
       switch (sortKey) {
-        case "empresa":
-          return f.empresa_id ? empresaById[f.empresa_id] ?? "" : "";
-        case "codigo":
-          return f.codigo ?? "";
-        case "obra":
-          return f.obra ?? "";
-        case "cargo":
-          return f.cargo ?? "";
-        case "admissao":
-          return f.admissao ?? "";
+        case "cliente":
+          return r.f.cliente_razao_social || "";
         case "status":
-          return f.status;
+          return r.f.status || "";
+        case "periodo_inicio":
+          return r.p ? r.p.inicio : "";
+        case "saldo":
+          return r.p ? r.p.saldo : -1;
+        case "data_limite":
+          return r.p ? r.p.data_limite : "";
+        case "status_periodo":
+          return r.p ? r.p.status : "";
         default:
-          return f.nome;
+          return r.f.nome || "";
       }
     };
-    return [...rows].sort((a, b) => {
-      const av = get(a);
-      const bv = get(b);
-      return av.localeCompare(bv, "pt-BR") * dir;
+    return [...filtered].sort((a, b) => {
+      const va = getter(a);
+      const vb = getter(b);
+      if (va < vb) return -1 * dir;
+      if (va > vb) return 1 * dir;
+      return 0;
     });
-  }, [funcionarios, statusFilter, empresaFilter, query, sortKey, sortDir, empresaById]);
+  }, [filtered, sortKey, sortDir]);
 
-  function Arrow({ col }: { col: SortKey }) {
-    if (sortKey !== col) return null;
-    return <span className="ml-1 text-slate-400">{sortDir === 1 ? "▲" : "▼"}</span>;
+  const agrupar = FUNCIONARIO_LEVEL_KEYS.has(sortKey);
+
+  const groups = useMemo(() => {
+    const result: Row[][] = [];
+    let i = 0;
+    while (i < sorted.length) {
+      let span = 1;
+      if (agrupar) {
+        while (i + span < sorted.length && sorted[i + span].f.id === sorted[i].f.id) {
+          span++;
+        }
+      }
+      result.push(sorted.slice(i, i + span));
+      i += span;
+    }
+    return result;
+  }, [sorted, agrupar]);
+
+  const funcionariosUnicos = useMemo(
+    () => new Set(sorted.map((r) => r.f.id)).size,
+    [sorted]
+  );
+
+
+  async function handleExportXlsx() {
+    const XLSX = await import("xlsx");
+    const rows = filtered.map((r) => ({
+      Nome: r.f.nome,
+      Cliente: r.f.cliente_razao_social || "",
+      "Obra/Projeto": r.f.obra || "",
+      Setor: r.f.setor || "",
+      Cargo: r.f.cargo || "",
+      "Status Cadastro": r.f.status,
+      "Início Período": r.p ? fmtDate(r.p.inicio) : "",
+      "Fim Período": r.p ? fmtDate(r.p.fim) : "",
+      "Dias Gozados": r.p ? r.p.dias_gozados : "",
+      Saldo: r.p ? r.p.saldo : "",
+      "Data Limite": r.p ? fmtDate(r.p.data_limite) : "",
+      "Status Período": r.p ? PERIODO_STATUS_LABEL[PERIODO_STATUS_MAP[r.p.status]] : "",
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Controle de Ferias");
+    XLSX.writeFile(wb, "controle_ferias_export.xlsx");
+  }
+
+  async function handleExportPdf() {
+    const { jsPDF } = await import("jspdf");
+    const autoTableMod = await import("jspdf-autotable");
+    const autoTable = autoTableMod.default;
+
+    const doc = new jsPDF({ orientation: "landscape" });
+    doc.setFontSize(14);
+    doc.text("Controle de Férias - Relatório", 14, 14);
+    doc.setFontSize(9);
+    const hoje = new Date();
+    const geradoEm = `${String(hoje.getDate()).padStart(2, "0")}/${String(
+      hoje.getMonth() + 1
+    ).padStart(2, "0")}/${hoje.getFullYear()}`;
+    doc.text(
+      `Cliente: ${clienteFilter || "Todos"}  |  Obra/Projeto: ${
+        obraFilter || "Todas"
+      }  |  Mês de vencimento: ${mesFilter || "Todos"}  |  Gerado em: ${geradoEm}`,
+      14,
+      20
+    );
+
+    const rows = filtered.map((r) => [
+      r.f.nome,
+      r.f.cliente_razao_social || "-",
+      r.f.obra || "-",
+      r.f.status,
+      r.p ? `${fmtDate(r.p.inicio)} - ${fmtDate(r.p.fim)}` : "-",
+      r.p ? String(r.p.saldo) : "-",
+      r.p ? fmtDate(r.p.data_limite) : "-",
+      r.p ? PERIODO_STATUS_LABEL[PERIODO_STATUS_MAP[r.p.status]] : "-",
+    ]);
+
+    autoTable(doc, {
+      startY: 26,
+      head: [
+        [
+          "Nome",
+          "Cliente",
+          "Obra/Projeto",
+          "Status Cadastro",
+          "Período",
+          "Saldo",
+          "Data Limite",
+          "Status Período",
+        ],
+      ],
+      body: rows,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [91, 140, 255] },
+    });
+    doc.save("controle_ferias_export.pdf");
   }
 
   return (
@@ -101,111 +268,233 @@ export default function FuncionariosClient({
         <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
           Funcionários
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          {filtered.length.toLocaleString("pt-BR")} de{" "}
-          {funcionarios.length.toLocaleString("pt-BR")} registros
-        </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Buscar por nome ou código..."
-          className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-slate-400"
-        />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-3 py-1.5 text-sm"
-        >
-          <option value="">Todos os status</option>
-          <option value="ATIVO">Ativo</option>
-          <option value="INATIVO">Inativo</option>
-          <option value="REVISAR">A revisar</option>
-        </select>
-        <select
-          value={empresaFilter}
-          onChange={(e) => setEmpresaFilter(e.target.value)}
-          className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-3 py-1.5 text-sm"
-        >
-          <option value="">Todas as empresas</option>
-          {empresas.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.nome}
-            </option>
-          ))}
-        </select>
+      <div className="flex flex-wrap items-end gap-2">
+        <Field label="Cliente">
+          <select
+            value={clienteFilter}
+            onChange={(e) => setClienteFilter(e.target.value)}
+            className="input min-w-[150px]"
+          >
+            <option value="">Todos</option>
+            {clientes.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Obra / projeto">
+          <select
+            value={obraFilter}
+            onChange={(e) => setObraFilter(e.target.value)}
+            className="input min-w-[150px]"
+          >
+            <option value="">Todas</option>
+            {obras.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Mês de vencimento">
+          <select
+            value={mesFilter}
+            onChange={(e) => setMesFilter(e.target.value)}
+            className="input min-w-[150px]"
+          >
+            <option value="">Todos</option>
+            {meses.map((ym) => {
+              const [y, m] = ym.split("-");
+              return (
+                <option key={ym} value={ym}>
+                  {m}/{y}
+                </option>
+              );
+            })}
+          </select>
+        </Field>
+        <Field label="Status do período">
+          <select
+            value={statusPeriodoFilter}
+            onChange={(e) => setStatusPeriodoFilter(e.target.value)}
+            className="input min-w-[150px]"
+          >
+            <option value="">Todos</option>
+            {PERIODO_STATUS_ORDER.map((k) => (
+              <option key={k} value={k}>
+                {PERIODO_STATUS_LABEL_LONG[k]}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Buscar nome">
+          <input
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Digite um nome..."
+            className="input w-56"
+          />
+        </Field>
+
+        <div className="flex gap-2 ml-auto">
+          <button
+            onClick={() => setShowNovoFuncionario(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg px-3.5 py-2"
+          >
+            + Novo funcionário
+          </button>
+          <button
+            onClick={handleExportXlsx}
+            className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+          >
+            Exportar Excel
+          </button>
+          <button
+            onClick={handleExportPdf}
+            className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+          >
+            Exportar PDF
+          </button>
+        </div>
       </div>
+
+      <p className="text-xs text-slate-500 dark:text-slate-400">
+        Clique em um funcionário na tabela para editar o cadastro, lançar um
+        novo gozo de férias ou abrir um novo período aquisitivo. O filtro de
+        obra/projeto por enquanto só tem dado para os clientes que já enviaram
+        esse detalhe no export — os demais ganham essa granularidade quando
+        recebermos o mesmo tipo de planilha.
+      </p>
 
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="px-4 pt-3 text-xs text-slate-500 dark:text-slate-400">
+          {funcionariosUnicos.toLocaleString("pt-BR")} funcionário(s) ·{" "}
+          {sorted.length.toLocaleString("pt-BR")} período(s) — um mesmo
+          funcionário pode ter até 2 períodos aquisitivos abertos ao mesmo
+          tempo
+        </div>
         <div className="overflow-x-auto max-h-[70vh]">
           <table className="w-full text-sm">
             <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800 z-[1]">
               <tr className="text-left text-xs text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
-                <Th onClick={() => toggleSort("codigo")}>
-                  Código <Arrow col="codigo" />
-                </Th>
                 <Th onClick={() => toggleSort("nome")}>
-                  Nome <Arrow col="nome" />
+                  Nome <Arrow col="nome" sortKey={sortKey} sortDir={sortDir} />
                 </Th>
-                <Th onClick={() => toggleSort("empresa")}>
-                  Empresa <Arrow col="empresa" />
+                <Th onClick={() => toggleSort("cliente")}>
+                  Cliente <Arrow col="cliente" sortKey={sortKey} sortDir={sortDir} />
                 </Th>
-                <Th onClick={() => toggleSort("obra")}>
-                  Obra <Arrow col="obra" />
-                </Th>
-                <Th onClick={() => toggleSort("cargo")}>
-                  Cargo <Arrow col="cargo" />
-                </Th>
-                <Th onClick={() => toggleSort("admissao")}>
-                  Admissão <Arrow col="admissao" />
-                </Th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap">
+                  Setor / Cargo
+                </th>
                 <Th onClick={() => toggleSort("status")}>
-                  Status <Arrow col="status" />
+                  Status cadastro <Arrow col="status" sortKey={sortKey} sortDir={sortDir} />
+                </Th>
+                <Th onClick={() => toggleSort("periodo_inicio")}>
+                  Período <Arrow col="periodo_inicio" sortKey={sortKey} sortDir={sortDir} />
+                </Th>
+                <Th onClick={() => toggleSort("saldo")}>
+                  Saldo <Arrow col="saldo" sortKey={sortKey} sortDir={sortDir} />
+                </Th>
+                <Th onClick={() => toggleSort("data_limite")}>
+                  Data limite <Arrow col="data_limite" sortKey={sortKey} sortDir={sortDir} />
+                </Th>
+                <Th onClick={() => toggleSort("status_periodo")}>
+                  Status período <Arrow col="status_periodo" sortKey={sortKey} sortDir={sortDir} />
                 </Th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((f) => (
-                <tr
-                  key={f.id}
-                  onClick={() => setSelected(f)}
-                  className="border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer"
-                >
-                  <td className="py-2 px-3 text-slate-500 dark:text-slate-400">
-                    {f.codigo || "–"}
-                  </td>
-                  <td className="py-2 px-3 font-medium text-slate-900 dark:text-slate-100">
-                    {f.nome}
-                  </td>
-                  <td className="py-2 px-3 text-slate-700 dark:text-slate-300">
-                    {f.empresa_id ? (
-                      empresaById[f.empresa_id]
-                    ) : (
-                      <span className="text-slate-400 dark:text-slate-500">
-                        sem empresa
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-2 px-3 text-slate-500 dark:text-slate-400">
-                    {f.obra || "–"}
-                  </td>
-                  <td className="py-2 px-3 text-slate-500 dark:text-slate-400">
-                    {f.cargo || "–"}
-                  </td>
-                  <td className="py-2 px-3 text-slate-500 dark:text-slate-400">
-                    {f.admissao || "–"}
-                  </td>
-                  <td className="py-2 px-3">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${STATUS_TONE[f.status]}`}
+              {groups.map((group) => {
+                const span = group.length;
+                const f = group[0].f;
+                return group.map((row, j) => {
+                  const p = row.p;
+                  const periodoStatusKey = p ? PERIODO_STATUS_MAP[p.status] : null;
+                  return (
+                    <tr
+                      key={`${f.id}-${p?.id ?? "none"}`}
+                      onClick={() => setSelected(f)}
+                      className="border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer"
                     >
-                      {STATUS_LABEL[f.status]}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+                      {j === 0 && (
+                        <>
+                          <td
+                            rowSpan={span}
+                            className="py-2 px-3 font-medium text-slate-900 dark:text-slate-100 align-top"
+                          >
+                            {f.nome}
+                            {span > 1 && (
+                              <span className="ml-2 text-[11px] bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full px-2 py-0.5 text-slate-500 dark:text-slate-400">
+                                {span} períodos
+                              </span>
+                            )}
+                            {f.codigo && (
+                              <span className="ml-1 text-xs text-slate-400 dark:text-slate-500">
+                                #{f.codigo}
+                              </span>
+                            )}
+                          </td>
+                          <td
+                            rowSpan={span}
+                            className="py-2 px-3 text-slate-700 dark:text-slate-300 align-top"
+                          >
+                            {f.cliente_razao_social || (
+                              <span className="text-slate-400 dark:text-slate-500">
+                                sem cliente
+                              </span>
+                            )}
+                            {f.obra && (
+                              <span className="text-xs text-slate-400 dark:text-slate-500">
+                                {" "}
+                                · {f.obra}
+                              </span>
+                            )}
+                          </td>
+                          <td
+                            rowSpan={span}
+                            className="py-2 px-3 text-slate-500 dark:text-slate-400 align-top"
+                          >
+                            {f.setor || "–"}{" "}
+                            <span className="text-slate-400 dark:text-slate-500">
+                              / {f.cargo || "–"}
+                            </span>
+                          </td>
+                          <td rowSpan={span} className="py-2 px-3 align-top">
+                            <span
+                              className={`text-xs px-2 py-0.5 rounded-full ${STATUS_TONE[f.status]}`}
+                            >
+                              {STATUS_LABEL[f.status]}
+                            </span>
+                          </td>
+                        </>
+                      )}
+                      <td className="py-2 px-3 text-slate-700 dark:text-slate-300">
+                        {p ? `${fmtDate(p.inicio)} – ${fmtDate(p.fim)}` : "–"}
+                      </td>
+                      <td className="py-2 px-3 text-slate-700 dark:text-slate-300">
+                        {p ? `${p.saldo}/${p.dias_direito}` : "–"}
+                      </td>
+                      <td className="py-2 px-3 text-slate-700 dark:text-slate-300">
+                        {p ? fmtDate(p.data_limite) : "–"}
+                      </td>
+                      <td className="py-2 px-3">
+                        {periodoStatusKey ? (
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full ${PERIODO_STATUS_BADGE_CLASS[periodoStatusKey]}`}
+                          >
+                            {PERIODO_STATUS_LABEL[periodoStatusKey]}
+                          </span>
+                        ) : (
+                          "–"
+                        )}
+                      </td>
+                    </tr>
+                  );
+                });
+              })}
             </tbody>
           </table>
         </div>
@@ -231,8 +520,33 @@ export default function FuncionariosClient({
           }}
         />
       )}
+
+      {showNovoFuncionario && (
+        <NovoFuncionarioModal
+          onClose={() => setShowNovoFuncionario(false)}
+          onCreated={(novo) => {
+            setFuncionarios((prev) =>
+              [...prev, novo].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+            );
+            setShowNovoFuncionario(false);
+          }}
+        />
+      )}
     </div>
   );
+}
+
+function Arrow({
+  col,
+  sortKey,
+  sortDir,
+}: {
+  col: SortKey;
+  sortKey: SortKey;
+  sortDir: 1 | -1;
+}) {
+  if (sortKey !== col) return null;
+  return <span className="ml-1 text-blue-500">{sortDir === 1 ? "▲" : "▼"}</span>;
 }
 
 function Th({
@@ -249,6 +563,133 @@ function Th({
     >
       {children}
     </th>
+  );
+}
+
+function NovoFuncionarioModal({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: (f: Funcionario) => void;
+}) {
+  const supabase = useMemo(() => createClient(), []);
+  const [nome, setNome] = useState("");
+  const [cliente, setCliente] = useState("");
+  const [setor, setSetor] = useState("");
+  const [cargo, setCargo] = useState("");
+  const [admissao, setAdmissao] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    if (!nome.trim()) {
+      setError("Informe o nome do funcionário.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    const { data, error } = await supabase
+      .from("rh_funcionarios")
+      .insert({
+        nome: nome.trim(),
+        cliente_razao_social: cliente.trim() || null,
+        setor: setor.trim() || null,
+        cargo: cargo.trim() || null,
+        admissao: admissao || null,
+        status: "ATIVO",
+      })
+      .select()
+      .single();
+    setSaving(false);
+    if (error) {
+      setError("Erro ao salvar: " + error.message);
+      return;
+    }
+    if (data) onCreated(data as Funcionario);
+  }
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-lg"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-5 py-4">
+          <h2 className="font-semibold text-slate-900 dark:text-slate-100">
+            Novo funcionário
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 text-lg leading-none"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="p-5 space-y-3">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Cadastro manual — útil para incluir alguém que ainda não veio na
+            planilha de importação.
+          </p>
+          <Field label="Nome">
+            <input
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              className="input w-full"
+            />
+          </Field>
+          <Field label="Cliente">
+            <input
+              value={cliente}
+              onChange={(e) => setCliente(e.target.value)}
+              placeholder="Ex: GEOSONDA"
+              className="input w-full"
+            />
+          </Field>
+          <Field label="Setor">
+            <input
+              value={setor}
+              onChange={(e) => setSetor(e.target.value)}
+              className="input w-full"
+            />
+          </Field>
+          <Field label="Cargo">
+            <input
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
+              className="input w-full"
+            />
+          </Field>
+          <Field label="Data de admissão">
+            <input
+              type="date"
+              value={admissao}
+              onChange={(e) => setAdmissao(e.target.value)}
+              className="input w-full"
+            />
+          </Field>
+
+          {error && (
+            <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 rounded-lg px-3 py-2">
+              {error}
+            </p>
+          )}
+
+          <div className="flex justify-end">
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg px-4 py-1.5 disabled:opacity-50"
+            >
+              {saving ? "Salvando..." : "Salvar funcionário"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -271,6 +712,7 @@ function FuncionarioModal({
   const [form, setForm] = useState({
     nome: funcionario.nome,
     empresa_id: funcionario.empresa_id ?? "",
+    cliente_razao_social: funcionario.cliente_razao_social ?? "",
     obra: funcionario.obra ?? "",
     cargo: funcionario.cargo ?? "",
     setor: funcionario.setor ?? "",
@@ -310,6 +752,7 @@ function FuncionarioModal({
       .update({
         nome: form.nome,
         empresa_id: form.empresa_id || null,
+        cliente_razao_social: form.cliente_razao_social || null,
         obra: form.obra || null,
         cargo: form.cargo || null,
         setor: form.setor || null,
@@ -422,6 +865,15 @@ function FuncionarioModal({
                 <option value="REVISAR">A revisar</option>
               </select>
             </Field>
+            <Field label="Cliente">
+              <input
+                value={form.cliente_razao_social}
+                onChange={(e) =>
+                  setForm({ ...form, cliente_razao_social: e.target.value })
+                }
+                className="input"
+              />
+            </Field>
             <Field label="Empresa">
               <select
                 value={form.empresa_id}
@@ -493,80 +945,75 @@ function FuncionarioModal({
               </p>
             ) : (
               <div className="space-y-3">
-                {periodos.map((p) => (
-                  <div
-                    key={p.id}
-                    className="border border-slate-200 dark:border-slate-700 rounded-lg p-3"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
-                      <span className="text-slate-700 dark:text-slate-300">
-                        {p.inicio} → {p.fim}
-                      </span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">
-                        Limite: {p.data_limite}
-                      </span>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full ${
-                          p.status === "vencido"
-                            ? "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-400"
-                            : p.status === "integral"
-                            ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400"
-                            : p.status === "parcial"
-                            ? "bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-                        }`}
-                      >
-                        Saldo: {p.saldo} dias ({p.status})
-                      </span>
-                    </div>
+                {periodos.map((p) => {
+                  const statusKey = PERIODO_STATUS_MAP[p.status];
+                  return (
+                    <div
+                      key={p.id}
+                      className="border border-slate-200 dark:border-slate-700 rounded-lg p-3"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                        <span className="text-slate-700 dark:text-slate-300">
+                          {p.inicio} → {p.fim}
+                        </span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          Limite: {p.data_limite}
+                        </span>
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full ${PERIODO_STATUS_BADGE_CLASS[statusKey]}`}
+                        >
+                          Saldo: {p.saldo} dias ({PERIODO_STATUS_LABEL[statusKey]})
+                        </span>
+                      </div>
 
-                    <div className="mt-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 space-y-1">
-                      {(lancamentos[p.id] ?? []).map((l) => (
-                        <div
-                          key={l.id}
-                          className="text-xs text-slate-600 dark:text-slate-400 flex justify-between"
-                        >
-                          <span>
-                            {l.inicio} → {l.fim} ({l.dias} dias)
-                          </span>
-                          <span
-                            className={
-                              l.status_pagamento === "PAGO"
-                                ? "text-emerald-600 dark:text-emerald-400"
-                                : "text-amber-600 dark:text-amber-400"
-                            }
+                      <div className="mt-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 space-y-1">
+                        {(lancamentos[p.id] ?? []).map((l) => (
+                          <div
+                            key={l.id}
+                            className="text-xs text-slate-600 dark:text-slate-400 flex justify-between"
                           >
-                            {l.status_pagamento}
-                          </span>
-                        </div>
-                      ))}
-                      {showNovoLancamento === p.id ? (
-                        <NovoLancamentoForm
-                          periodoId={p.id}
-                          onCancel={() => setShowNovoLancamento(null)}
-                          onSaved={async () => {
-                            setShowNovoLancamento(null);
-                            await loadLancamentos(p.id);
-                            const { data: refreshed } = await supabase
-                              .from("v_rh_periodos")
-                              .select(
-                                "id, funcionario_id, inicio, fim, dias_direito, data_limite, dias_gozados, saldo, status"
-                              )
-                              .eq("funcionario_id", funcionario.id);
-                            onPeriodosChanged((refreshed as VPeriodo[]) ?? []);
-                          }}
-                        />
-                      ) : (
-                        <button
-                          onClick={() => setShowNovoLancamento(p.id)}
-                          className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 mt-1"
-                        >
-                          + lançar gozo de férias
-                        </button>
-                      )}
+                            <span>
+                              {l.inicio} → {l.fim} ({l.dias} dias)
+                            </span>
+                            <span
+                              className={
+                                l.status_pagamento === "PAGO"
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : "text-amber-600 dark:text-amber-400"
+                              }
+                            >
+                              {l.status_pagamento}
+                            </span>
+                          </div>
+                        ))}
+                        {showNovoLancamento === p.id ? (
+                          <NovoLancamentoForm
+                            periodoId={p.id}
+                            onCancel={() => setShowNovoLancamento(null)}
+                            onSaved={async () => {
+                              setShowNovoLancamento(null);
+                              await loadLancamentos(p.id);
+                              const { data: refreshed } = await supabase
+                                .from("v_rh_periodos")
+                                .select(
+                                  "id, funcionario_id, inicio, fim, dias_direito, data_limite, dias_gozados, saldo, status"
+                                )
+                                .eq("funcionario_id", funcionario.id);
+                              onPeriodosChanged((refreshed as VPeriodo[]) ?? []);
+                            }}
+                          />
+                        ) : (
+                          <button
+                            onClick={() => setShowNovoLancamento(p.id)}
+                            className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 mt-1"
+                          >
+                            + lançar gozo de férias
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

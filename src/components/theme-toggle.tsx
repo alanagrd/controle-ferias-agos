@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
+
+const emptySubscribe = () => () => {};
+
+// Detecta hidratação sem setState em effect (evita mismatch de SSR do next-themes).
+function useMounted() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+}
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
 
   if (!mounted) {
     return <div className="w-16 h-7" />;
@@ -18,18 +27,10 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="text-xs border border-slate-200 dark:border-slate-700 rounded-md px-2.5 py-1.5 text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5"
+      className="text-xs font-semibold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full px-3.5 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
       title={isDark ? "Mudar para modo claro" : "Mudar para modo escuro"}
     >
-      {isDark ? (
-        <>
-          <span aria-hidden>☀️</span> Claro
-        </>
-      ) : (
-        <>
-          <span aria-hidden>🌙</span> Escuro
-        </>
-      )}
+      {isDark ? "☀️ Modo claro" : "🌙 Modo escuro"}
     </button>
   );
 }

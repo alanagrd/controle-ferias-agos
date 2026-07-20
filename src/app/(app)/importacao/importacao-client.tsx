@@ -3,8 +3,11 @@
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
+  DIVERGENCIA_SIMILARITY_THRESHOLD,
+  nameSimilarity,
   normName,
   parseAtivosGeralCsv,
+  splitEmpresaObra,
   type LinhaAtivosGeral,
 } from "@/lib/importacao";
 
@@ -14,7 +17,13 @@ type FuncionarioBasico = {
   nome: string;
   status: "ATIVO" | "INATIVO" | "REVISAR";
   empresa_id: string | null;
+  cliente_codigo: string | null;
+  cliente_razao_social: string | null;
 };
+
+function csvKey(r: LinhaAtivosGeral): string {
+  return `${r.codigo}||${r.nomeChave}`;
+}
 
 export default function ImportacaoClient({
   funcionarios,
@@ -35,14 +44,31 @@ export default function ImportacaoClient({
   const [selecionadosInativar, setSelecionadosInativar] = useState<Set<string>>(
     new Set()
   );
-  const [selecionadosNovos, setSelecionadosNovos] = useState<Set<number>>(
+  const [selecionadosNovos, setSelecionadosNovos] = useState<Set<string>>(
     new Set()
   );
+  const [analisadoParaSelecao, setAnalisadoParaSelecao] = useState<
+    LinhaAtivosGeral[] | null
+  >(null);
+  const [clienteEscolhido, setClienteEscolhido] = useState<
+    Record<string, string>
+  >({});
   const [applying, setApplying] = useState(false);
   const [resultado, setResultado] = useState<{
     inativados: number;
     criados: number;
+    semCliente: number;
   } | null>(null);
+
+  // divergências de grafia já resolvidas pelo usuário nesta sessão — ficam
+  // excluídas permanentemente das listas/pareamento, mesmo após recomputar
+  const [excludedDbIds, setExcludedDbIds] = useState<Set<string>>(new Set());
+  const [excludedCsvKeys, setExcludedCsvKeys] = useState<Set<string>>(
+    new Set()
+  );
+  const [resolvendoDivergencia, setResolvendoDivergencia] = useState<
+    string | null
+  >(null);
 
   const empresaByNome = useMemo(
     () =>
@@ -50,6 +76,18 @@ export default function ImportacaoClient({
         empresas.map((e) => [e.nome.toUpperCase(), e.id])
       ),
     [empresas]
+  );
+
+  const clientesConhecidos = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          dbFuncionarios
+            .map((f) => f.cliente_razao_social)
+            .filter((c): c is string => !!c)
+        )
+      ).sort((a, b) => a.localeCompare(b, "pt-BR")),
+    [dbFuncionarios]
   );
 
   async function handleFile(file: File) {
@@ -69,6 +107,7 @@ export default function ImportacaoClient({
       } else {
         setAtivosGeral(rows);
         setFileName(file.name);
+        setClienteEscolhido({});
       }
     } catch {
       setParseError("Não consegui ler o arquivo. Confira o formato (CSV).");
@@ -92,21 +131,83 @@ export default function ImportacaoClient({
       dbFuncionarios.map((f) => normName(f.nome, true))
     );
 
-    const candidatosInativacao = dbFuncionarios.filter((f) => {
+    const candidatosInativacaoRaw = dbFuncionarios.filter((f) => {
       if (f.status !== "ATIVO") return false;
+      if (excludedDbIds.has(f.id)) return false;
       const porCodigo = f.codigo ? codigosGeral.has(f.codigo) : false;
       const porNome = nomesGeral.has(normName(f.nome, true));
       return !porCodigo && !porNome;
     });
 
-    const novosACadastrar = ativosGeral.filter((r) => {
+    const novosACadastrarRaw = ativosGeral.filter((r) => {
+      if (excludedCsvKeys.has(csvKey(r))) return false;
       const porCodigo = r.codigo ? codigosDb.has(r.codigo) : false;
       const porNome = nomesDb.has(r.nomeChave);
       return !porCodigo && !porNome;
     });
 
-    return { candidatosInativacao, novosACadastrar };
-  }, [ativosGeral, dbFuncionarios]);
+    // ---- divergência de grafia: cruza os dois lados por similaridade de
+    // nome (pareamento guloso 1-para-1, maior score primeiro)
+    type Par = { fi: number; ri: number; score: number };
+    const pares: Par[] = [];
+    candidatosInativacaoRaw.forEach((f, fi) => {
+      novosACadastrarRaw.forEach((r, ri) => {
+        const score = nameSimilarity(f.nome, r.nome);
+        if (score >= DIVERGENCIA_SIMILARITY_THRESHOLD) {
+          pares.push({ fi, ri, score });
+        }
+      });
+    });
+    pares.sort((a, b) => b.score - a.score);
+
+    const usedF = new Set<number>();
+    const usedR = new Set<number>();
+    const divergencias: {
+      funcionario: FuncionarioBasico;
+      linha: LinhaAtivosGeral;
+      score: number;
+    }[] = [];
+    for (const p of pares) {
+      if (usedF.has(p.fi) || usedR.has(p.ri)) continue;
+      usedF.add(p.fi);
+      usedR.add(p.ri);
+      divergencias.push({
+        funcionario: candidatosInativacaoRaw[p.fi],
+        linha: novosACadastrarRaw[p.ri],
+        score: p.score,
+      });
+    }
+
+    const candidatosInativacao = candidatosInativacaoRaw.filter(
+      (_, fi) => !usedF.has(fi)
+    );
+    const novosACadastrar = novosACadastrarRaw.filter(
+      (_, ri) => !usedR.has(ri)
+    );
+
+    return { candidatosInativacao, novosACadastrar, divergencias };
+  }, [ativosGeral, dbFuncionarios, excludedDbIds, excludedCsvKeys]);
+
+  // colisões de nome entre clientes — independe do arquivo importado, é
+  // apenas informativo sobre o cadastro atual
+  const colisoes = useMemo(() => {
+    const porNome = new Map<string, { nome: string; clientes: Set<string> }>();
+    dbFuncionarios.forEach((f) => {
+      if (!f.cliente_razao_social) return;
+      const chave = normName(f.nome, true);
+      if (!chave) return;
+      const atual = porNome.get(chave) ?? {
+        nome: f.nome,
+        clientes: new Set<string>(),
+      };
+      atual.clientes.add(f.cliente_razao_social);
+      porNome.set(chave, atual);
+    });
+    return Array.from(porNome.values())
+      .filter((v) => v.clientes.size > 1)
+      .map((v) => ({ nome: v.nome, clientes: Array.from(v.clientes).sort() }))
+      .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  }, [dbFuncionarios]);
 
   function toggleAllInativar(checked: boolean) {
     if (!analise) return;
@@ -119,19 +220,55 @@ export default function ImportacaoClient({
     if (!analise) return;
     setSelecionadosNovos(
       checked
-        ? new Set(analise.novosACadastrar.map((_, i) => i))
+        ? new Set(analise.novosACadastrar.map((r) => csvKey(r)))
         : new Set()
     );
   }
 
-  // default: select everything once analysis is ready
-  useMemo(() => {
+  // default: select everything once a new file is analyzed. Adjusting state
+  // during render (guarded by comparing against the last seen ativosGeral)
+  // instead of in an effect, per React's "adjusting state when a prop
+  // changes" pattern.
+  if (ativosGeral !== analisadoParaSelecao) {
+    setAnalisadoParaSelecao(ativosGeral);
     if (analise) {
       setSelecionadosInativar(new Set(analise.candidatosInativacao.map((f) => f.id)));
-      setSelecionadosNovos(new Set(analise.novosACadastrar.map((_, i) => i)));
+      setSelecionadosNovos(
+        new Set(analise.novosACadastrar.map((r) => csvKey(r)))
+      );
+    } else {
+      setSelecionadosInativar(new Set());
+      setSelecionadosNovos(new Set());
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ativosGeral]);
+  }
+
+  async function resolverDivergenciaMesmaPessoa(funcionarioId: string, linha: LinhaAtivosGeral) {
+    setResolvendoDivergencia(funcionarioId);
+    setExcludedDbIds((prev) => new Set(prev).add(funcionarioId));
+    setExcludedCsvKeys((prev) => new Set(prev).add(csvKey(linha)));
+    setResolvendoDivergencia(null);
+  }
+
+  async function resolverDivergenciaInativar(funcionarioId: string, linha: LinhaAtivosGeral) {
+    setResolvendoDivergencia(funcionarioId);
+    const { error } = await supabase
+      .from("rh_funcionarios")
+      .update({ status: "INATIVO" })
+      .eq("id", funcionarioId);
+    if (error) {
+      alert("Erro ao inativar: " + error.message);
+      setResolvendoDivergencia(null);
+      return;
+    }
+    setDbFuncionarios((prev) =>
+      prev.map((f) =>
+        f.id === funcionarioId ? { ...f, status: "INATIVO" as const } : f
+      )
+    );
+    setExcludedDbIds((prev) => new Set(prev).add(funcionarioId));
+    setExcludedCsvKeys((prev) => new Set(prev).add(csvKey(linha)));
+    setResolvendoDivergencia(null);
+  }
 
   async function aplicar() {
     if (!analise) return;
@@ -153,40 +290,71 @@ export default function ImportacaoClient({
       inativados = idsInativar.length;
     }
 
-    const novos = analise.novosACadastrar.filter((_, i) =>
-      selecionadosNovos.has(i)
+    const novosIncluidos = analise.novosACadastrar.filter((r) =>
+      selecionadosNovos.has(csvKey(r))
     );
     let criados = 0;
-    if (novos.length) {
-      const payload = novos.map((r) => ({
+    let semCliente = 0;
+    const payload: {
+      codigo: string | null;
+      nome: string;
+      empresa_id: string | null;
+      obra: string | null;
+      cargo: string | null;
+      admissao: string | null;
+      status: "ATIVO";
+      cliente_codigo: string | null;
+      cliente_razao_social: string;
+    }[] = [];
+    for (const r of novosIncluidos) {
+      const clienteFinal = clienteEscolhido[csvKey(r)] || r.clienteRazaoSocial;
+      if (!clienteFinal) {
+        semCliente++;
+        continue; // fica pendente até escolherem o cliente
+      }
+      const { empresa } = splitEmpresaObra(clienteFinal);
+      payload.push({
         codigo: r.codigo || null,
         nome: r.nome,
-        empresa_id: r.empresa ? empresaByNome[r.empresa] ?? null : null,
+        empresa_id: empresaByNome[empresa] ?? null,
         obra: r.obra,
         cargo: r.cargo || null,
         admissao: r.admissao,
-        status: "ATIVO" as const,
+        status: "ATIVO",
         cliente_codigo: r.clienteCodigo || null,
-        cliente_razao_social: r.clienteRazaoSocial,
-      }));
+        cliente_razao_social: clienteFinal,
+      });
+    }
+    if (payload.length) {
       const { error } = await supabase.from("rh_funcionarios").insert(payload);
       if (error) {
         alert("Erro ao cadastrar novos: " + error.message);
         setApplying(false);
         return;
       }
-      criados = novos.length;
+      criados = payload.length;
     }
 
     // refresh local state so the lists recompute without a full reload
     const { data: refreshed } = await supabase
       .from("rh_funcionarios")
-      .select("id, codigo, nome, status, empresa_id");
+      .select(
+        "id, codigo, nome, status, empresa_id, cliente_codigo, cliente_razao_social"
+      );
     if (refreshed) setDbFuncionarios(refreshed);
 
-    setResultado({ inativados, criados });
+    setResultado({ inativados, criados, semCliente });
     setApplying(false);
   }
+
+  const ativosConfirmados = dbFuncionarios.filter(
+    (f) => f.status === "ATIVO"
+  ).length;
+
+  const nadaPendente =
+    !!analise &&
+    analise.candidatosInativacao.length === 0 &&
+    analise.novosACadastrar.length === 0;
 
   return (
     <div className="space-y-6">
@@ -228,14 +396,127 @@ export default function ImportacaoClient({
         )}
       </div>
 
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <Kpi
+          label="Confirmados ativos"
+          value={ativosConfirmados}
+          tone="ok"
+        />
+        <Kpi
+          label="A inativar (não estão na lista)"
+          value={analise ? analise.candidatosInativacao.length : "–"}
+          tone="danger"
+        />
+        <Kpi
+          label="Divergência de grafia (revisar)"
+          value={analise ? analise.divergencias.length : "–"}
+          tone="warn"
+        />
+        <Kpi
+          label="Novos a cadastrar"
+          value={analise ? analise.novosACadastrar.length : "–"}
+          tone="neutral"
+        />
+      </div>
+
       {analise && (
         <>
           {resultado && (
             <div className="bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-900 rounded-xl p-4 text-sm text-emerald-800 dark:text-emerald-300">
               Aplicado: {resultado.inativados} funcionário(s) inativado(s) e{" "}
               {resultado.criados} novo(s) cadastrado(s).
+              {resultado.semCliente > 0 && (
+                <>
+                  {" "}
+                  {resultado.semCliente} ainda aguardam a escolha do cliente
+                  antes de cadastrar (selecione e confirme de novo).
+                </>
+              )}
             </div>
           )}
+
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Divergência de grafia — resolva antes de confirmar
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Nome parecido encontrado na lista de ativos, mas grafado de
+                forma diferente. Decida se é a mesma pessoa (mantém ativo, sem
+                alterar cadastro) ou se deve ser tratado como desligamento.
+              </p>
+            </div>
+            <div className="max-h-80 overflow-y-auto">
+              {analise.divergencias.length === 0 ? (
+                <p className="text-sm text-slate-500 dark:text-slate-400 px-4 py-3">
+                  Nenhuma divergência pendente.
+                </p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800">
+                      <th className="py-1.5 px-3 font-medium">Cadastrado como</th>
+                      <th className="py-1.5 px-3 font-medium">Cliente</th>
+                      <th className="py-1.5 px-3 font-medium">
+                        Encontrado na lista como
+                      </th>
+                      <th className="py-1.5 px-3 font-medium">Ação</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analise.divergencias.map((d) => {
+                      const resolvendo =
+                        resolvendoDivergencia === d.funcionario.id;
+                      return (
+                        <tr
+                          key={d.funcionario.id}
+                          className="border-t border-slate-100 dark:border-slate-800"
+                        >
+                          <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">
+                            {d.funcionario.nome}
+                          </td>
+                          <td className="py-1.5 px-3 text-slate-700 dark:text-slate-300">
+                            {d.funcionario.cliente_razao_social || "–"}
+                          </td>
+                          <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">
+                            {d.linha.nome}
+                          </td>
+                          <td className="py-1.5 px-3">
+                            <div className="flex gap-2">
+                              <button
+                                disabled={resolvendo}
+                                onClick={() =>
+                                  resolverDivergenciaMesmaPessoa(
+                                    d.funcionario.id,
+                                    d.linha
+                                  )
+                                }
+                                className="text-xs rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-1 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
+                              >
+                                É a mesma pessoa
+                              </button>
+                              <button
+                                disabled={resolvendo}
+                                onClick={() =>
+                                  resolverDivergenciaInativar(
+                                    d.funcionario.id,
+                                    d.linha
+                                  )
+                                }
+                                className="text-xs rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-1 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
+                              >
+                                Inativar mesmo assim
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
 
           <Secao
             titulo="Candidatos a inativação"
@@ -268,10 +549,10 @@ export default function ImportacaoClient({
                           }}
                         />
                       </td>
-                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
-                        {f.codigo || "–"}
-                      </td>
                       <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">{f.nome}</td>
+                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
+                        {f.cliente_razao_social || "–"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -281,7 +562,7 @@ export default function ImportacaoClient({
 
           <Secao
             titulo="Novos a cadastrar"
-            subtitulo="Estão ativos no arquivo enviado, mas ainda não existem no cadastro."
+            subtitulo="O cliente já vem identificado automaticamente pelo código real de cliente sempre que possível. Só é preciso escolher manualmente quando aparecer 'Selecionar...' (quem ficar sem cliente continua pendente para a próxima rodada)."
             total={analise.novosACadastrar.length}
             onToggleAll={toggleAllNovos}
             allChecked={
@@ -298,55 +579,80 @@ export default function ImportacaoClient({
                 <thead>
                   <tr className="text-left text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800">
                     <th className="py-1.5 px-3 font-medium"></th>
-                    <th className="py-1.5 px-3 font-medium">Código</th>
                     <th className="py-1.5 px-3 font-medium">Nome</th>
-                    <th className="py-1.5 px-3 font-medium">Empresa</th>
-                    <th className="py-1.5 px-3 font-medium">Obra</th>
+                    <th className="py-1.5 px-3 font-medium">Código</th>
                     <th className="py-1.5 px-3 font-medium">Cargo</th>
+                    <th className="py-1.5 px-3 font-medium">Admissão</th>
+                    <th className="py-1.5 px-3 font-medium">Obra</th>
+                    <th className="py-1.5 px-3 font-medium">Cliente</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {analise.novosACadastrar.map((r, i) => (
-                    <tr key={i} className="border-t border-slate-100 dark:border-slate-800">
-                      <td className="w-8 py-1.5 px-3">
-                        <input
-                          type="checkbox"
-                          checked={selecionadosNovos.has(i)}
-                          onChange={(e) => {
-                            const next = new Set(selecionadosNovos);
-                            if (e.target.checked) next.add(i);
-                            else next.delete(i);
-                            setSelecionadosNovos(next);
-                          }}
-                        />
-                      </td>
-                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
-                        {r.codigo || "–"}
-                      </td>
-                      <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">
-                        {r.nome}
-                      </td>
-                      <td className="py-1.5 px-3 text-slate-700 dark:text-slate-300">
-                        {r.empresa || (
-                          <span className="text-slate-400 dark:text-slate-500">
-                            não identificada
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
-                        {r.obra || "–"}
-                      </td>
-                      <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
-                        {r.cargo || "–"}
-                      </td>
-                    </tr>
-                  ))}
+                  {analise.novosACadastrar.map((r) => {
+                    const key = csvKey(r);
+                    const valorSelect = clienteEscolhido[key] ?? r.clienteRazaoSocial ?? "";
+                    return (
+                      <tr key={key} className="border-t border-slate-100 dark:border-slate-800">
+                        <td className="w-8 py-1.5 px-3">
+                          <input
+                            type="checkbox"
+                            checked={selecionadosNovos.has(key)}
+                            onChange={(e) => {
+                              const next = new Set(selecionadosNovos);
+                              if (e.target.checked) next.add(key);
+                              else next.delete(key);
+                              setSelecionadosNovos(next);
+                            }}
+                          />
+                        </td>
+                        <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">
+                          {r.nome}
+                        </td>
+                        <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
+                          {r.codigo || "–"}
+                        </td>
+                        <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
+                          {r.cargo || "–"}
+                        </td>
+                        <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
+                          {r.admissao || "–"}
+                        </td>
+                        <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
+                          {r.obra || "–"}
+                        </td>
+                        <td className="py-1.5 px-3">
+                          <select
+                            value={valorSelect}
+                            onChange={(e) =>
+                              setClienteEscolhido((prev) => ({
+                                ...prev,
+                                [key]: e.target.value,
+                              }))
+                            }
+                            className="text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 rounded-lg px-2 py-1 min-w-[140px]"
+                          >
+                            <option value="">Selecionar...</option>
+                            {clientesConhecidos.map((c) => (
+                              <option key={c} value={c}>
+                                {c}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
           </Secao>
 
-          <div className="flex justify-end">
+          <div className="flex items-center justify-end gap-4 flex-wrap">
+            {nadaPendente && (
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Nada pendente para aplicar — todos os itens já foram tratados.
+              </span>
+            )}
             <button
               onClick={aplicar}
               disabled={
@@ -357,11 +663,77 @@ export default function ImportacaoClient({
             >
               {applying
                 ? "Aplicando..."
-                : `Aplicar seleção (${selecionadosInativar.size} inativações, ${selecionadosNovos.size} novos)`}
+                : `Confirmar importação deste mês (${selecionadosInativar.size} inativações, ${selecionadosNovos.size} novos)`}
             </button>
           </div>
         </>
       )}
+
+      {colisoes.length > 0 && (
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              Nomes iguais em mais de um cliente
+              <span className="text-xs font-normal text-slate-400 dark:text-slate-500">
+                (apenas informativo)
+              </span>
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-3xl">
+              Ao juntar as planilhas dos clientes, encontrei nomes idênticos
+              cadastrados em mais de uma empresa do grupo. Pode ser a mesma
+              pessoa que migrou de obra/cliente, ou coincidência de nome —
+              vale confirmar na importação real, porque o cruzamento com o
+              histórico de pagamento é feito só pelo nome e pode juntar
+              lançamentos no cadastro errado quando isso acontece.
+            </p>
+          </div>
+          <div className="max-h-56 overflow-y-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800">
+                  <th className="py-1.5 px-3 font-medium">Nome</th>
+                  <th className="py-1.5 px-3 font-medium">Clientes onde aparece</th>
+                </tr>
+              </thead>
+              <tbody>
+                {colisoes.map((c) => (
+                  <tr key={c.nome} className="border-t border-slate-100 dark:border-slate-800">
+                    <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">{c.nome}</td>
+                    <td className="py-1.5 px-3 text-slate-700 dark:text-slate-300">
+                      {c.clientes.join(" e ")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Kpi({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number | string;
+  tone: "ok" | "danger" | "warn" | "neutral";
+}) {
+  const toneClasses: Record<typeof tone, string> = {
+    ok: "text-emerald-700 dark:text-emerald-400",
+    danger: "text-red-600 dark:text-red-400",
+    warn: "text-amber-600 dark:text-amber-400",
+    neutral: "text-slate-900 dark:text-slate-100",
+  };
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+      <div className="text-xs text-slate-500 dark:text-slate-400">{label}</div>
+      <div className={`text-2xl font-semibold mt-1 ${toneClasses[tone]}`}>
+        {value}
+      </div>
     </div>
   );
 }

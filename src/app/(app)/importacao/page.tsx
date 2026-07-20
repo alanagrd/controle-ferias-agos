@@ -8,7 +8,9 @@ export default async function ImportacaoPage() {
   const [{ data: funcionarios }, { data: empresas }] = await Promise.all([
     supabase
       .from("rh_funcionarios")
-      .select("id, codigo, nome, status, empresa_id"),
+      .select(
+        "id, codigo, nome, status, empresa_id, cliente_codigo, cliente_razao_social"
+      ),
     supabase.from("rh_empresas").select("id, nome").order("nome"),
   ]);
 
