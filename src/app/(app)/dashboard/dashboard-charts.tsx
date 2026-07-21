@@ -82,15 +82,16 @@ export default function DashboardClient({
     ).size;
 
     let vencidos = 0;
+    let prox7 = 0;
     let prox30 = 0;
     let prox60 = 0;
+    let prox90 = 0;
     const statusCount: Record<string, number> = {
       EM_ABERTO: 0,
       PARCIALMENTE_GOZADO: 0,
       VENCIDO: 0,
       INTEGRALMENTE_GOZADO: 0,
     };
-    const porCliente: Record<string, Record<string, number>> = {};
     const proximos: {
       id: string;
       nome: string;
@@ -109,22 +110,15 @@ export default function DashboardClient({
       const clienteKey = f.cliente_razao_social || "Sem cliente";
 
       statusCount[statusKey] = (statusCount[statusKey] || 0) + 1;
-      if (!porCliente[clienteKey]) {
-        porCliente[clienteKey] = {
-          EM_ABERTO: 0,
-          PARCIALMENTE_GOZADO: 0,
-          VENCIDO: 0,
-          INTEGRALMENTE_GOZADO: 0,
-        };
-      }
-      porCliente[clienteKey][statusKey]++;
 
       if (statusKey === "VENCIDO") vencidos++;
 
       const dias = daysBetween(p.data_limite);
+      if (dias >= 0 && dias <= 7 && p.saldo > 0) prox7++;
       if (dias >= 0 && dias <= 30 && p.saldo > 0) prox30++;
+      if (dias >= 0 && dias <= 60 && p.saldo > 0) prox60++;
+      if (dias >= 0 && dias <= 90 && p.saldo > 0) prox90++;
       if (dias >= 0 && dias <= 60 && p.saldo > 0) {
-        prox60++;
         proximos.push({
           id: p.id,
           nome: f.nome,
@@ -138,7 +132,16 @@ export default function DashboardClient({
 
     proximos.sort((a, b) => a.dias - b.dias);
 
-    return { ativos, vencidos, prox30, prox60, statusCount, porCliente, proximos };
+    return {
+      ativos,
+      vencidos,
+      prox7,
+      prox30,
+      prox60,
+      prox90,
+      statusCount,
+      proximos,
+    };
   }, [funcionarios, periodos, cliente, funcionarioById]);
 
   return (
@@ -182,10 +185,17 @@ export default function DashboardClient({
       <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-4">
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
           <h2 className="text-[14.5px] font-semibold text-slate-900 dark:text-slate-100 mb-3">
-            Períodos por cliente e status
+            Férias a vencer
           </h2>
           <div style={{ height: 230 }}>
-            <ClientStatusBarChart porCliente={stats.porCliente} />
+            <VencimentosBarChart
+              counts={{
+                d7: stats.prox7,
+                d30: stats.prox30,
+                d60: stats.prox60,
+                d90: stats.prox90,
+              }}
+            />
           </div>
         </div>
 
@@ -304,55 +314,58 @@ function useChartTheme() {
   };
 }
 
-function ClientStatusBarChart({
-  porCliente,
+/**
+ * Contagens de "quantas férias vencem em até N dias" (`d90` inclui os já
+ * contados em `d60`/`d30`/`d7` — mesma semântica cumulativa dos KPIs
+ * "Vencem em 30/60 dias" acima). Cores em gradiente de urgência: vermelho
+ * (7d, mesmo tom de VENCIDO) → laranja AGOS → âmbar (mesmo tom de
+ * PARCIALMENTE_GOZADO) → verde AGOS (90d, ainda com folga).
+ */
+function VencimentosBarChart({
+  counts,
 }: {
-  porCliente: Record<string, Record<string, number>>;
+  counts: { d7: number; d30: number; d60: number; d90: number };
 }) {
-  const { mounted, textColor, mutedColor, gridColor } = useChartTheme();
+  const { mounted, mutedColor, gridColor } = useChartTheme();
   if (!mounted) return null;
 
-  const clientesOrdenados = Object.keys(porCliente).sort((a, b) =>
-    a.localeCompare(b, "pt-BR")
-  );
-
-  if (clientesOrdenados.length === 0) {
-    return (
-      <p className="text-sm text-slate-500 dark:text-slate-400">
-        Nenhum dado disponível.
-      </p>
-    );
-  }
+  const labels = ["Até 7 dias", "Até 30 dias", "Até 60 dias", "Até 90 dias"];
+  const data = [counts.d7, counts.d30, counts.d60, counts.d90];
+  const colors = ["#f0546b", "#E87722", "#f5a623", "#8BAB3E"];
 
   return (
     <Bar
       data={{
-        labels: clientesOrdenados,
-        datasets: PERIODO_STATUS_ORDER.map((key) => ({
-          label: PERIODO_STATUS_LABEL[key],
-          data: clientesOrdenados.map((c) => porCliente[c][key] || 0),
-          backgroundColor: PERIODO_STATUS_COLOR[key],
-        })),
+        labels,
+        datasets: [
+          {
+            label: "Períodos com saldo a vencer",
+            data,
+            backgroundColor: colors,
+            borderRadius: 6,
+          },
+        ],
       }}
       options={{
         responsive: true,
         maintainAspectRatio: false,
         scales: {
           x: {
-            stacked: true,
             ticks: { color: mutedColor, font: { size: 11 } },
-            grid: { color: gridColor },
+            grid: { display: false },
           },
           y: {
-            stacked: true,
-            ticks: { color: mutedColor },
+            beginAtZero: true,
+            ticks: { color: mutedColor, precision: 0 },
             grid: { color: gridColor },
           },
         },
         plugins: {
-          legend: {
-            position: "bottom" as const,
-            labels: { color: textColor, boxWidth: 11, font: { size: 11 } },
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => ` ${ctx.parsed.y} período(s)`,
+            },
           },
         },
       }}
