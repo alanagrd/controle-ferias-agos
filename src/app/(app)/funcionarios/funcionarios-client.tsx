@@ -837,6 +837,30 @@ function FuncionarioModal({
     onPeriodosChanged((refreshed as VPeriodo[]) ?? []);
   }
 
+  async function handleDeletePeriodo(periodoId: string) {
+    const qtdLancamentos = (lancamentos[periodoId] ?? []).length;
+    const aviso =
+      qtdLancamentos > 0
+        ? `Excluir este período aquisitivo? Isso também vai apagar os ${qtdLancamentos} lançamento(s) de gozo registrados nele. Essa ação não pode ser desfeita.`
+        : "Excluir este período aquisitivo? Essa ação não pode ser desfeita.";
+    if (!window.confirm(aviso)) return;
+    const { error } = await supabase
+      .from("rh_periodos_aquisitivos")
+      .delete()
+      .eq("id", periodoId);
+    if (error) {
+      alert("Erro ao excluir período: " + error.message);
+      return;
+    }
+    const { data: refreshed } = await supabase
+      .from("v_rh_periodos")
+      .select(
+        "id, funcionario_id, inicio, fim, dias_direito, data_limite, dias_gozados, saldo, status"
+      )
+      .eq("funcionario_id", funcionario.id);
+    onPeriodosChanged((refreshed as VPeriodo[]) ?? []);
+  }
+
   async function handleAddPeriodo() {
     const hoje = new Date();
     const inicioStr = window.prompt(
@@ -1032,6 +1056,13 @@ function FuncionarioModal({
                         >
                           Saldo: {p.saldo} dias ({PERIODO_STATUS_LABEL[statusKey]})
                         </span>
+                        <button
+                          onClick={() => handleDeletePeriodo(p.id)}
+                          title="Excluir período aquisitivo"
+                          className="text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400"
+                        >
+                          ✕
+                        </button>
                       </div>
 
                       <div className="mt-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 space-y-1">
