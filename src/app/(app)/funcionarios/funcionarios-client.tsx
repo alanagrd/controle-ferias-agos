@@ -1022,10 +1022,10 @@ function FuncionarioModal({
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
                         <span className="text-slate-700 dark:text-slate-300">
-                          {p.inicio} → {p.fim}
+                          {fmtDate(p.inicio)} → {fmtDate(p.fim)}
                         </span>
                         <span className="text-xs text-slate-500 dark:text-slate-400">
-                          Limite: {p.data_limite}
+                          Limite: {fmtDate(p.data_limite)}
                         </span>
                         <span
                           className={`text-xs px-2 py-0.5 rounded-full ${PERIODO_STATUS_BADGE_CLASS[statusKey]}`}
@@ -1041,7 +1041,7 @@ function FuncionarioModal({
                             className="text-xs text-slate-600 dark:text-slate-400 flex items-center justify-between gap-2"
                           >
                             <span>
-                              {l.inicio} → {l.fim} ({l.dias} dias)
+                              {fmtDate(l.inicio)} → {fmtDate(l.fim)} ({l.dias} dias)
                             </span>
                             <span className="flex items-center gap-2">
                               <span
