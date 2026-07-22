@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import {
@@ -300,10 +300,16 @@ function Kpi({
   );
 }
 
+const emptySubscribe = () => () => {};
+
 function useChartTheme() {
   const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // Detecta hidratação sem setState em effect (evita mismatch de SSR do next-themes).
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const isDark = theme === "dark";
   return {
     mounted,
