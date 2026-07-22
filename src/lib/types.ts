@@ -54,3 +54,27 @@ export type VPeriodo = PeriodoAquisitivo & {
   saldo: number;
   status: StatusPeriodo;
 };
+
+export type StatusAso = "valido" | "vencido";
+export type TipoAso = "ADMISSIONAL" | "PERIODICO";
+
+export type RegistroAso = {
+  id: string;
+  funcionario_id: string;
+  data_aso: string;
+  tipo: TipoAso;
+  data_vencimento: string;
+  observacao: string | null;
+  criado_em?: string;
+};
+
+/** view v_rh_aso: registro de ASO vigente (mais recente) por funcionário ativo. */
+export type VAso = {
+  funcionario_id: string;
+  registro_id: string;
+  data_aso: string;
+  tipo: TipoAso;
+  data_vencimento: string;
+  dias_para_vencer: number;
+  status: StatusAso;
+};

@@ -13,15 +13,9 @@ import {
   Legend,
 } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
-import type { StatusFuncionario, StatusPeriodo } from "@/lib/types";
-import {
-  PERIODO_STATUS_COLOR,
-  PERIODO_STATUS_LABEL,
-  PERIODO_STATUS_MAP,
-  PERIODO_STATUS_ORDER,
-  daysBetween,
-  fmtDate,
-} from "@/lib/status";
+import type { StatusFuncionario, VAso } from "@/lib/types";
+import { ASO_STATUS_COLOR, ASO_STATUS_LABEL } from "@/lib/status-aso";
+import { fmtDate } from "@/lib/status";
 
 ChartJS.register(
   CategoryScale,
@@ -39,20 +33,12 @@ type FuncionarioLite = {
   cliente_razao_social: string | null;
 };
 
-type PeriodoLite = {
-  id: string;
-  funcionario_id: string;
-  data_limite: string;
-  saldo: number;
-  status: StatusPeriodo;
-};
-
-export default function DashboardClient({
+export default function AsoDashboardClient({
   funcionarios,
-  periodos,
+  registros,
 }: {
   funcionarios: FuncionarioLite[];
-  periodos: PeriodoLite[];
+  registros: VAso[];
 }) {
   const [cliente, setCliente] = useState("");
 
@@ -74,58 +60,46 @@ export default function DashboardClient({
   );
 
   const stats = useMemo(() => {
-    const funcionariosFiltrados = funcionarios.filter(
-      (f) => !cliente || f.cliente_razao_social === cliente
-    );
-    const ativos = new Set(
-      funcionariosFiltrados.filter((f) => f.status === "ATIVO").map((f) => f.nome)
-    ).size;
-
     let vencidos = 0;
     let prox7 = 0;
     let prox30 = 0;
     let prox60 = 0;
     let prox90 = 0;
-    const statusCount: Record<string, number> = {
-      EM_ABERTO: 0,
-      PARCIALMENTE_GOZADO: 0,
-      VENCIDO: 0,
-      INTEGRALMENTE_GOZADO: 0,
-    };
+    const statusCount: Record<string, number> = { valido: 0, vencido: 0 };
     const proximos: {
       id: string;
       nome: string;
       cliente: string;
-      dataLimite: string;
-      saldo: number;
+      vencimento: string;
       dias: number;
+      status: "valido" | "vencido";
     }[] = [];
 
-    periodos.forEach((p) => {
-      const f = funcionarioById[p.funcionario_id];
+    let ativosContados = 0;
+
+    registros.forEach((r) => {
+      const f = funcionarioById[r.funcionario_id];
       if (!f) return;
       if (cliente && f.cliente_razao_social !== cliente) return;
 
-      const statusKey = PERIODO_STATUS_MAP[p.status];
-      const clienteKey = f.cliente_razao_social || "Sem cliente";
+      ativosContados++;
+      statusCount[r.status] = (statusCount[r.status] || 0) + 1;
+      if (r.status === "vencido") vencidos++;
 
-      statusCount[statusKey] = (statusCount[statusKey] || 0) + 1;
+      const dias = r.dias_para_vencer;
+      if (dias >= 0 && dias <= 7) prox7++;
+      if (dias >= 0 && dias <= 30) prox30++;
+      if (dias >= 0 && dias <= 60) prox60++;
+      if (dias >= 0 && dias <= 90) prox90++;
 
-      if (statusKey === "VENCIDO") vencidos++;
-
-      const dias = daysBetween(p.data_limite);
-      if (dias >= 0 && dias <= 7 && p.saldo > 0) prox7++;
-      if (dias >= 0 && dias <= 30 && p.saldo > 0) prox30++;
-      if (dias >= 0 && dias <= 60 && p.saldo > 0) prox60++;
-      if (dias >= 0 && dias <= 90 && p.saldo > 0) prox90++;
-      if (dias >= 0 && dias <= 60 && p.saldo > 0) {
+      if (dias >= 0 && dias <= 60) {
         proximos.push({
-          id: p.id,
+          id: r.registro_id,
           nome: f.nome,
-          cliente: clienteKey,
-          dataLimite: p.data_limite,
-          saldo: p.saldo,
+          cliente: f.cliente_razao_social || "Sem cliente",
+          vencimento: r.data_vencimento,
           dias,
+          status: r.status,
         });
       }
     });
@@ -133,7 +107,7 @@ export default function DashboardClient({
     proximos.sort((a, b) => a.dias - b.dias);
 
     return {
-      ativos,
+      ativos: ativosContados,
       vencidos,
       prox7,
       prox30,
@@ -142,16 +116,16 @@ export default function DashboardClient({
       statusCount,
       proximos,
     };
-  }, [funcionarios, periodos, cliente, funcionarioById]);
+  }, [registros, cliente, funcionarioById]);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-          Dashboard
+          Dashboard ASO
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Visão geral de férias e vencimentos.
+          Visão geral de exames ocupacionais e vencimentos.
         </p>
       </div>
 
@@ -176,8 +150,8 @@ export default function DashboardClient({
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Kpi label="Funcionários ativos" value={stats.ativos} tone="default" />
-        <Kpi label="Períodos vencidos" value={stats.vencidos} tone="danger" />
+        <Kpi label="Funcionários ativos (ASO)" value={stats.ativos} tone="default" />
+        <Kpi label="ASOs vencidos" value={stats.vencidos} tone="danger" />
         <Kpi label="Vencem em 30 dias" value={stats.prox30} tone="danger" />
         <Kpi label="Vencem em 60 dias" value={stats.prox60} tone="warn" />
       </div>
@@ -185,7 +159,7 @@ export default function DashboardClient({
       <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-4">
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
           <h2 className="text-[14.5px] font-semibold text-slate-900 dark:text-slate-100 mb-3">
-            Férias a vencer
+            ASOs a vencer
           </h2>
           <div style={{ height: 230 }}>
             <VencimentosBarChart
@@ -201,7 +175,7 @@ export default function DashboardClient({
 
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5">
           <h2 className="text-[14.5px] font-semibold text-slate-900 dark:text-slate-100 mb-3">
-            Status dos períodos{" "}
+            Status dos ASOs{" "}
             <span className="text-slate-500 dark:text-slate-400 font-normal">
               (geral)
             </span>
@@ -223,7 +197,7 @@ export default function DashboardClient({
                 <th className="py-2 font-medium">Nome</th>
                 <th className="py-2 font-medium">Cliente</th>
                 <th className="py-2 font-medium">Vence em</th>
-                <th className="py-2 font-medium">Saldo</th>
+                <th className="py-2 font-medium">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -244,7 +218,7 @@ export default function DashboardClient({
                   >
                     <td className="py-1.5">
                       <Link
-                        href={`/funcionarios?q=${encodeURIComponent(p.nome)}`}
+                        href={`/aso/funcionarios?q=${encodeURIComponent(p.nome)}`}
                         className="text-agos-green-dark dark:text-agos-green-light hover:underline"
                       >
                         {p.nome}
@@ -254,13 +228,21 @@ export default function DashboardClient({
                       {p.cliente}
                     </td>
                     <td className="py-1.5 text-slate-700 dark:text-slate-300">
-                      {fmtDate(p.dataLimite)}{" "}
+                      {fmtDate(p.vencimento)}{" "}
                       <span className="text-xs text-slate-500 dark:text-slate-400">
                         ({p.dias}d)
                       </span>
                     </td>
-                    <td className="py-1.5 text-slate-700 dark:text-slate-300">
-                      {p.saldo}
+                    <td className="py-1.5">
+                      <span
+                        className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                        style={{
+                          color: ASO_STATUS_COLOR[p.status],
+                          backgroundColor: `${ASO_STATUS_COLOR[p.status]}1a`,
+                        }}
+                      >
+                        {ASO_STATUS_LABEL[p.status]}
+                      </span>
                     </td>
                   </tr>
                 ))
@@ -321,11 +303,8 @@ function useChartTheme() {
 }
 
 /**
- * Contagens de "quantas férias vencem em até N dias" (`d90` inclui os já
- * contados em `d60`/`d30`/`d7` — mesma semântica cumulativa dos KPIs
- * "Vencem em 30/60 dias" acima). Cores em gradiente de urgência: vermelho
- * (7d, mesmo tom de VENCIDO) → laranja AGOS → âmbar (mesmo tom de
- * PARCIALMENTE_GOZADO) → verde AGOS (90d, ainda com folga).
+ * Mesma semântica cumulativa e gradiente de urgência usados no gráfico
+ * "Férias a vencer" (vermelho -> laranja AGOS -> âmbar -> verde AGOS).
  */
 function VencimentosBarChart({
   counts,
@@ -345,7 +324,7 @@ function VencimentosBarChart({
         labels,
         datasets: [
           {
-            label: "Períodos com saldo a vencer",
+            label: "ASOs a vencer",
             data,
             backgroundColor: colors,
             borderRadius: 6,
@@ -387,16 +366,16 @@ function StatusDoughnutChart({
   const { mounted, textColor } = useChartTheme();
   if (!mounted) return null;
 
+  const order: ("valido" | "vencido")[] = ["valido", "vencido"];
+
   return (
     <Doughnut
       data={{
-        labels: PERIODO_STATUS_ORDER.map((k) => PERIODO_STATUS_LABEL[k]),
+        labels: order.map((k) => ASO_STATUS_LABEL[k]),
         datasets: [
           {
-            data: PERIODO_STATUS_ORDER.map((k) => statusCount[k] || 0),
-            backgroundColor: PERIODO_STATUS_ORDER.map(
-              (k) => PERIODO_STATUS_COLOR[k]
-            ),
+            data: order.map((k) => statusCount[k] || 0),
+            backgroundColor: order.map((k) => ASO_STATUS_COLOR[k]),
             borderWidth: 0,
           },
         ],

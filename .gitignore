@@ -43,3 +43,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env.local
+
+# patches baixados (artefatos, nao versionar)
+*.patch
