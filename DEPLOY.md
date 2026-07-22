@@ -23,4 +23,4 @@
 
 ## Login de teste
 - E-mail: alan.agrd@gmail.com
-- Senha provisória: GxI9oAlwKXxa6V (troque depois de entrar, se quiser)
+- Senha: **não fica no repositório** (repo público). Peça a senha por fora — canal privado / gerenciador de senhas.
