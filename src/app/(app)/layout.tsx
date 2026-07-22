@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import LogoutButton from "./logout-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ModuleNav } from "@/components/module-nav";
 
 export default async function AppLayout({
   children,
@@ -33,37 +33,7 @@ export default async function AppLayout({
             </p>
           </div>
           <div className="flex items-center gap-4 flex-wrap">
-            <nav className="flex items-center gap-1 border-b border-white/10">
-              <span className="px-3.5 py-2 text-[13px] font-semibold text-white border-b-2 border-agos-green">
-                Férias
-              </span>
-              <span className="px-3.5 py-2 text-[13px] font-semibold text-white/40 opacity-80 flex items-center gap-1.5 cursor-default">
-                ASO
-                <span className="text-[10px] font-normal bg-agos-orange/15 text-agos-orange border border-agos-orange/30 rounded-full px-1.5 py-0.5">
-                  em breve
-                </span>
-              </span>
-            </nav>
-            <nav className="hidden sm:flex items-center gap-1 text-sm">
-              <Link
-                href="/dashboard"
-                className="px-3 py-1.5 rounded-md text-white/70 hover:bg-white/10 hover:text-white transition"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/funcionarios"
-                className="px-3 py-1.5 rounded-md text-white/70 hover:bg-white/10 hover:text-white transition"
-              >
-                Funcionários
-              </Link>
-              <Link
-                href="/importacao"
-                className="px-3 py-1.5 rounded-md text-white/70 hover:bg-white/10 hover:text-white transition"
-              >
-                Importação mensal
-              </Link>
-            </nav>
+            <ModuleNav />
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-white/60 hidden sm:inline">
