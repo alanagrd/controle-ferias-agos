@@ -1,14 +1,22 @@
-export default function AsoImportacaoPage() {
-  return (
-    <div className="space-y-3">
-      <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-        Importação mensal — ASO
-      </h1>
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 text-sm text-slate-600 dark:text-slate-300">
-        Em construção. O fluxo mensal (importar &quot;Funcionários Ativos
-        Geral&quot;, conciliar headcount e atualizar C.Custo) entra assim que
-        a carga inicial de ASO for confirmada em Dashboard/Funcionários.
-      </div>
-    </div>
+import { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/supabase/fetch-all";
+import type { Funcionario } from "@/lib/types";
+import AsoImportacaoClient from "./aso-importacao-client";
+
+export const dynamic = "force-dynamic";
+
+export default async function AsoImportacaoPage() {
+  const supabase = await createClient();
+
+  const { data: funcionarios } = await fetchAllRows<Funcionario>((from, to) =>
+    supabase
+      .from("rh_funcionarios")
+      .select(
+        "id, codigo, nome, empresa_id, obra, setor, cargo, admissao, demissao, status, cliente_codigo, cliente_razao_social"
+      )
+      .order("id")
+      .range(from, to)
   );
+
+  return <AsoImportacaoClient dbFuncionarios={funcionarios ?? []} />;
 }

@@ -55,6 +55,8 @@ export default function AsoFuncionariosClient({
   const [modalFuncionario, setModalFuncionario] = useState<Funcionario | null>(
     null
   );
+  const [modalRegistroExistente, setModalRegistroExistente] =
+    useState<RegistroAso | null>(null);
 
   const vigentePorFuncionario = useMemo(() => {
     const map: Record<string, RegistroAso> = {};
@@ -176,6 +178,25 @@ export default function AsoFuncionariosClient({
   function handleRegistroCriado(registro: RegistroAso) {
     setRegistrosState((prev) => [...prev, registro]);
     setModalFuncionario(null);
+    setModalRegistroExistente(null);
+  }
+
+  function handleRegistroAtualizado(registro: RegistroAso) {
+    setRegistrosState((prev) =>
+      prev.map((r) => (r.id === registro.id ? registro : r))
+    );
+    setModalFuncionario(null);
+    setModalRegistroExistente(null);
+  }
+
+  function abrirModalLancar(f: Funcionario) {
+    setModalRegistroExistente(null);
+    setModalFuncionario(f);
+  }
+
+  function abrirModalEditar(f: Funcionario, registro: RegistroAso) {
+    setModalRegistroExistente(registro);
+    setModalFuncionario(f);
   }
 
   return (
@@ -324,19 +345,29 @@ export default function AsoFuncionariosClient({
                   <td className="py-2 px-3">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => setModalFuncionario(r.f)}
+                        onClick={() => abrirModalLancar(r.f)}
                         className="text-xs font-semibold text-agos-green-dark dark:text-agos-green-light hover:underline"
                       >
                         + Lançar exame
                       </button>
                       {r.vigente && (
-                        <button
-                          onClick={() => handleDeleteRegistro(r.vigente as RegistroAso)}
-                          title="Excluir registro"
-                          className="text-slate-400 hover:text-red-500 text-sm px-1"
-                        >
-                          ✕
-                        </button>
+                        <>
+                          <button
+                            onClick={() =>
+                              abrirModalEditar(r.f, r.vigente as RegistroAso)
+                            }
+                            className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:underline"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => handleDeleteRegistro(r.vigente as RegistroAso)}
+                            title="Excluir registro"
+                            className="text-slate-400 hover:text-red-500 text-sm px-1"
+                          >
+                            ✕
+                          </button>
+                        </>
                       )}
                     </div>
                   </td>
@@ -357,8 +388,13 @@ export default function AsoFuncionariosClient({
       {modalFuncionario && (
         <LancarExameModal
           funcionario={modalFuncionario}
-          onClose={() => setModalFuncionario(null)}
+          registroExistente={modalRegistroExistente}
+          onClose={() => {
+            setModalFuncionario(null);
+            setModalRegistroExistente(null);
+          }}
           onCreated={handleRegistroCriado}
+          onUpdated={handleRegistroAtualizado}
         />
       )}
     </div>
@@ -367,16 +403,23 @@ export default function AsoFuncionariosClient({
 
 function LancarExameModal({
   funcionario,
+  registroExistente,
   onClose,
   onCreated,
+  onUpdated,
 }: {
   funcionario: Funcionario;
+  registroExistente: RegistroAso | null;
   onClose: () => void;
   onCreated: (r: RegistroAso) => void;
+  onUpdated: (r: RegistroAso) => void;
 }) {
   const supabase = useMemo(() => createClient(), []);
-  const [dataAso, setDataAso] = useState(new Date().toISOString().slice(0, 10));
-  const [tipo, setTipo] = useState<TipoAso>("PERIODICO");
+  const editando = !!registroExistente;
+  const [dataAso, setDataAso] = useState(
+    registroExistente?.data_aso ?? new Date().toISOString().slice(0, 10)
+  );
+  const [tipo, setTipo] = useState<TipoAso>(registroExistente?.tipo ?? "PERIODICO");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -391,6 +434,23 @@ function LancarExameModal({
 
     setSaving(true);
     setError(null);
+
+    if (editando && registroExistente) {
+      const { data, error } = await supabase
+        .from("rh_registros_aso")
+        .update({ data_aso: dataAso, tipo, data_vencimento: dataVencimento })
+        .eq("id", registroExistente.id)
+        .select()
+        .single();
+      setSaving(false);
+      if (error) {
+        setError("Erro ao salvar: " + error.message);
+        return;
+      }
+      if (data) onUpdated(data as RegistroAso);
+      return;
+    }
+
     const { data, error } = await supabase
       .from("rh_registros_aso")
       .insert({
@@ -419,7 +479,7 @@ function LancarExameModal({
         className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 w-full max-w-sm"
       >
         <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1">
-          Lançar exame ASO
+          {editando ? "Editar registro de ASO" : "Lançar exame ASO"}
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
           {funcionario.nome}
@@ -470,7 +530,7 @@ function LancarExameModal({
             disabled={saving}
             className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-3.5 py-2 disabled:opacity-60"
           >
-            {saving ? "Salvando..." : "Salvar lançamento"}
+            {saving ? "Salvando..." : editando ? "Salvar alterações" : "Salvar lançamento"}
           </button>
         </div>
       </div>

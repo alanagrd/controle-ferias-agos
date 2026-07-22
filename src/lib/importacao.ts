@@ -172,6 +172,59 @@ export function parseFeriasCsv(text: string): LinhaFerias[] {
   return rows;
 }
 
+export type LinhaAtivosGeralAso = {
+  codigo: string;
+  codigoNum: number | null;
+  nome: string;
+  cargo: string;
+  admissao: string | null;
+  demissao: string | null;
+  ccusto: string | null;
+  nomeChave: string;
+};
+
+/**
+ * Parses the "Funcionários Ativos Geral" export used pelo módulo ASO para o
+ * import mensal (reconciliação de headcount + atualização de C.Custo — não
+ * traz data de exame, isso continua sendo lançado manualmente na tela de
+ * Funcionários). Layout real confirmado com o Alan (";"-delimitado,
+ * windows-1252, header row): CÓDIGO(0) NOME(1) PREFIXO(2) CÓDIGO-função(3)
+ * FUNÇÃO(4) SALARIO(5) C. CUSTO(6) ADMISSÃO(7) 1o VENCIMENTO(8)
+ * 2o VENCIMENTO(9) PERIODO CONTRATO(10) DEMISSÃO(11) CAUSA DEMISSÃO(12)
+ * COD CLIENTE(13) DATA NASCIMENTO(14). Diferente do parseAtivosGeralCsv
+ * antigo (código morto do fluxo de Férias, layout diferente/desatualizado) —
+ * função separada para não arriscar quebrar nada ali.
+ *
+ * O código aqui vem sem zero à esquerda (comparação numérica, conforme
+ * confirmado: "o código tem sempre apenas 4 números, sem zeros na frente").
+ */
+export function parseAtivosGeralAsoCsv(text: string): LinhaAtivosGeralAso[] {
+  const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+  const rows: LinhaAtivosGeralAso[] = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(";");
+    const nome = (cols[1] ?? "").trim();
+    if (!nome) continue;
+    const codigo = (cols[0] ?? "").replace(/[\r\x0c]/g, "").trim();
+    if (!/^\d+$/.test(codigo)) continue;
+    const cargo = (cols[4] ?? "").trim();
+    const ccusto = (cols[6] ?? "").trim() || null;
+    const admissao = toDateISO(cols[7]);
+    const demissao = toDateISO(cols[11]);
+    rows.push({
+      codigo,
+      codigoNum: Number(codigo),
+      nome,
+      cargo,
+      admissao,
+      demissao,
+      ccusto,
+      nomeChave: normName(nome, true),
+    });
+  }
+  return rows;
+}
+
 export type LinhaAtivosGeral = {
   codigo: string;
   nome: string;
