@@ -199,6 +199,77 @@ export default function AsoFuncionariosClient({
     setModalFuncionario(f);
   }
 
+  async function handleExportXlsx() {
+    const XLSX = await import("xlsx");
+    const rows = sorted.map((r) => ({
+      Nome: r.f.nome,
+      Função: r.f.cargo || "",
+      Cliente: r.f.cliente_razao_social || "",
+      "Obra/C.Custo": r.f.obra || "",
+      "Status Cadastro": r.f.status,
+      "Data ASO": r.vigente ? fmtDate(r.vigente.data_aso) : "",
+      Vencimento: r.vigente ? fmtDate(r.vigente.data_vencimento) : "",
+      "Status ASO": r.statusAso ? ASO_STATUS_LABEL[r.statusAso] : "Sem registro",
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Controle de ASO");
+    XLSX.writeFile(wb, "controle_aso_export.xlsx");
+  }
+
+  async function handleExportPdf() {
+    const { jsPDF } = await import("jspdf");
+    const autoTableMod = await import("jspdf-autotable");
+    const autoTable = autoTableMod.default;
+
+    const doc = new jsPDF({ orientation: "landscape" });
+    doc.setFontSize(14);
+    doc.text("Controle de ASO - Relatório", 14, 14);
+    doc.setFontSize(9);
+    const hoje = new Date();
+    const geradoEm = `${String(hoje.getDate()).padStart(2, "0")}/${String(
+      hoje.getMonth() + 1
+    ).padStart(2, "0")}/${hoje.getFullYear()}`;
+    doc.text(
+      `Cliente: ${clienteFilter || "Todos"}  |  Obra/C.Custo: ${
+        obraFilter || "Todas"
+      }  |  Status: ${statusFilter ? ASO_STATUS_LABEL[statusFilter] : "Todos"}  |  Gerado em: ${geradoEm}`,
+      14,
+      20
+    );
+
+    const rows = sorted.map((r) => [
+      r.f.nome,
+      r.f.cargo || "-",
+      r.f.cliente_razao_social || "-",
+      r.f.obra || "-",
+      r.f.status,
+      r.vigente ? fmtDate(r.vigente.data_aso) : "-",
+      r.vigente ? fmtDate(r.vigente.data_vencimento) : "-",
+      r.statusAso ? ASO_STATUS_LABEL[r.statusAso] : "Sem registro",
+    ]);
+
+    autoTable(doc, {
+      startY: 26,
+      head: [
+        [
+          "Nome",
+          "Função",
+          "Cliente",
+          "Obra/C.Custo",
+          "Status Cadastro",
+          "Data ASO",
+          "Vencimento",
+          "Status ASO",
+        ],
+      ],
+      body: rows,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [139, 171, 62] },
+    });
+    doc.save("controle_aso_export.pdf");
+  }
+
   return (
     <div className="space-y-4">
       <div>
@@ -265,6 +336,21 @@ export default function AsoFuncionariosClient({
           />
           Mostrar inativos
         </label>
+
+        <div className="flex gap-2 ml-auto pb-0">
+          <button
+            onClick={handleExportXlsx}
+            className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+          >
+            Exportar Excel
+          </button>
+          <button
+            onClick={handleExportPdf}
+            className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+          >
+            Exportar PDF
+          </button>
+        </div>
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
