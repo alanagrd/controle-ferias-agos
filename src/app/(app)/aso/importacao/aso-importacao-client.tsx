@@ -2,21 +2,40 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Funcionario } from "@/lib/types";
-import { parseAtivosGeralAsoCsv, type LinhaAtivosGeralAso } from "@/lib/importacao";
+import type { Funcionario, RegistroAso, TipoAso } from "@/lib/types";
+import {
+  parseAtivosGeralAsoCsv,
+  type LinhaAtivosGeralAso,
+  nameSimilarity,
+  DIVERGENCIA_SIMILARITY_THRESHOLD,
+} from "@/lib/importacao";
 import { fmtDate } from "@/lib/status";
+import { TIPO_ASO_LABEL } from "@/lib/status-aso";
 
 type CandidatoInativacao = { f: Funcionario };
 type CandidatoNovo = { row: LinhaAtivosGeralAso };
 type CandidatoCcusto = { f: Funcionario; row: LinhaAtivosGeralAso };
 
+type ExameExtraido = { nome: string; data: string; tipo: TipoAso };
+
+type ExameConciliado = {
+  exame: ExameExtraido;
+  funcionario: Funcionario | null;
+  similaridade: number;
+  acao: "corrigir" | "novo" | "sem_match";
+  registroAtualId: string | null;
+};
+
 export default function AsoImportacaoClient({
   dbFuncionarios,
+  dbRegistros,
 }: {
   dbFuncionarios: Funcionario[];
+  dbRegistros: RegistroAso[];
 }) {
   const supabase = useMemo(() => createClient(), []);
   const [dbState, setDbState] = useState(dbFuncionarios);
+  const [registrosState, setRegistrosState] = useState(dbRegistros);
   const [linhas, setLinhas] = useState<LinhaAtivosGeralAso[] | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [parsing, setParsing] = useState(false);
@@ -287,6 +306,293 @@ export default function AsoImportacaoClient({
               />
             ))}
           </Painel>
+
+          <div className="flex justify-end">
+            <button
+              onClick={handleAplicar}
+              disabled={aplicando}
+              className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-4 py-2.5 disabled:opacity-60"
+            >
+              {aplicando ? "Aplicando..." : "Aplicar selecionados"}
+            </button>
+          </div>
+        </>
+      )}
+
+      <AtualizarExamesPanel
+        dbFuncionarios={dbState}
+        registros={registrosState}
+        onAplicado={(atualizados, novos) => {
+          setRegistrosState((prev) => {
+            const byId = new Map(prev.map((r) => [r.id, r]));
+            atualizados.forEach((r) => byId.set(r.id, r));
+            novos.forEach((r) => byId.set(r.id, r));
+            return Array.from(byId.values());
+          });
+        }}
+      />
+    </div>
+  );
+}
+
+function AtualizarExamesPanel({
+  dbFuncionarios,
+  registros,
+  onAplicado,
+}: {
+  dbFuncionarios: Funcionario[];
+  registros: RegistroAso[];
+  onAplicado: (atualizados: RegistroAso[], novos: RegistroAso[]) => void;
+}) {
+  const supabase = useMemo(() => createClient(), []);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [extraindo, setExtraindo] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const [conciliados, setConciliados] = useState<ExameConciliado[] | null>(null);
+  const [excluidos, setExcluidos] = useState<Set<number>>(new Set());
+  const [aplicando, setAplicando] = useState(false);
+  const [aplicado, setAplicado] = useState<string | null>(null);
+
+  const registrosPorFuncionario = useMemo(() => {
+    const map = new Map<string, RegistroAso[]>();
+    registros.forEach((r) => {
+      const arr = map.get(r.funcionario_id) ?? [];
+      arr.push(r);
+      map.set(r.funcionario_id, arr);
+    });
+    return map;
+  }, [registros]);
+
+  const ativos = useMemo(
+    () => dbFuncionarios.filter((f) => f.status === "ATIVO"),
+    [dbFuncionarios]
+  );
+
+  function conciliar(exames: ExameExtraido[]): ExameConciliado[] {
+    return exames.map((exame) => {
+      let melhor: Funcionario | null = null;
+      let melhorScore = 0;
+      for (const f of ativos) {
+        const score = nameSimilarity(exame.nome, f.nome);
+        if (score > melhorScore) {
+          melhorScore = score;
+          melhor = f;
+        }
+      }
+      if (!melhor || melhorScore < DIVERGENCIA_SIMILARITY_THRESHOLD) {
+        return {
+          exame,
+          funcionario: null,
+          similaridade: melhorScore,
+          acao: "sem_match",
+          registroAtualId: null,
+        };
+      }
+      const registrosDele = registrosPorFuncionario.get(melhor.id) ?? [];
+      const ehCorrecaoAdmissional =
+        exame.tipo === "ADMISSIONAL" &&
+        registrosDele.length === 1 &&
+        registrosDele[0].tipo === "ADMISSIONAL";
+      return {
+        exame,
+        funcionario: melhor,
+        similaridade: melhorScore,
+        acao: ehCorrecaoAdmissional ? "corrigir" : "novo",
+        registroAtualId: ehCorrecaoAdmissional ? registrosDele[0].id : null,
+      };
+    });
+  }
+
+  async function extrairViaApi(kind: "pdf" | "text", payload: File | string) {
+    const form = new FormData();
+    form.set("kind", kind);
+    if (kind === "pdf") form.set("file", payload as File);
+    else form.set("text", payload as string);
+
+    const res = await fetch("/api/aso/extrair-exames", {
+      method: "POST",
+      body: form,
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error ?? "Erro desconhecido na extração.");
+    return json.exames as ExameExtraido[];
+  }
+
+  async function handleFile(file: File) {
+    setExtraindo(true);
+    setErro(null);
+    setAplicado(null);
+    setConciliados(null);
+    setExcluidos(new Set());
+    setFileName(file.name);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase();
+      let exames: ExameExtraido[];
+      if (ext === "pdf") {
+        exames = await extrairViaApi("pdf", file);
+      } else if (ext === "xlsx" || ext === "xls") {
+        const XLSX = await import("xlsx");
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: "array", cellDates: true });
+        const partes = wb.SheetNames.map((nome) => {
+          const csv = XLSX.utils.sheet_to_csv(wb.Sheets[nome]);
+          return `--- Aba: ${nome} ---\n${csv}`;
+        });
+        exames = await extrairViaApi("text", partes.join("\n\n"));
+      } else {
+        throw new Error("Formato não suportado. Envie um .pdf ou .xlsx/.xls.");
+      }
+      setConciliados(conciliar(exames));
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Erro ao processar o arquivo.");
+    } finally {
+      setExtraindo(false);
+    }
+  }
+
+  async function handleAplicar() {
+    if (!conciliados) return;
+    setAplicando(true);
+    setAplicado(null);
+
+    const atualizados: RegistroAso[] = [];
+    const novos: RegistroAso[] = [];
+    const erros: string[] = [];
+
+    for (let i = 0; i < conciliados.length; i++) {
+      if (excluidos.has(i)) continue;
+      const c = conciliados[i];
+      if (c.acao === "sem_match" || !c.funcionario) continue;
+
+      const vencimento = new Date(c.exame.data + "T00:00:00");
+      vencimento.setDate(vencimento.getDate() + 365);
+      const dataVencimento = vencimento.toISOString().slice(0, 10);
+
+      if (c.acao === "corrigir" && c.registroAtualId) {
+        const { data, error } = await supabase
+          .from("rh_registros_aso")
+          .update({
+            data_aso: c.exame.data,
+            tipo: c.exame.tipo,
+            data_vencimento: dataVencimento,
+          })
+          .eq("id", c.registroAtualId)
+          .select()
+          .single();
+        if (error) erros.push(`${c.funcionario.nome}: ${error.message}`);
+        else if (data) atualizados.push(data as RegistroAso);
+      } else {
+        const { data, error } = await supabase
+          .from("rh_registros_aso")
+          .insert({
+            funcionario_id: c.funcionario.id,
+            data_aso: c.exame.data,
+            tipo: c.exame.tipo,
+            data_vencimento: dataVencimento,
+          })
+          .select()
+          .single();
+        if (error) erros.push(`${c.funcionario.nome}: ${error.message}`);
+        else if (data) novos.push(data as RegistroAso);
+      }
+    }
+
+    onAplicado(atualizados, novos);
+    setAplicando(false);
+    setAplicado(
+      erros.length > 0
+        ? `Aplicado com ${erros.length} erro(s): ${erros.join("; ")}`
+        : `Aplicado: ${atualizados.length} data(s) corrigida(s), ${novos.length} registro(s) novo(s).`
+    );
+    setConciliados(null);
+    setFileName(null);
+  }
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 space-y-3">
+      <div>
+        <h2 className="text-[14.5px] font-semibold text-slate-900 dark:text-slate-100">
+          Atualizar exames (relatório da clínica)
+        </h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Sobe o relatório mensal da clínica (PDF ou Excel) com os exames
+          realizados. O Claude lê o documento e extrai nome, data e tipo de
+          cada exame; o casamento com o funcionário é por nome.
+        </p>
+      </div>
+
+      <input
+        type="file"
+        accept=".pdf,.xlsx,.xls"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) handleFile(f);
+        }}
+        className="text-sm text-slate-700 dark:text-slate-300"
+      />
+      {extraindo && (
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Lendo {fileName}... isso pode levar alguns segundos.
+        </p>
+      )}
+      {erro && <p className="text-xs text-red-600">{erro}</p>}
+      {aplicado && (
+        <p className="text-xs text-agos-green-dark dark:text-agos-green-light">
+          {aplicado}
+        </p>
+      )}
+
+      {conciliados && (
+        <>
+          <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800/60">
+            {conciliados.map((c, i) => (
+              <label
+                key={i}
+                className="flex items-start gap-3 py-2 text-sm cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={!excluidos.has(i)}
+                  disabled={c.acao === "sem_match"}
+                  onChange={() =>
+                    setExcluidos((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(i)) next.delete(i);
+                      else next.add(i);
+                      return next;
+                    })
+                  }
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <div className="text-slate-900 dark:text-slate-100">
+                    {c.exame.nome}{" "}
+                    <span className="text-xs text-slate-400">
+                      ({TIPO_ASO_LABEL[c.exame.tipo]}, {fmtDate(c.exame.data)})
+                    </span>
+                  </div>
+                  <div className="text-xs">
+                    {c.acao === "sem_match" && (
+                      <span className="text-red-500">
+                        Nenhum funcionário ativo correspondente encontrado
+                        (melhor similaridade: {(c.similaridade * 100).toFixed(0)}%)
+                      </span>
+                    )}
+                    {c.acao === "corrigir" && c.funcionario && (
+                      <span className="text-agos-green-dark dark:text-agos-green-light">
+                        Corrige data do ASO admissional de {c.funcionario.nome}
+                      </span>
+                    )}
+                    {c.acao === "novo" && c.funcionario && (
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Novo registro de ASO para {c.funcionario.nome}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </label>
+            ))}
+          </div>
 
           <div className="flex justify-end">
             <button

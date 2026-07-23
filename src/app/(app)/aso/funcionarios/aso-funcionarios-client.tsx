@@ -581,24 +581,17 @@ function LancarExameModal({
             />
           </Field>
           <Field label="Tipo de exame">
-            <div className="flex gap-4 text-sm text-slate-700 dark:text-slate-300 pt-1">
-              <label className="flex items-center gap-1.5">
-                <input
-                  type="radio"
-                  checked={tipo === "PERIODICO"}
-                  onChange={() => setTipo("PERIODICO")}
-                />
-                {TIPO_ASO_LABEL.PERIODICO}
-              </label>
-              <label className="flex items-center gap-1.5">
-                <input
-                  type="radio"
-                  checked={tipo === "ADMISSIONAL"}
-                  onChange={() => setTipo("ADMISSIONAL")}
-                />
-                {TIPO_ASO_LABEL.ADMISSIONAL}
-              </label>
-            </div>
+            <select
+              value={tipo}
+              onChange={(e) => setTipo(e.target.value as TipoAso)}
+              className="input w-full"
+            >
+              {(Object.keys(TIPO_ASO_LABEL) as TipoAso[]).map((t) => (
+                <option key={t} value={t}>
+                  {TIPO_ASO_LABEL[t]}
+                </option>
+              ))}
+            </select>
           </Field>
         </div>
 

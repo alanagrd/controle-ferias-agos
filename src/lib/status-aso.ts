@@ -1,5 +1,10 @@
 export type StatusAso = "valido" | "vencido";
-export type TipoAso = "ADMISSIONAL" | "PERIODICO";
+export type TipoAso =
+  | "ADMISSIONAL"
+  | "PERIODICO"
+  | "RETORNO_AO_TRABALHO"
+  | "MUDANCA_DE_RISCO"
+  | "DEMISSIONAL";
 
 export const ASO_STATUS_LABEL: Record<StatusAso, string> = {
   valido: "Válido",
@@ -21,4 +26,7 @@ export const ASO_STATUS_COLOR: Record<StatusAso, string> = {
 export const TIPO_ASO_LABEL: Record<TipoAso, string> = {
   ADMISSIONAL: "Admissional",
   PERIODICO: "Periódico",
+  RETORNO_AO_TRABALHO: "Retorno ao Trabalho",
+  MUDANCA_DE_RISCO: "Mudança de Risco",
+  DEMISSIONAL: "Demissional",
 };

@@ -56,7 +56,12 @@ export type VPeriodo = PeriodoAquisitivo & {
 };
 
 export type StatusAso = "valido" | "vencido";
-export type TipoAso = "ADMISSIONAL" | "PERIODICO";
+export type TipoAso =
+  | "ADMISSIONAL"
+  | "PERIODICO"
+  | "RETORNO_AO_TRABALHO"
+  | "MUDANCA_DE_RISCO"
+  | "DEMISSIONAL";
 
 export type RegistroAso = {
   id: string;
