@@ -4,7 +4,12 @@ export const runtime = "nodejs";
 
 const SYSTEM_PROMPT = `Você lê relatórios/faturas de clínicas de medicina do trabalho brasileiras (ASO - Atestado de Saúde Ocupacional) e extrai os exames realizados.
 
-Cada relatório pode vir em formatos diferentes (fatura em PDF com blocos por funcionário, ou planilha convertida em texto/CSV com uma linha por exame). Identifique, para cada exame realizado, três campos:
+Cada relatório pode vir em formatos bem diferentes:
+- Fatura em PDF com um bloco de texto por funcionário (o tipo de ASO aparece uma vez, seguido da lista de exames individuais cobrados).
+- Planilha/CSV com uma linha por funcionário.
+- Planilha/CSV de "medição" com VÁRIAS LINHAS por funcionário — uma linha para cada item de exame individual (ex.: "GLICEMIA DE JEJUM", "ELETROCARDIOGRAMA", "AUDIOMETRIA TONAL" etc.), todas repetindo o mesmo nome, mesma data e mesma coluna de tipo (ex. "Tipo de Pedido" = "ADMISSIONAL"). Nesse caso, é o MESMO evento de exame ocupacional — NÃO crie um item de saída por linha da planilha. Agrupe por (nome + data + tipo) e gere apenas UM item de saída para cada combinação única.
+
+Para cada exame realizado (já consolidado, um por evento), extraia três campos:
 
 - "nome": nome completo do funcionário, exatamente como aparece no documento (não invente nem corrija grafia).
 - "data": data em que o exame foi realizado, no formato ISO "AAAA-MM-DD".
@@ -17,10 +22,10 @@ Cada relatório pode vir em formatos diferentes (fatura em PDF com blocos por fu
 
 Ignore linhas de taxa extra, totais, cabeçalhos ou qualquer coisa que não seja um exame de um funcionário específico.
 
-Responda APENAS com um array JSON, sem nenhum texto antes ou depois, sem markdown, no formato:
-[{"nome": "...", "data": "AAAA-MM-DD", "tipo": "ADMISSIONAL"}, ...]
+IMPORTANTE: responda APENAS com um array JSON compacto (sem espaçamento desnecessário), sem nenhum texto antes ou depois, sem markdown, no formato:
+[{"nome":"...","data":"AAAA-MM-DD","tipo":"ADMISSIONAL"}]
 
-Se não conseguir determinar a data ou o tipo de uma linha com confiança, não inclua essa linha no resultado.`;
+O array final deve ter no máximo um item por (nome, data, tipo) — nunca repita a mesma combinação. Se não conseguir determinar a data ou o tipo de uma linha com confiança, não inclua essa linha no resultado.`;
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -78,7 +83,7 @@ export async function POST(req: NextRequest) {
     },
     body: JSON.stringify({
       model: "claude-sonnet-5",
-      max_tokens: 8192,
+      max_tokens: 16000,
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content }],
     }),
@@ -93,6 +98,17 @@ export async function POST(req: NextRequest) {
   }
 
   const data = await response.json();
+
+  if (data.stop_reason === "max_tokens") {
+    return NextResponse.json(
+      {
+        error:
+          "A resposta do modelo foi cortada por ser grande demais (muitos exames num arquivo só). Tente dividir o arquivo em partes menores antes de subir.",
+      },
+      { status: 502 }
+    );
+  }
+
   const textBlock = (data.content ?? []).find(
     (b: { type: string }) => b.type === "text"
   );
@@ -102,10 +118,26 @@ export async function POST(req: NextRequest) {
   try {
     exames = JSON.parse(raw);
   } catch {
-    return NextResponse.json(
-      { error: "Não consegui interpretar a resposta do modelo como JSON." },
-      { status: 502 }
-    );
+    // Fallback: tenta salvar os objetos completos de um array truncado,
+    // fechando o último objeto incompleto e o array.
+    const lastComplete = raw.lastIndexOf("},");
+    if (lastComplete > 0) {
+      try {
+        exames = JSON.parse(raw.slice(0, lastComplete + 1) + "]");
+      } catch {
+        exames = undefined;
+      }
+    }
+    if (exames === undefined) {
+      return NextResponse.json(
+        {
+          error:
+            "Não consegui interpretar a resposta do modelo como JSON. Trecho recebido: " +
+            raw.slice(0, 300),
+        },
+        { status: 502 }
+      );
+    }
   }
 
   if (!Array.isArray(exames)) {
