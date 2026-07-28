@@ -38,6 +38,16 @@ const STATUS_TONE: Record<StatusFuncionario, string> = {
 
 type Row = { f: Funcionario; p: VPeriodo | null };
 
+type Lancamento = {
+  id: string;
+  inicio: string;
+  fim: string;
+  dias: number;
+  status_pagamento: string;
+  data_pagamento: string | null;
+  processado_por: string | null;
+};
+
 export default function FuncionariosClient({
   initialFuncionarios,
   empresas,
@@ -764,8 +774,9 @@ function FuncionarioModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lancamentos, setLancamentos] = useState<
-    Record<string, { id: string; inicio: string; fim: string; dias: number; status_pagamento: string }[]>
+    Record<string, Lancamento[]>
   >({});
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [showNovoLancamento, setShowNovoLancamento] = useState<string | null>(
     null
   );
@@ -774,10 +785,15 @@ function FuncionarioModal({
     async (periodoId: string) => {
       const { data } = await supabase
         .from("rh_lancamentos_ferias")
-        .select("id, inicio, fim, dias, status_pagamento")
+        .select(
+          "id, inicio, fim, dias, status_pagamento, data_pagamento, processado_por"
+        )
         .eq("periodo_id", periodoId)
         .order("inicio", { ascending: false });
-      setLancamentos((prev) => ({ ...prev, [periodoId]: data ?? [] }));
+      setLancamentos((prev) => ({
+        ...prev,
+        [periodoId]: (data as Lancamento[]) ?? [],
+      }));
     },
     [supabase]
   );
@@ -786,6 +802,12 @@ function FuncionarioModal({
     periodos.forEach((p) => loadLancamentos(p.id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [funcionario.id]);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUserEmail(data.user?.email ?? null);
+    });
+  }, [supabase]);
 
   async function handleSave() {
     setSaving(true);
@@ -1067,32 +1089,13 @@ function FuncionarioModal({
 
                       <div className="mt-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 space-y-1">
                         {(lancamentos[p.id] ?? []).map((l) => (
-                          <div
+                          <LancamentoRow
                             key={l.id}
-                            className="text-xs text-slate-600 dark:text-slate-400 flex items-center justify-between gap-2"
-                          >
-                            <span>
-                              {fmtDate(l.inicio)} → {fmtDate(l.fim)} ({l.dias} dias)
-                            </span>
-                            <span className="flex items-center gap-2">
-                              <span
-                                className={
-                                  l.status_pagamento === "PAGO"
-                                    ? "text-emerald-600 dark:text-emerald-400"
-                                    : "text-amber-600 dark:text-amber-400"
-                                }
-                              >
-                                {l.status_pagamento}
-                              </span>
-                              <button
-                                onClick={() => handleDeleteLancamento(p.id, l.id)}
-                                title="Excluir lançamento"
-                                className="text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400"
-                              >
-                                ✕
-                              </button>
-                            </span>
-                          </div>
+                            lancamento={l}
+                            userEmail={userEmail}
+                            onDelete={() => handleDeleteLancamento(p.id, l.id)}
+                            onChanged={() => loadLancamentos(p.id)}
+                          />
                         ))}
                         {showNovoLancamento === p.id ? (
                           <NovoLancamentoForm
@@ -1127,6 +1130,165 @@ function FuncionarioModal({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function LancamentoRow({
+  lancamento,
+  userEmail,
+  onDelete,
+  onChanged,
+}: {
+  lancamento: Lancamento;
+  userEmail: string | null;
+  onDelete: () => void;
+  onChanged: () => void | Promise<void>;
+}) {
+  const supabase = useMemo(() => createClient(), []);
+  const pago = lancamento.status_pagamento === "PAGO";
+  const [confirming, setConfirming] = useState(false);
+  const [dataPagamento, setDataPagamento] = useState(() =>
+    new Date().toISOString().slice(0, 10)
+  );
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function confirmarPagamento() {
+    setBusy(true);
+    setError(null);
+    // Resolve o email do usuário logado (fallback caso ainda não tenha carregado).
+    let email = userEmail;
+    if (!email) {
+      const { data } = await supabase.auth.getUser();
+      email = data.user?.email ?? null;
+    }
+    const { error } = await supabase
+      .from("rh_lancamentos_ferias")
+      .update({
+        status_pagamento: "PAGO",
+        data_pagamento: dataPagamento,
+        processado_por: email,
+      })
+      .eq("id", lancamento.id);
+    setBusy(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    setConfirming(false);
+    await onChanged();
+  }
+
+  async function desfazerPagamento() {
+    if (
+      !window.confirm(
+        "Desfazer a confirmação de pagamento deste lançamento? A data e o responsável serão apagados."
+      )
+    )
+      return;
+    setBusy(true);
+    setError(null);
+    const { error } = await supabase
+      .from("rh_lancamentos_ferias")
+      .update({
+        status_pagamento: "PENDENTE",
+        data_pagamento: null,
+        processado_por: null,
+      })
+      .eq("id", lancamento.id);
+    setBusy(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    await onChanged();
+  }
+
+  return (
+    <div className="text-xs text-slate-600 dark:text-slate-400">
+      <div className="flex items-center justify-between gap-2">
+        <span>
+          {fmtDate(lancamento.inicio)} → {fmtDate(lancamento.fim)} ({lancamento.dias}{" "}
+          dias)
+        </span>
+        <span className="flex items-center gap-2">
+          <span
+            className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${
+              pago
+                ? "bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400"
+                : "bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400"
+            }`}
+          >
+            {pago ? "PAGO" : "PENDENTE"}
+          </span>
+          {pago ? (
+            <button
+              onClick={desfazerPagamento}
+              disabled={busy}
+              className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-50"
+            >
+              Desfazer
+            </button>
+          ) : (
+            <button
+              onClick={() => setConfirming((v) => !v)}
+              disabled={busy}
+              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 disabled:opacity-50"
+            >
+              Confirmar pagamento
+            </button>
+          )}
+          <button
+            onClick={onDelete}
+            title="Excluir lançamento"
+            className="text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400"
+          >
+            ✕
+          </button>
+        </span>
+      </div>
+
+      {pago && (lancamento.data_pagamento || lancamento.processado_por) && (
+        <div className="mt-0.5 text-[11px] text-slate-400 dark:text-slate-500">
+          Pago em{" "}
+          {lancamento.data_pagamento ? fmtDate(lancamento.data_pagamento) : "—"}
+          {lancamento.processado_por ? ` · por ${lancamento.processado_por}` : ""}
+        </div>
+      )}
+
+      {!pago && confirming && (
+        <div className="mt-1 flex flex-wrap items-end gap-2 bg-slate-50 dark:bg-slate-800 rounded-lg p-2">
+          <div>
+            <label className="block text-[10px] text-slate-500 dark:text-slate-400">
+              Data do pagamento
+            </label>
+            <input
+              type="date"
+              value={dataPagamento}
+              onChange={(e) => setDataPagamento(e.target.value)}
+              className="text-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded px-1.5 py-1"
+            />
+          </div>
+          <button
+            onClick={confirmarPagamento}
+            disabled={busy || !dataPagamento}
+            className="text-xs bg-agos-green text-white rounded px-2 py-1 disabled:opacity-50"
+          >
+            {busy ? "Confirmando..." : "Confirmar"}
+          </button>
+          <button
+            onClick={() => setConfirming(false)}
+            className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+          >
+            Cancelar
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <p className="mt-1 text-[11px] text-red-600 dark:text-red-400">{error}</p>
+      )}
     </div>
   );
 }
