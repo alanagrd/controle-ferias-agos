@@ -14,7 +14,31 @@ import { TIPO_ASO_LABEL } from "@/lib/status-aso";
 
 type CandidatoInativacao = { f: Funcionario };
 type CandidatoNovo = { row: LinhaAtivosGeralAso };
-type CandidatoCcusto = { f: Funcionario; row: LinhaAtivosGeralAso };
+type CandidatoDivergencia = {
+  f: Funcionario;
+  row: LinhaAtivosGeralAso;
+  obraDiff: boolean;
+  clienteDiff: boolean;
+};
+
+/**
+ * Decide se um valor do banco diverge do da planilha (mesma regra para C.Custo
+ * e para Cliente):
+ * - sempre com trim();
+ * - planilha vazia NUNCA sobrescreve valor do banco → não é divergência;
+ * - banco vazio + planilha preenchida É divergência (é preenchimento);
+ * - se um valor for prefixo do outro, trata como IGUAL — a carga antiga truncou
+ *   cliente_razao_social em 34 chars e a coluna nova do Bitti tem 35, então
+ *   nomes longos diferem só pelo corte.
+ */
+function camposDivergem(dbRaw: string | null, planRaw: string | null): boolean {
+  const db = (dbRaw ?? "").trim();
+  const plan = (planRaw ?? "").trim();
+  if (!plan) return false;
+  if (db === plan) return false;
+  if (db && (db.startsWith(plan) || plan.startsWith(db))) return false;
+  return true;
+}
 
 type ExameExtraido = { nome: string; data: string; tipo: TipoAso };
 
@@ -42,7 +66,9 @@ export default function AsoImportacaoClient({
   const [parseError, setParseError] = useState<string | null>(null);
   const [excludedInativar, setExcludedInativar] = useState<Set<string>>(new Set());
   const [excludedNovos, setExcludedNovos] = useState<Set<string>>(new Set());
-  const [excludedCcusto, setExcludedCcusto] = useState<Set<string>>(new Set());
+  const [excludedDivergencia, setExcludedDivergencia] = useState<Set<string>>(
+    new Set()
+  );
   const [aplicando, setAplicando] = useState(false);
   const [aplicado, setAplicado] = useState<string | null>(null);
 
@@ -65,7 +91,7 @@ export default function AsoImportacaoClient({
         setFileName(file.name);
         setExcludedInativar(new Set());
         setExcludedNovos(new Set());
-        setExcludedCcusto(new Set());
+        setExcludedDivergencia(new Set());
       }
     } catch {
       setParseError("Não consegui ler o arquivo. Confira o formato (CSV).");
@@ -106,19 +132,19 @@ export default function AsoImportacaoClient({
       .filter((r) => r.codigoNum !== null && !dbByCodigo.has(r.codigoNum))
       .map((row) => ({ row }));
 
-    const ccustoDivergente: CandidatoCcusto[] = linhas
+    const divergencias: CandidatoDivergencia[] = linhas
       .filter((r) => r.codigoNum !== null)
       .map((row) => {
         const f = dbByCodigo.get(row.codigoNum as number);
         if (!f || f.status !== "ATIVO") return null;
-        const obraAtual = (f.obra ?? "").trim();
-        const obraNova = (row.ccusto ?? "").trim();
-        if (!obraNova || obraNova === obraAtual) return null;
-        return { f, row };
+        const obraDiff = camposDivergem(f.obra, row.ccusto);
+        const clienteDiff = camposDivergem(f.cliente_razao_social, row.cliente);
+        if (!obraDiff && !clienteDiff) return null;
+        return { f, row, obraDiff, clienteDiff };
       })
-      .filter((x): x is CandidatoCcusto => x !== null);
+      .filter((x): x is CandidatoDivergencia => x !== null);
 
-    return { candidatosInativacao, novosACadastrar, ccustoDivergente };
+    return { candidatosInativacao, novosACadastrar, divergencias };
   }, [linhas, dbState, codigoInt]);
 
   async function handleAplicar() {
@@ -132,8 +158,8 @@ export default function AsoImportacaoClient({
     const novos = analise.novosACadastrar.filter(
       (c) => !excludedNovos.has(c.row.codigo)
     );
-    const ccusto = analise.ccustoDivergente.filter(
-      (c) => !excludedCcusto.has(c.f.id)
+    const divergencias = analise.divergencias.filter(
+      (c) => !excludedDivergencia.has(c.f.id)
     );
 
     const erros: string[] = [];
@@ -148,13 +174,19 @@ export default function AsoImportacaoClient({
       else dbUpdates.push({ ...c.f, status: "INATIVO" });
     }
 
-    for (const c of ccusto) {
+    for (const c of divergencias) {
+      // Atualiza obra e cliente juntos, numa mesma linha, mas só os campos que
+      // de fato divergem — camposDivergem() já garante que planilha vazia nunca
+      // entra aqui, então isso nunca sobrescreve valor do banco com vazio.
+      const patch: { obra?: string | null; cliente_razao_social?: string | null } = {};
+      if (c.obraDiff) patch.obra = c.row.ccusto;
+      if (c.clienteDiff) patch.cliente_razao_social = c.row.cliente;
       const { error } = await supabase
         .from("rh_funcionarios")
-        .update({ obra: c.row.ccusto })
+        .update(patch)
         .eq("id", c.f.id);
       if (error) erros.push(`${c.f.nome}: ${error.message}`);
-      else dbUpdates.push({ ...c.f, obra: c.row.ccusto });
+      else dbUpdates.push({ ...c.f, ...patch });
     }
 
     for (const c of novos) {
@@ -165,6 +197,7 @@ export default function AsoImportacaoClient({
           nome: c.row.nome,
           cargo: c.row.cargo || null,
           obra: c.row.ccusto,
+          cliente_razao_social: c.row.cliente,
           admissao: c.row.admissao,
           status: "ATIVO",
         })
@@ -197,7 +230,7 @@ export default function AsoImportacaoClient({
     setAplicado(
       erros.length > 0
         ? `Aplicado com ${erros.length} erro(s): ${erros.join("; ")}`
-        : `Aplicado: ${inativar.length} inativado(s), ${novos.length} cadastrado(s), ${ccusto.length} C.Custo atualizado(s).`
+        : `Aplicado: ${inativar.length} inativado(s), ${novos.length} cadastrado(s), ${divergencias.length} divergência(s) atualizada(s).`
     );
     setLinhas(null);
     setFileName(null);
@@ -284,27 +317,36 @@ export default function AsoImportacaoClient({
                   setExcludedNovos((prev) => toggleSet(prev, c.row.codigo))
                 }
                 titulo={c.row.nome}
-                sub={`Código ${c.row.codigo} · ${c.row.cargo || "sem função"} · admissão ${fmtDate(c.row.admissao)} · ${c.row.ccusto || "sem C.Custo"}`}
+                sub={`Código ${c.row.codigo} · ${c.row.cargo || "sem função"} · admissão ${fmtDate(c.row.admissao)} · ${c.row.cliente || "sem cliente"} · ${c.row.ccusto || "sem C.Custo"}`}
               />
             ))}
           </Painel>
 
           <Painel
-            titulo={`C.Custo divergente (${analise.ccustoDivergente.length})`}
-            descricao="Mesmo funcionário, mas o C.Custo da planilha é diferente do cadastrado."
-            vazio="Nenhuma divergência de C.Custo."
+            titulo={`Cliente / C.Custo divergente (${analise.divergencias.length})`}
+            descricao="Mesmo funcionário, mas o Cliente e/ou o C.Custo da planilha diferem do cadastrado. Ao aplicar, os dois são atualizados juntos."
+            vazio="Nenhuma divergência de Cliente ou C.Custo."
           >
-            {analise.ccustoDivergente.map((c) => (
-              <LinhaCandidato
-                key={c.f.id}
-                checked={!excludedCcusto.has(c.f.id)}
-                onToggle={() =>
-                  setExcludedCcusto((prev) => toggleSet(prev, c.f.id))
-                }
-                titulo={c.f.nome}
-                sub={`${c.f.obra || "sem C.Custo"} → ${c.row.ccusto}`}
-              />
-            ))}
+            {analise.divergencias.map((c) => {
+              const partes: string[] = [];
+              if (c.obraDiff)
+                partes.push(`C.Custo: ${c.f.obra || "vazio"} → ${c.row.ccusto}`);
+              if (c.clienteDiff)
+                partes.push(
+                  `Cliente: ${c.f.cliente_razao_social || "vazio"} → ${c.row.cliente}`
+                );
+              return (
+                <LinhaCandidato
+                  key={c.f.id}
+                  checked={!excludedDivergencia.has(c.f.id)}
+                  onToggle={() =>
+                    setExcludedDivergencia((prev) => toggleSet(prev, c.f.id))
+                  }
+                  titulo={c.f.nome}
+                  sub={partes.join(" · ")}
+                />
+              );
+            })}
           </Painel>
 
           <div className="flex justify-end">

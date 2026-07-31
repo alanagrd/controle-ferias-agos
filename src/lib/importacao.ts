@@ -180,6 +180,7 @@ export type LinhaAtivosGeralAso = {
   admissao: string | null;
   demissao: string | null;
   ccusto: string | null;
+  cliente: string | null;
   nomeChave: string;
 };
 
@@ -191,9 +192,10 @@ export type LinhaAtivosGeralAso = {
  * windows-1252, header row): CÓDIGO(0) NOME(1) PREFIXO(2) CÓDIGO-função(3)
  * FUNÇÃO(4) SALARIO(5) C. CUSTO(6) ADMISSÃO(7) 1o VENCIMENTO(8)
  * 2o VENCIMENTO(9) PERIODO CONTRATO(10) DEMISSÃO(11) CAUSA DEMISSÃO(12)
- * COD CLIENTE(13) DATA NASCIMENTO(14). Diferente do parseAtivosGeralCsv
- * antigo (código morto do fluxo de Férias, layout diferente/desatualizado) —
- * função separada para não arriscar quebrar nada ali.
+ * COD CLIENTE(13) CLIENTE(14). A coluna CLIENTE(14) é nova (o Bitti passou a
+ * exportá-la) e alimenta rh_funcionarios.cliente_razao_social. Diferente do
+ * parseAtivosGeralCsv antigo (código morto do fluxo de Férias, layout
+ * diferente/desatualizado) — função separada para não arriscar quebrar nada ali.
  *
  * O código aqui vem sem zero à esquerda (comparação numérica, conforme
  * confirmado: "o código tem sempre apenas 4 números, sem zeros na frente").
@@ -211,6 +213,7 @@ export function parseAtivosGeralAsoCsv(text: string): LinhaAtivosGeralAso[] {
     const ccusto = (cols[6] ?? "").trim() || null;
     const admissao = toDateISO(cols[7]);
     const demissao = toDateISO(cols[11]);
+    const cliente = (cols[14] ?? "").trim() || null;
     rows.push({
       codigo,
       codigoNum: Number(codigo),
@@ -219,6 +222,7 @@ export function parseAtivosGeralAsoCsv(text: string): LinhaAtivosGeralAso[] {
       admissao,
       demissao,
       ccusto,
+      cliente,
       nomeChave: normName(nome, true),
     });
   }
