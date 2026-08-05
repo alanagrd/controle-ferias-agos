@@ -49,6 +49,8 @@ export default function AsoFuncionariosClient({
   const [clienteFilter, setClienteFilter] = useState("");
   const [obraFilter, setObraFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<"" | StatusAso>("");
+  const [vencDe, setVencDe] = useState("");
+  const [vencAte, setVencAte] = useState("");
   const [mostrarInativos, setMostrarInativos] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("nome");
   const [sortDir, setSortDir] = useState<1 | -1>(1);
@@ -122,9 +124,27 @@ export default function AsoFuncionariosClient({
         if (!r.f.nome.toUpperCase().includes(q)) return false;
       }
       if (statusFilter && r.statusAso !== statusFilter) return false;
+      // Filtro por intervalo de vencimento (inclusivo). data_vencimento é
+      // "AAAA-MM-DD", então a comparação de string já ordena por data. Sem
+      // registro vigente (sem vencimento) sai da lista quando há filtro de data.
+      if (vencDe || vencAte) {
+        const venc = r.vigente?.data_vencimento;
+        if (!venc) return false;
+        if (vencDe && venc < vencDe) return false;
+        if (vencAte && venc > vencAte) return false;
+      }
       return true;
     });
-  }, [allRows, mostrarInativos, clienteFilterTerms, obraFilter, busca, statusFilter]);
+  }, [
+    allRows,
+    mostrarInativos,
+    clienteFilterTerms,
+    obraFilter,
+    busca,
+    statusFilter,
+    vencDe,
+    vencAte,
+  ]);
 
   const sorted = useMemo(() => {
     const dir = sortDir;
@@ -230,10 +250,14 @@ export default function AsoFuncionariosClient({
     const geradoEm = `${String(hoje.getDate()).padStart(2, "0")}/${String(
       hoje.getMonth() + 1
     ).padStart(2, "0")}/${hoje.getFullYear()}`;
+    const vencDesc =
+      vencDe || vencAte
+        ? `${vencDe ? fmtDate(vencDe) : "…"} a ${vencAte ? fmtDate(vencAte) : "…"}`
+        : "Todos";
     doc.text(
       `Cliente: ${clienteFilter || "Todos"}  |  Obra/C.Custo: ${
         obraFilter || "Todas"
-      }  |  Status: ${statusFilter ? ASO_STATUS_LABEL[statusFilter] : "Todos"}  |  Gerado em: ${geradoEm}`,
+      }  |  Status: ${statusFilter ? ASO_STATUS_LABEL[statusFilter] : "Todos"}  |  Vencimento: ${vencDesc}  |  Gerado em: ${geradoEm}`,
       14,
       20
     );
@@ -327,6 +351,24 @@ export default function AsoFuncionariosClient({
             <option value="valido">Válido</option>
             <option value="vencido">Vencido</option>
           </select>
+        </Field>
+        <Field label="Vencimento de">
+          <input
+            type="date"
+            value={vencDe}
+            max={vencAte || undefined}
+            onChange={(e) => setVencDe(e.target.value)}
+            className="input"
+          />
+        </Field>
+        <Field label="Vencimento até">
+          <input
+            type="date"
+            value={vencAte}
+            min={vencDe || undefined}
+            onChange={(e) => setVencAte(e.target.value)}
+            className="input"
+          />
         </Field>
         <label className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300 pb-2">
           <input
