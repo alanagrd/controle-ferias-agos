@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type Modulo = "ferias" | "aso";
+type Modulo = "ferias" | "aso" | "vt";
 
 const MODULE_LINKS: Record<
   Modulo,
@@ -19,35 +19,44 @@ const MODULE_LINKS: Record<
     { href: "/aso/funcionarios", label: "Funcionários" },
     { href: "/aso/importacao", label: "Importação mensal" },
   ],
+  vt: [
+    { href: "/vt/dashboard", label: "Dashboard" },
+    { href: "/vt/funcionarios", label: "Funcionários & VT" },
+    { href: "/vt/lancamentos", label: "Lançamentos avulsos" },
+    { href: "/vt/importacao", label: "Importar apontamento" },
+  ],
 };
+
+const MODULE_TABS: { id: Modulo; href: string; label: string }[] = [
+  { id: "ferias", href: "/dashboard", label: "Férias" },
+  { id: "aso", href: "/aso/dashboard", label: "ASO" },
+  { id: "vt", href: "/vt/dashboard", label: "VT" },
+];
 
 export function ModuleNav() {
   const pathname = usePathname();
-  const activeModule: Modulo = pathname?.startsWith("/aso") ? "aso" : "ferias";
+  const activeModule: Modulo = pathname?.startsWith("/aso")
+    ? "aso"
+    : pathname?.startsWith("/vt")
+    ? "vt"
+    : "ferias";
 
   return (
     <>
       <nav className="flex items-center gap-1 border-b border-white/10">
-        <Link
-          href="/dashboard"
-          className={
-            activeModule === "ferias"
-              ? "px-3.5 py-2 text-[13px] font-semibold text-white border-b-2 border-agos-green"
-              : "px-3.5 py-2 text-[13px] font-semibold text-white/40 hover:text-white/70"
-          }
-        >
-          Férias
-        </Link>
-        <Link
-          href="/aso/dashboard"
-          className={
-            activeModule === "aso"
-              ? "px-3.5 py-2 text-[13px] font-semibold text-white border-b-2 border-agos-green"
-              : "px-3.5 py-2 text-[13px] font-semibold text-white/40 hover:text-white/70"
-          }
-        >
-          ASO
-        </Link>
+        {MODULE_TABS.map((tab) => (
+          <Link
+            key={tab.id}
+            href={tab.href}
+            className={
+              activeModule === tab.id
+                ? "px-3.5 py-2 text-[13px] font-semibold text-white border-b-2 border-agos-green"
+                : "px-3.5 py-2 text-[13px] font-semibold text-white/40 hover:text-white/70"
+            }
+          >
+            {tab.label}
+          </Link>
+        ))}
       </nav>
       <nav className="hidden sm:flex items-center gap-1 text-sm">
         {MODULE_LINKS[activeModule].map((link) => (

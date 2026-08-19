@@ -83,3 +83,64 @@ export type VAso = {
   dias_para_vencer: number;
   status: StatusAso;
 };
+
+// ---- Módulo VT (Vale Transporte) ----
+
+export type StatusCompetencia = "ABERTA" | "FECHADA";
+export type StatusFuncionarioMes = "ATIVO" | "DISPENSADO";
+export type TipoVt = "DIARIO" | "MENSAL";
+
+export type Competencia = {
+  id: string;
+  ano: number;
+  mes: number;
+  status: StatusCompetencia;
+  criado_em?: string;
+  atualizado_em?: string;
+};
+
+export type FuncionarioCompetencia = {
+  id: string;
+  funcionario_id: string;
+  competencia_id: string;
+  obra_snapshot: string | null;
+  status_no_mes: StatusFuncionarioMes;
+  tipo_vt: TipoVt;
+  valor_diario: number | null;
+  dias_uteis: number | null;
+  valor_total: number;
+  /** Valor de VR pago no mês — controlado junto com o VT, reembolso via vt_lancamentos. */
+  vr_valor: number | null;
+  criado_em?: string;
+  atualizado_em?: string;
+};
+
+export type LancamentoVt = {
+  id: string;
+  func_comp_id: string;
+  data: string;
+  valor: number;
+  motivo: string | null;
+  cobrado_cliente: boolean;
+  criado_em?: string;
+};
+
+export type ApontamentoVt = {
+  id: string;
+  func_comp_id: string;
+  h50: number;
+  h70: number;
+  h100: number;
+  faltas: number;
+  dsr: number;
+  ad_not: number;
+  premio: number;
+  arquivo_origem: string | null;
+  importado_em?: string;
+};
+
+/** Linha combinada usada nas telas: funcionário + snapshot da competência atual. */
+export type VtFuncionarioRow = {
+  funcComp: FuncionarioCompetencia;
+  funcionario: Pick<Funcionario, "id" | "nome" | "codigo" | "cliente_razao_social" | "status">;
+};
