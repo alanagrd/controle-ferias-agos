@@ -12,7 +12,7 @@ type FuncionarioLite = Pick<
 
 type FuncCompLite = Pick<
   FuncionarioCompetencia,
-  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot"
+  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot" | "status_no_mes"
 >;
 
 export default async function VtImportacaoPage() {
@@ -36,7 +36,7 @@ export default async function VtImportacaoPage() {
     fetchAllRows<FuncCompLite>((from, to) =>
       supabase
         .from("vt_funcionario_competencia")
-        .select("id, funcionario_id, competencia_id, obra_snapshot")
+        .select("id, funcionario_id, competencia_id, obra_snapshot, status_no_mes")
         .eq("competencia_id", atual.id)
         .order("id")
         .range(from, to)
