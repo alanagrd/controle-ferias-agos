@@ -641,9 +641,11 @@ function AbrirCompetenciaModal({
 
 /**
  * Cadastro manual de um funcionário na competência aberta — para admissões
- * no meio do mês, que não entraram no snapshot inicial. Busca no cadastro
- * de RH (rh_funcionarios) já existente; se a pessoa ainda nem tem cadastro
- * de RH, precisa ser criada primeiro em Férias → Funcionários.
+ * no meio do mês, que não entraram no snapshot inicial. Primeiro busca no
+ * cadastro de RH (rh_funcionarios) já existente; se ninguém bater com a
+ * busca, oferece cadastrar a pessoa na hora (grava em rh_funcionarios,
+ * mesma tabela única usada por Férias/ASO — não duplica cadastro em lugar
+ * nenhum, só evita ter que trocar de módulo pra registrar uma admissão).
  */
 function NovoFuncionarioModal({
   competenciaId,
@@ -663,8 +665,17 @@ function NovoFuncionarioModal({
     lancamento: LancamentoLite | null
   ) => void;
 }) {
+  const [modo, setModo] = useState<"buscar" | "criar">("buscar");
   const [busca, setBusca] = useState("");
   const [selecionado, setSelecionado] = useState<FuncionarioLite | null>(null);
+
+  // Campos do cadastro novo em rh_funcionarios (modo "criar")
+  const [novoNome, setNovoNome] = useState("");
+  const [novoCliente, setNovoCliente] = useState("");
+  const [novoCargo, setNovoCargo] = useState("");
+  const [novoSetor, setNovoSetor] = useState("");
+  const [novaAdmissao, setNovaAdmissao] = useState("");
+
   const [obra, setObra] = useState("");
   const [valorDiario, setValorDiario] = useState("");
   const [diasUteis, setDiasUteis] = useState("");
@@ -690,18 +701,17 @@ function NovoFuncionarioModal({
     setBusca(f.nome);
   }
 
-  async function handleConfirm() {
-    if (!selecionado) {
-      setError("Selecione um funcionário na busca.");
-      return;
-    }
-    setLoading(true);
+  function irParaCriar() {
+    setNovoNome(busca);
+    setModo("criar");
     setError(null);
+  }
 
+  async function adicionarNaCompetencia(funcionarioId: string) {
     const { data: fc, error: errFc } = await supabase
       .from("vt_funcionario_competencia")
       .insert({
-        funcionario_id: selecionado.id,
+        funcionario_id: funcionarioId,
         competencia_id: competenciaId,
         obra_snapshot: obra || null,
         status_no_mes: "ATIVO",
@@ -716,9 +726,8 @@ function NovoFuncionarioModal({
       .single();
 
     if (errFc || !fc) {
-      setError(errFc?.message ?? "Erro ao cadastrar.");
-      setLoading(false);
-      return;
+      setError(errFc?.message ?? "Erro ao cadastrar na competência.");
+      return null;
     }
 
     let lancamento: LancamentoLite | null = null;
@@ -737,8 +746,52 @@ function NovoFuncionarioModal({
       if (!errL) lancamento = l;
     }
 
+    return { fc: fc as FuncionarioCompetencia, lancamento };
+  }
+
+  async function handleConfirmExistente() {
+    if (!selecionado) {
+      setError("Selecione um funcionário na busca.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    const result = await adicionarNaCompetencia(selecionado.id);
     setLoading(false);
-    onCreated(fc as FuncionarioCompetencia, lancamento);
+    if (result) onCreated(result.fc, result.lancamento);
+  }
+
+  async function handleCriarECadastrar() {
+    if (!novoNome.trim()) {
+      setError("Informe o nome do funcionário.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+
+    const { data: novoFuncionario, error: errNovo } = await supabase
+      .from("rh_funcionarios")
+      .insert({
+        nome: novoNome.trim(),
+        cliente_razao_social: novoCliente.trim() || null,
+        obra: obra.trim() || null,
+        cargo: novoCargo.trim() || null,
+        setor: novoSetor.trim() || null,
+        admissao: novaAdmissao || null,
+        status: "ATIVO",
+      })
+      .select("id")
+      .single();
+
+    if (errNovo || !novoFuncionario) {
+      setError(errNovo?.message ?? "Erro ao cadastrar funcionário.");
+      setLoading(false);
+      return;
+    }
+
+    const result = await adicionarNaCompetencia(novoFuncionario.id);
+    setLoading(false);
+    if (result) onCreated(result.fc, result.lancamento);
   }
 
   return (
@@ -754,109 +807,156 @@ function NovoFuncionarioModal({
           Novo funcionário na competência
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-          Para admissões no meio do mês. O funcionário precisa já existir no
-          cadastro de RH — se não existir, cadastre primeiro em Férias →
-          Funcionários.
+          Para admissões no meio do mês.{" "}
+          {modo === "buscar"
+            ? "Busque primeiro — se a pessoa já tem cadastro de RH, é só selecionar."
+            : "Cadastro novo no RH — vale pra todos os módulos (Férias, ASO, VT), não só o VT."}
         </p>
-        <div className="space-y-3">
-          <div className="relative">
-            <label className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-              Funcionário
-            </label>
-            <input
-              value={busca}
-              onChange={(e) => {
-                setBusca(e.target.value);
-                setSelecionado(null);
-              }}
-              placeholder="Buscar por nome ou matrícula..."
-              className="input w-full"
-            />
-            {candidatos.length > 0 && !selecionado && (
-              <div className="absolute z-10 mt-1 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                {candidatos.map((f) => (
+
+        {modo === "buscar" ? (
+          <div className="space-y-3">
+            <div className="relative">
+              <label className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+                Funcionário
+              </label>
+              <input
+                value={busca}
+                onChange={(e) => {
+                  setBusca(e.target.value);
+                  setSelecionado(null);
+                }}
+                placeholder="Buscar por nome ou matrícula..."
+                className="input w-full"
+              />
+              {candidatos.length > 0 && !selecionado && (
+                <div className="absolute z-10 mt-1 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  {candidatos.map((f) => (
+                    <button
+                      key={f.id}
+                      onClick={() => selecionar(f)}
+                      className="block w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      <span className="font-medium text-slate-900 dark:text-slate-100">
+                        {f.nome}
+                      </span>
+                      <span className="ml-2 text-xs text-slate-400">{f.codigo}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {busca.trim().length > 1 && candidatos.length === 0 && !selecionado && (
+                <div className="mt-2 flex items-center justify-between rounded-lg border border-dashed border-slate-300 dark:border-slate-700 px-3 py-2">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Ninguém encontrado com esse nome/matrícula.
+                  </span>
                   <button
-                    key={f.id}
-                    onClick={() => selecionar(f)}
-                    className="block w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+                    onClick={irParaCriar}
+                    className="text-xs font-semibold text-agos-green-dark dark:text-agos-green-light hover:underline whitespace-nowrap ml-2"
                   >
-                    <span className="font-medium text-slate-900 dark:text-slate-100">
-                      {f.nome}
-                    </span>
-                    <span className="ml-2 text-xs text-slate-400">{f.codigo}</span>
+                    + Cadastrar novo
                   </button>
-                ))}
-              </div>
+                </div>
+              )}
+            </div>
+
+            {selecionado && (
+              <CamposCompetencia
+                obra={obra}
+                setObra={setObra}
+                valorDiario={valorDiario}
+                setValorDiario={setValorDiario}
+                diasUteis={diasUteis}
+                setDiasUteis={setDiasUteis}
+                vrValor={vrValor}
+                setVrValor={setVrValor}
+                reembolsoInicial={reembolsoInicial}
+                setReembolsoInicial={setReembolsoInicial}
+              />
             )}
           </div>
-
-          {selecionado && (
-            <>
+        ) : (
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                setModo("buscar");
+                setError(null);
+              }}
+              className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:underline"
+            >
+              ← Voltar pra busca
+            </button>
+            <label className="block">
+              <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+                Nome
+              </span>
+              <input
+                value={novoNome}
+                onChange={(e) => setNovoNome(e.target.value)}
+                className="input w-full"
+              />
+            </label>
+            <div className="grid grid-cols-2 gap-3">
               <label className="block">
                 <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-                  Obra
+                  Cliente
                 </span>
                 <input
-                  value={obra}
-                  onChange={(e) => setObra(e.target.value)}
+                  value={novoCliente}
+                  onChange={(e) => setNovoCliente(e.target.value)}
+                  placeholder="Ex: GEOSONDA"
                   className="input w-full"
                 />
               </label>
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block">
-                  <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-                    Valor diário VT (R$)
-                  </span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={valorDiario}
-                    onChange={(e) => setValorDiario(e.target.value)}
-                    className="input w-full"
-                  />
-                </label>
-                <label className="block">
-                  <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-                    Dias
-                  </span>
-                  <input
-                    type="number"
-                    value={diasUteis}
-                    onChange={(e) => setDiasUteis(e.target.value)}
-                    className="input w-full"
-                  />
-                </label>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block">
-                  <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-                    VR do mês (R$)
-                  </span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={vrValor}
-                    onChange={(e) => setVrValor(e.target.value)}
-                    className="input w-full"
-                  />
-                </label>
-                <label className="block">
-                  <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-                    Reembolso VT (opcional)
-                  </span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={reembolsoInicial}
-                    onChange={(e) => setReembolsoInicial(e.target.value)}
-                    placeholder="0,00"
-                    className="input w-full"
-                  />
-                </label>
-              </div>
-            </>
-          )}
-        </div>
+              <label className="block">
+                <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+                  Cargo
+                </span>
+                <input
+                  value={novoCargo}
+                  onChange={(e) => setNovoCargo(e.target.value)}
+                  className="input w-full"
+                />
+              </label>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block">
+                <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+                  Setor
+                </span>
+                <input
+                  value={novoSetor}
+                  onChange={(e) => setNovoSetor(e.target.value)}
+                  className="input w-full"
+                />
+              </label>
+              <label className="block">
+                <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+                  Admissão
+                </span>
+                <input
+                  type="date"
+                  value={novaAdmissao}
+                  onChange={(e) => setNovaAdmissao(e.target.value)}
+                  className="input w-full"
+                />
+              </label>
+            </div>
+
+            <CamposCompetencia
+              obra={obra}
+              setObra={setObra}
+              valorDiario={valorDiario}
+              setValorDiario={setValorDiario}
+              diasUteis={diasUteis}
+              setDiasUteis={setDiasUteis}
+              vrValor={vrValor}
+              setVrValor={setVrValor}
+              reembolsoInicial={reembolsoInicial}
+              setReembolsoInicial={setReembolsoInicial}
+            />
+          </div>
+        )}
+
         {error && <p className="text-xs text-red-600 mt-3">{error}</p>}
         <div className="flex justify-end gap-2 mt-5">
           <button
@@ -865,16 +965,117 @@ function NovoFuncionarioModal({
           >
             Cancelar
           </button>
-          <button
-            onClick={handleConfirm}
-            disabled={loading || !selecionado}
-            className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-3.5 py-2 disabled:opacity-60"
-          >
-            {loading ? "Salvando..." : "Adicionar à competência"}
-          </button>
+          {modo === "buscar" ? (
+            <button
+              onClick={handleConfirmExistente}
+              disabled={loading || !selecionado}
+              className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-3.5 py-2 disabled:opacity-60"
+            >
+              {loading ? "Salvando..." : "Adicionar à competência"}
+            </button>
+          ) : (
+            <button
+              onClick={handleCriarECadastrar}
+              disabled={loading}
+              className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-3.5 py-2 disabled:opacity-60"
+            >
+              {loading ? "Salvando..." : "Cadastrar e adicionar"}
+            </button>
+          )}
         </div>
       </div>
     </div>
+  );
+}
+
+function CamposCompetencia({
+  obra,
+  setObra,
+  valorDiario,
+  setValorDiario,
+  diasUteis,
+  setDiasUteis,
+  vrValor,
+  setVrValor,
+  reembolsoInicial,
+  setReembolsoInicial,
+}: {
+  obra: string;
+  setObra: (v: string) => void;
+  valorDiario: string;
+  setValorDiario: (v: string) => void;
+  diasUteis: string;
+  setDiasUteis: (v: string) => void;
+  vrValor: string;
+  setVrValor: (v: string) => void;
+  reembolsoInicial: string;
+  setReembolsoInicial: (v: string) => void;
+}) {
+  return (
+    <>
+      <label className="block">
+        <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+          Obra
+        </span>
+        <input
+          value={obra}
+          onChange={(e) => setObra(e.target.value)}
+          className="input w-full"
+        />
+      </label>
+      <div className="grid grid-cols-2 gap-3">
+        <label className="block">
+          <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+            Valor diário VT (R$)
+          </span>
+          <input
+            type="number"
+            step="0.01"
+            value={valorDiario}
+            onChange={(e) => setValorDiario(e.target.value)}
+            className="input w-full"
+          />
+        </label>
+        <label className="block">
+          <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+            Dias
+          </span>
+          <input
+            type="number"
+            value={diasUteis}
+            onChange={(e) => setDiasUteis(e.target.value)}
+            className="input w-full"
+          />
+        </label>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <label className="block">
+          <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+            VR do mês (R$)
+          </span>
+          <input
+            type="number"
+            step="0.01"
+            value={vrValor}
+            onChange={(e) => setVrValor(e.target.value)}
+            className="input w-full"
+          />
+        </label>
+        <label className="block">
+          <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+            Reembolso VT (opcional)
+          </span>
+          <input
+            type="number"
+            step="0.01"
+            value={reembolsoInicial}
+            onChange={(e) => setReembolsoInicial(e.target.value)}
+            placeholder="0,00"
+            className="input w-full"
+          />
+        </label>
+      </div>
+    </>
   );
 }
 
