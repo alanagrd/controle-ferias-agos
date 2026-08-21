@@ -14,6 +14,7 @@ import {
   fmtMoeda,
   nomeCompetencia,
 } from "@/lib/status-vt";
+import { fmtDate } from "@/lib/status";
 import { exportarPlanilhaVt } from "@/lib/export-vt";
 
 type FuncionarioLite = Pick<
@@ -73,7 +74,7 @@ export default function VtFuncionariosClient({
   const [showAbrirCompetencia, setShowAbrirCompetencia] = useState(false);
   const [showNovoFuncionario, setShowNovoFuncionario] = useState(false);
   const [editRow, setEditRow] = useState<Row | null>(null);
-  const [avulsoRow, setAvulsoRow] = useState<Row | null>(null);
+  const [lancamentosRow, setLancamentosRow] = useState<Row | null>(null);
 
   const funcionariosPorId = useMemo(() => {
     const map = new Map<string, FuncionarioLite>();
@@ -409,10 +410,10 @@ export default function VtFuncionariosClient({
                             Editar
                           </button>
                           <button
-                            onClick={() => setAvulsoRow(r)}
+                            onClick={() => setLancamentosRow(r)}
                             className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:underline"
                           >
-                            + Avulso
+                            Avulso{r.vtAvulso !== 0 || r.vrAvulso !== 0 ? "" : " +"}
                           </button>
                         </div>
                       </td>
@@ -468,14 +469,22 @@ export default function VtFuncionariosClient({
         />
       )}
 
-      {avulsoRow && (
-        <AvulsoModal
-          row={avulsoRow}
+      {lancamentosRow && (
+        <LancamentosFuncionarioModal
+          row={lancamentosRow}
+          lancamentos={lancamentosPorFuncComp.get(lancamentosRow.fc.id) ?? []}
           supabase={supabase}
-          onClose={() => setAvulsoRow(null)}
-          onSaved={(novoLancamento) => {
-            setLancamentosState((prev) => [...prev, novoLancamento]);
-            setAvulsoRow(null);
+          onClose={() => setLancamentosRow(null)}
+          onCriado={(novo) => {
+            setLancamentosState((prev) => [...prev, novo]);
+          }}
+          onAtualizado={(atualizado) => {
+            setLancamentosState((prev) =>
+              prev.map((l) => (l.id === atualizado.id ? atualizado : l))
+            );
+          }}
+          onExcluido={(id) => {
+            setLancamentosState((prev) => prev.filter((l) => l.id !== id));
           }}
         />
       )}
@@ -1229,15 +1238,176 @@ function EditFuncCompModal({
   );
 }
 
-function AvulsoModal({
+/**
+ * Histórico de lançamentos avulsos (VT/VR) de um funcionário na competência
+ * — lista, edita, exclui e permite adicionar novo, tudo num só lugar. Editar
+ * é só pra corrigir erro de digitação; um novo pagamento avulso no mês deve
+ * virar um lançamento novo (mantém o histórico de quando cada um foi pago,
+ * útil pra conferir com a NF do cliente depois).
+ */
+function LancamentosFuncionarioModal({
   row,
+  lancamentos,
   supabase,
   onClose,
-  onSaved,
+  onCriado,
+  onAtualizado,
+  onExcluido,
 }: {
   row: Row;
+  lancamentos: LancamentoLite[];
   supabase: ReturnType<typeof createClient>;
   onClose: () => void;
+  onCriado: (novo: LancamentoLite) => void;
+  onAtualizado: (atualizado: LancamentoLite) => void;
+  onExcluido: (id: string) => void;
+}) {
+  const [editando, setEditando] = useState<LancamentoLite | null>(null);
+  const [criandoNovo, setCriandoNovo] = useState(false);
+
+  async function handleDelete(id: string) {
+    if (!confirm("Excluir este lançamento?")) return;
+    const { error } = await supabase.from("vt_lancamentos").delete().eq("id", id);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    onExcluido(id);
+  }
+
+  const ordenados = [...lancamentos].sort((a, b) => (a.data < b.data ? 1 : -1));
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 w-full max-w-lg"
+      >
+        <div className="flex items-start justify-between mb-1">
+          <div>
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+              Lançamentos avulsos
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {row.f?.nome} — {row.fc.obra_snapshot}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-lg leading-none"
+          >
+            ×
+          </button>
+        </div>
+
+        {ordenados.length === 0 ? (
+          <p className="text-sm text-slate-400 dark:text-slate-500 py-4">
+            Nenhum lançamento ainda.
+          </p>
+        ) : (
+          <div className="mt-3 max-h-64 overflow-y-auto rounded-lg border border-slate-100 dark:border-slate-800">
+            <table className="w-full text-sm">
+              <tbody>
+                {ordenados.map((l) => (
+                  <tr
+                    key={l.id}
+                    className="border-b border-slate-50 dark:border-slate-800/60 last:border-0"
+                  >
+                    <td className="py-2 px-3 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                      {fmtDate(l.data)}
+                    </td>
+                    <td className="py-2 px-3 text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                      {l.motivo}
+                    </td>
+                    <td
+                      className={`py-2 px-3 text-right font-semibold whitespace-nowrap ${
+                        l.valor < 0
+                          ? "text-red-600 dark:text-red-400"
+                          : "text-slate-900 dark:text-slate-100"
+                      }`}
+                    >
+                      {fmtMoeda(l.valor)}
+                    </td>
+                    <td className="py-2 px-3 text-right whitespace-nowrap">
+                      <button
+                        onClick={() => setEditando(l)}
+                        className="text-xs font-semibold text-agos-green-dark dark:text-agos-green-light hover:underline mr-2.5"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleDelete(l.id)}
+                        className="text-slate-400 hover:text-red-500 text-sm px-1"
+                        title="Excluir"
+                      >
+                        ✕
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {criandoNovo ? (
+          <NovoLancamentoForm
+            funcCompId={row.fc.id}
+            supabase={supabase}
+            onCancel={() => setCriandoNovo(false)}
+            onSaved={(novo) => {
+              onCriado(novo);
+              setCriandoNovo(false);
+            }}
+          />
+        ) : (
+          <button
+            onClick={() => setCriandoNovo(true)}
+            className="mt-4 text-xs font-semibold text-agos-green-dark dark:text-agos-green-light hover:underline"
+          >
+            + Novo lançamento
+          </button>
+        )}
+
+        {editando && (
+          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <EditLancamentoForm
+              lancamento={editando}
+              supabase={supabase}
+              onCancel={() => setEditando(null)}
+              onSaved={(atualizado) => {
+                onAtualizado(atualizado);
+                setEditando(null);
+              }}
+            />
+          </div>
+        )}
+
+        <div className="flex justify-end mt-5">
+          <button
+            onClick={onClose}
+            className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+          >
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NovoLancamentoForm({
+  funcCompId,
+  supabase,
+  onCancel,
+  onSaved,
+}: {
+  funcCompId: string;
+  supabase: ReturnType<typeof createClient>;
+  onCancel: () => void;
   onSaved: (lancamento: LancamentoLite) => void;
 }) {
   const [motivo, setMotivo] = useState<(typeof MOTIVO_OPCOES)[number]>(
@@ -1261,7 +1431,7 @@ function AvulsoModal({
     const { data, error: err } = await supabase
       .from("vt_lancamentos")
       .insert({
-        func_comp_id: row.fc.id,
+        func_comp_id: funcCompId,
         data: new Date().toISOString().slice(0, 10),
         valor: isDesconto ? -Math.abs(valorNum) : Math.abs(valorNum),
         motivo,
@@ -1279,77 +1449,193 @@ function AvulsoModal({
   }
 
   return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 w-full max-w-sm"
-      >
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1">
-          Novo lançamento avulso
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-          {row.f?.nome} — {row.fc.obra_snapshot}
-        </p>
-        <div className="space-y-3">
-          <label className="block">
-            <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-              Motivo
-            </span>
-            <select
-              value={motivo}
-              onChange={(e) =>
-                setMotivo(e.target.value as (typeof MOTIVO_OPCOES)[number])
-              }
-              className="input w-full"
-            >
-              {MOTIVO_OPCOES.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
-              Valor (R$)
-            </span>
-            <input
-              type="number"
-              step="0.01"
-              value={valor}
-              onChange={(e) => setValor(e.target.value)}
-              placeholder="0,00"
-              className="input w-full"
-            />
-          </label>
-          <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
-            <input
-              type="checkbox"
-              checked={cobradoCliente}
-              onChange={(e) => setCobradoCliente(e.target.checked)}
-            />
-            Cobrar do cliente na próxima NF
-          </label>
-        </div>
-        {error && <p className="text-xs text-red-600 mt-3">{error}</p>}
-        <div className="flex justify-end gap-2 mt-5">
-          <button
-            onClick={onClose}
-            className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+      <div className="grid grid-cols-2 gap-3">
+        <label className="block">
+          <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+            Motivo
+          </span>
+          <select
+            value={motivo}
+            onChange={(e) =>
+              setMotivo(e.target.value as (typeof MOTIVO_OPCOES)[number])
+            }
+            className="input w-full"
           >
-            Cancelar
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={loading}
-            className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-3.5 py-2 disabled:opacity-60"
+            {MOTIVO_OPCOES.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+            Valor (R$)
+          </span>
+          <input
+            type="number"
+            step="0.01"
+            value={valor}
+            onChange={(e) => setValor(e.target.value)}
+            placeholder="0,00"
+            className="input w-full"
+          />
+        </label>
+      </div>
+      <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+        <input
+          type="checkbox"
+          checked={cobradoCliente}
+          onChange={(e) => setCobradoCliente(e.target.checked)}
+        />
+        Cobrar do cliente na próxima NF
+      </label>
+      {error && <p className="text-xs text-red-600">{error}</p>}
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={onCancel}
+          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+        >
+          Cancelar
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-3.5 py-2 disabled:opacity-60"
+        >
+          {loading ? "Salvando..." : "Salvar lançamento"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function EditLancamentoForm({
+  lancamento,
+  supabase,
+  onCancel,
+  onSaved,
+}: {
+  lancamento: LancamentoLite;
+  supabase: ReturnType<typeof createClient>;
+  onCancel: () => void;
+  onSaved: (atualizado: LancamentoLite) => void;
+}) {
+  const motivoInicial = (MOTIVO_OPCOES as readonly string[]).includes(
+    lancamento.motivo ?? ""
+  )
+    ? (lancamento.motivo as (typeof MOTIVO_OPCOES)[number])
+    : "Reembolso VT";
+
+  const [motivo, setMotivo] = useState<(typeof MOTIVO_OPCOES)[number]>(motivoInicial);
+  const [valor, setValor] = useState(Math.abs(lancamento.valor).toString());
+  const [data, setData] = useState(lancamento.data);
+  const [cobradoCliente, setCobradoCliente] = useState(lancamento.cobrado_cliente);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    if (!valor) {
+      setError("Informe o valor.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+
+    const valorNum = Number(valor);
+    const isDesconto = motivo.startsWith("Desconto");
+    const { data: updated, error: err } = await supabase
+      .from("vt_lancamentos")
+      .update({
+        data,
+        valor: isDesconto ? -Math.abs(valorNum) : Math.abs(valorNum),
+        motivo,
+        cobrado_cliente: cobradoCliente,
+      })
+      .eq("id", lancamento.id)
+      .select("id, func_comp_id, data, valor, motivo, cobrado_cliente")
+      .single();
+
+    setLoading(false);
+    if (err || !updated) {
+      setError(err?.message ?? "Erro ao salvar.");
+      return;
+    }
+    onSaved(updated);
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+        Editando lançamento
+      </p>
+      <div className="grid grid-cols-2 gap-3">
+        <label className="block">
+          <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+            Data
+          </span>
+          <input
+            type="date"
+            value={data}
+            onChange={(e) => setData(e.target.value)}
+            className="input w-full"
+          />
+        </label>
+        <label className="block">
+          <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+            Motivo
+          </span>
+          <select
+            value={motivo}
+            onChange={(e) =>
+              setMotivo(e.target.value as (typeof MOTIVO_OPCOES)[number])
+            }
+            className="input w-full"
           >
-            {loading ? "Salvando..." : "Salvar lançamento"}
-          </button>
-        </div>
+            {MOTIVO_OPCOES.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <label className="block">
+        <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+          Valor (R$)
+        </span>
+        <input
+          type="number"
+          step="0.01"
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+          className="input w-full"
+        />
+      </label>
+      <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+        <input
+          type="checkbox"
+          checked={cobradoCliente}
+          onChange={(e) => setCobradoCliente(e.target.checked)}
+        />
+        Cobrar do cliente na próxima NF
+      </label>
+      {error && <p className="text-xs text-red-600">{error}</p>}
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={onCancel}
+          className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+        >
+          Cancelar
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-3.5 py-2 disabled:opacity-60"
+        >
+          {loading ? "Salvando..." : "Salvar alterações"}
+        </button>
       </div>
     </div>
   );

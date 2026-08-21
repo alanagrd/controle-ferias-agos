@@ -32,6 +32,13 @@ type Row = {
   f: FuncionarioLite | undefined;
 };
 
+const MOTIVO_OPCOES = [
+  "Reembolso VT",
+  "Desconto VT",
+  "Reembolso VR",
+  "Desconto VR",
+] as const;
+
 export default function VtLancamentosClient({
   competenciaAtual,
   lancamentos,
@@ -46,6 +53,7 @@ export default function VtLancamentosClient({
   const supabase = useMemo(() => createClient(), []);
   const [lancamentosState, setLancamentosState] = useState(lancamentos);
   const [filtroCobranca, setFiltroCobranca] = useState<"" | "sim" | "nao">("");
+  const [editRow, setEditRow] = useState<Row | null>(null);
 
   const funcCompPorId = useMemo(() => {
     const map = new Map<string, FuncCompLite>();
@@ -185,13 +193,21 @@ export default function VtLancamentosClient({
                       )}
                     </td>
                     <td className="py-2 px-3">
-                      <button
-                        onClick={() => handleDelete(r.l.id)}
-                        className="text-slate-400 hover:text-red-500 text-sm px-1"
-                        title="Excluir"
-                      >
-                        ✕
-                      </button>
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          onClick={() => setEditRow(r)}
+                          className="text-xs font-semibold text-agos-green-dark dark:text-agos-green-light hover:underline"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => handleDelete(r.l.id)}
+                          className="text-slate-400 hover:text-red-500 text-sm px-1"
+                          title="Excluir"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -207,6 +223,160 @@ export default function VtLancamentosClient({
           </div>
         </>
       )}
+
+      {editRow && (
+        <EditLancamentoModal
+          row={editRow}
+          supabase={supabase}
+          onClose={() => setEditRow(null)}
+          onSaved={(updated) => {
+            setLancamentosState((prev) =>
+              prev.map((l) => (l.id === updated.id ? updated : l))
+            );
+            setEditRow(null);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function EditLancamentoModal({
+  row,
+  supabase,
+  onClose,
+  onSaved,
+}: {
+  row: Row;
+  supabase: ReturnType<typeof createClient>;
+  onClose: () => void;
+  onSaved: (updated: LancamentoLite) => void;
+}) {
+  const motivoInicial = (MOTIVO_OPCOES as readonly string[]).includes(row.l.motivo ?? "")
+    ? (row.l.motivo as (typeof MOTIVO_OPCOES)[number])
+    : "Reembolso VT";
+
+  const [motivo, setMotivo] = useState<(typeof MOTIVO_OPCOES)[number]>(motivoInicial);
+  const [valor, setValor] = useState(Math.abs(row.l.valor).toString());
+  const [data, setData] = useState(row.l.data);
+  const [cobradoCliente, setCobradoCliente] = useState(row.l.cobrado_cliente);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    if (!valor) {
+      setError("Informe o valor.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+
+    const valorNum = Number(valor);
+    const isDesconto = motivo.startsWith("Desconto");
+
+    const { data: updated, error: err } = await supabase
+      .from("vt_lancamentos")
+      .update({
+        data,
+        valor: isDesconto ? -Math.abs(valorNum) : Math.abs(valorNum),
+        motivo,
+        cobrado_cliente: cobradoCliente,
+      })
+      .eq("id", row.l.id)
+      .select("id, func_comp_id, data, valor, motivo, cobrado_cliente")
+      .single();
+
+    setLoading(false);
+    if (err || !updated) {
+      setError(err?.message ?? "Erro ao salvar.");
+      return;
+    }
+    onSaved(updated);
+  }
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 w-full max-w-sm"
+      >
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1">
+          Editar lançamento
+        </h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+          {row.f?.nome} — {row.fc?.obra_snapshot}
+        </p>
+        <div className="space-y-3">
+          <label className="block">
+            <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+              Data
+            </span>
+            <input
+              type="date"
+              value={data}
+              onChange={(e) => setData(e.target.value)}
+              className="input w-full"
+            />
+          </label>
+          <label className="block">
+            <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+              Motivo
+            </span>
+            <select
+              value={motivo}
+              onChange={(e) =>
+                setMotivo(e.target.value as (typeof MOTIVO_OPCOES)[number])
+              }
+              className="input w-full"
+            >
+              {MOTIVO_OPCOES.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+              Valor (R$)
+            </span>
+            <input
+              type="number"
+              step="0.01"
+              value={valor}
+              onChange={(e) => setValor(e.target.value)}
+              className="input w-full"
+            />
+          </label>
+          <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+            <input
+              type="checkbox"
+              checked={cobradoCliente}
+              onChange={(e) => setCobradoCliente(e.target.checked)}
+            />
+            Cobrar do cliente na próxima NF
+          </label>
+        </div>
+        {error && <p className="text-xs text-red-600 mt-3">{error}</p>}
+        <div className="flex justify-end gap-2 mt-5">
+          <button
+            onClick={onClose}
+            className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={loading}
+            className="bg-agos-green hover:bg-agos-green-dark text-white text-xs font-semibold rounded-lg px-3.5 py-2 disabled:opacity-60"
+          >
+            {loading ? "Salvando..." : "Salvar alterações"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
