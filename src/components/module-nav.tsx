@@ -22,8 +22,9 @@ const MODULE_LINKS: Record<
   vt: [
     { href: "/vt/dashboard", label: "Dashboard" },
     { href: "/vt/funcionarios", label: "Funcionários & VT" },
+    { href: "/vt/apontamento", label: "Apontamento" },
     { href: "/vt/lancamentos", label: "Lançamentos avulsos" },
-    { href: "/vt/importacao", label: "Importar apontamento" },
+    { href: "/vt/importacao", label: "Importação" },
   ],
 };
 

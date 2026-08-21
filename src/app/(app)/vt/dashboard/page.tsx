@@ -23,6 +23,11 @@ type FuncCompLite = Pick<
   | "valor_total"
 >;
 
+type ApontamentoLite = Pick<
+  ApontamentoVt,
+  "id" | "func_comp_id" | "h50" | "h70" | "h100" | "faltas" | "dsr" | "ad_not" | "premio"
+>;
+
 export default async function VtDashboardPage() {
   const supabase = await createClient();
 
@@ -67,7 +72,7 @@ export default async function VtDashboardPage() {
 
   const [{ data: apontamentosTodos }, { data: lancamentosTodos }] =
     await Promise.all([
-      fetchAllRows<ApontamentoVt>((from, to) =>
+      fetchAllRows<ApontamentoLite>((from, to) =>
         supabase
           .from("vt_apontamento")
           .select(

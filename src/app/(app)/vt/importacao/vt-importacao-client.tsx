@@ -14,7 +14,12 @@ type FuncionarioLite = Pick<
 
 type FuncCompLite = Pick<
   FuncionarioCompetencia,
-  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot" | "status_no_mes"
+  | "id"
+  | "funcionario_id"
+  | "competencia_id"
+  | "obra_snapshot"
+  | "status_no_mes"
+  | "valor_diario"
 >;
 
 export default function VtImportacaoClient({
@@ -626,12 +631,26 @@ function ApontamentoTab({
   const supabase = useMemo(() => createClient(), []);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [obraSelecionada, setObraSelecionada] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [avisos, setAvisos] = useState<string[]>([]);
-  const [conciliadas, setConciliadas] = useState<LinhaConciliada[]>([]);
+  const [linhasArquivo, setLinhasArquivo] = useState<LinhaApontamento[] | null>(
+    null
+  );
+  const [colunasEncontradas, setColunasEncontradas] = useState<
+    Partial<Record<keyof LinhaApontamento, boolean>>
+  >({});
   const [loading, setLoading] = useState(false);
   const [applying, setApplying] = useState(false);
   const [resultado, setResultado] = useState<string | null>(null);
+
+  const obras = useMemo(
+    () =>
+      Array.from(
+        new Set(funcComp.map((fc) => (fc.obra_snapshot ?? "").trim()).filter(Boolean))
+      ).sort((a, b) => a.localeCompare(b, "pt-BR")),
+    [funcComp]
+  );
 
   const funcionariosPorCodigo = useMemo(() => {
     const map = new Map<string, FuncionarioLite>();
@@ -652,9 +671,17 @@ function ApontamentoTab({
     setResultado(null);
     setFileName(file.name);
 
-    const { linhas, avisos: avisosParser } = await parseApontamentoXlsx(file);
+    const { linhas, avisos: avisosParser, colunasEncontradas: cols } =
+      await parseApontamentoXlsx(file);
+    setLinhasArquivo(linhas);
+    setAvisos(avisosParser);
+    setColunasEncontradas(cols);
+    setLoading(false);
+  }
 
-    const conciliadasResult: LinhaConciliada[] = linhas.map((linha) => {
+  const conciliadas = useMemo<LinhaConciliada[]>(() => {
+    if (!linhasArquivo) return [];
+    return linhasArquivo.map((linha) => {
       const codigo = linha.matricula.padStart(6, "0");
       const funcionario = funcionariosPorCodigo.get(codigo) ?? null;
       const fc = funcionario
@@ -662,13 +689,13 @@ function ApontamentoTab({
         : null;
       return { linha, funcComp: fc, funcionario };
     });
+  }, [linhasArquivo, funcionariosPorCodigo, funcCompPorFuncionarioId]);
 
-    setConciliadas(conciliadasResult);
-    setAvisos(avisosParser);
-    setLoading(false);
-  }
+  const naObraSelecionada = (c: LinhaConciliada) =>
+    (c.funcComp?.obra_snapshot ?? "").trim() === obraSelecionada;
 
-  const matched = conciliadas.filter((c) => c.funcComp);
+  const matched = conciliadas.filter((c) => c.funcComp && naObraSelecionada(c));
+  const foraDaObra = conciliadas.filter((c) => c.funcComp && !naObraSelecionada(c));
   const semFuncionario = conciliadas.filter((c) => !c.funcionario);
   const semNaCompetencia = conciliadas.filter((c) => c.funcionario && !c.funcComp);
 
@@ -685,6 +712,8 @@ function ApontamentoTab({
       dsr: c.linha.dsr,
       ad_not: c.linha.adNot,
       premio: c.linha.premio,
+      dias_reembolso: c.linha.diasReembolso,
+      dias_desconto: c.linha.diasDesconto,
       arquivo_origem: fileName,
     }));
 
@@ -692,33 +721,95 @@ function ApontamentoTab({
       .from("vt_apontamento")
       .upsert(rows, { onConflict: "func_comp_id" });
 
-    setApplying(false);
     if (error) {
+      setApplying(false);
       setResultado(`Erro ao aplicar: ${error.message}`);
       return;
     }
-    setResultado(`${rows.length} apontamento(s) importado(s) com sucesso.`);
+
+    // Valor diário: só atualiza quando a planilha de ponto traz um valor
+    // diferente do que já está salvo (evita sobrescrever com branco/igual).
+    // VR: sempre sobrescreve quando a coluna existe no arquivo, inclusive
+    // apagando um VR já cadastrado se a célula vier em branco — confirmado
+    // com o Alan que essa é a regra certa (VR é sempre reflexo fiel do que
+    // está na planilha de ponto daquele mês).
+    let atualizacoesFuncComp = 0;
+    for (const c of matched) {
+      const updates: Record<string, number | null> = {};
+      if (
+        colunasEncontradas.valorDiario &&
+        c.linha.valorDiario != null &&
+        c.linha.valorDiario !== c.funcComp!.valor_diario
+      ) {
+        updates.valor_diario = c.linha.valorDiario;
+      }
+      if (colunasEncontradas.vrValor) {
+        updates.vr_valor = c.linha.vrValor;
+      }
+      if (Object.keys(updates).length > 0) {
+        const { error: errUpdate } = await supabase
+          .from("vt_funcionario_competencia")
+          .update(updates)
+          .eq("id", c.funcComp!.id);
+        if (!errUpdate) atualizacoesFuncComp++;
+      }
+    }
+
+    setApplying(false);
+    setResultado(
+      `${rows.length} apontamento(s) importado(s) para ${obraSelecionada}` +
+        (atualizacoesFuncComp > 0
+          ? ` (${atualizacoesFuncComp} com valor diário/VR atualizado).`
+          : ".")
+    );
   }
 
   return (
     <div className="space-y-4">
       <p className="text-xs text-slate-500 dark:text-slate-400">
         {nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)} — planilha de
-        ponto de uma obra (50%, 70%, 100%, Faltas, DSR, Ad.Not, Prêmio)
+        ponto (50%, 70%, 100%, Faltas, DSR, Ad.Not, Prêmio). O arquivo pode trazer
+        outras obras junto (ex.: segmentação de dados do Excel) — só o que for da
+        obra selecionada abaixo é aplicado.
       </p>
 
+      <div className="flex flex-col gap-1 max-w-xs">
+        <label className="text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Obra deste apontamento
+        </label>
+        <select
+          value={obraSelecionada}
+          onChange={(e) => setObraSelecionada(e.target.value)}
+          className="input w-full"
+        >
+          <option value="">Selecione a obra...</option>
+          {obras.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div
-        onClick={() => inputRef.current?.click()}
+        onClick={() => obraSelecionada && inputRef.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
+          if (!obraSelecionada) return;
           const file = e.dataTransfer.files?.[0];
           if (file) handleFile(file);
         }}
-        className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-10 text-center cursor-pointer hover:border-agos-green transition bg-white dark:bg-slate-900"
+        className={`border-2 border-dashed rounded-xl p-10 text-center transition bg-white dark:bg-slate-900 ${
+          obraSelecionada
+            ? "border-slate-300 dark:border-slate-700 cursor-pointer hover:border-agos-green"
+            : "border-slate-200 dark:border-slate-800 opacity-50 cursor-not-allowed"
+        }`}
       >
         <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-          Arraste a planilha de ponto ou clique para selecionar
+          {obraSelecionada
+            ? "Arraste a planilha de ponto ou clique para selecionar"
+            : "Selecione a obra acima antes de subir o arquivo"}
         </p>
         <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
           Cruza automaticamente por matrícula com o cadastro ativo da competência
@@ -728,6 +819,7 @@ function ApontamentoTab({
           type="file"
           accept=".xlsx,.xls"
           className="hidden"
+          disabled={!obraSelecionada}
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) handleFile(file);
@@ -749,13 +841,21 @@ function ApontamentoTab({
 
       {conciliadas.length > 0 && (
         <>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-4 gap-3">
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
               <p className="text-[12px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Prontos para importar
               </p>
               <p className="text-[22px] font-bold mt-1 text-agos-green-dark dark:text-agos-green-light">
                 {matched.length}
+              </p>
+            </div>
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+              <p className="text-[12px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                De outra obra (ignorados)
+              </p>
+              <p className="text-[22px] font-bold mt-1 text-slate-400 dark:text-slate-500">
+                {foraDaObra.length}
               </p>
             </div>
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
@@ -814,12 +914,12 @@ function ApontamentoTab({
             )}
             <button
               onClick={aplicarImportacao}
-              disabled={applying || matched.length === 0}
+              disabled={applying || matched.length === 0 || !obraSelecionada}
               className="ml-auto bg-agos-green hover:bg-agos-green-dark text-white text-sm font-semibold rounded-lg px-4 py-2 disabled:opacity-60"
             >
               {applying
                 ? "Importando..."
-                : `Importar ${matched.length} apontamento(s)`}
+                : `Importar ${matched.length} apontamento(s) de ${obraSelecionada || "..."}`}
             </button>
           </div>
         </>

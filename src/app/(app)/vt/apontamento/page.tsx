@@ -1,7 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
-import type { Competencia, Funcionario, FuncionarioCompetencia } from "@/lib/types";
-import VtImportacaoClient from "./vt-importacao-client";
+import type {
+  ApontamentoVt,
+  Competencia,
+  Funcionario,
+  FuncionarioCompetencia,
+} from "@/lib/types";
+import VtApontamentoClient from "./vt-apontamento-client";
 
 export const dynamic = "force-dynamic";
 
@@ -12,15 +17,26 @@ type FuncionarioLite = Pick<
 
 type FuncCompLite = Pick<
   FuncionarioCompetencia,
-  | "id"
-  | "funcionario_id"
-  | "competencia_id"
-  | "obra_snapshot"
-  | "status_no_mes"
-  | "valor_diario"
+  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot"
 >;
 
-export default async function VtImportacaoPage() {
+type ApontamentoLite = Pick<
+  ApontamentoVt,
+  | "id"
+  | "func_comp_id"
+  | "h50"
+  | "h70"
+  | "h100"
+  | "faltas"
+  | "dsr"
+  | "ad_not"
+  | "premio"
+  | "dias_reembolso"
+  | "dias_desconto"
+  | "arquivo_origem"
+>;
+
+export default async function VtApontamentoPage() {
   const supabase = await createClient();
 
   const { data: competencias } = await supabase
@@ -33,7 +49,12 @@ export default async function VtImportacaoPage() {
 
   if (!atual) {
     return (
-      <VtImportacaoClient competenciaAtual={null} funcComp={[]} funcionarios={[]} />
+      <VtApontamentoClient
+        competenciaAtual={null}
+        funcComp={[]}
+        funcionarios={[]}
+        apontamentos={[]}
+      />
     );
   }
 
@@ -41,9 +62,7 @@ export default async function VtImportacaoPage() {
     fetchAllRows<FuncCompLite>((from, to) =>
       supabase
         .from("vt_funcionario_competencia")
-        .select(
-          "id, funcionario_id, competencia_id, obra_snapshot, status_no_mes, valor_diario"
-        )
+        .select("id, funcionario_id, competencia_id, obra_snapshot")
         .eq("competencia_id", atual.id)
         .order("id")
         .range(from, to)
@@ -57,11 +76,29 @@ export default async function VtImportacaoPage() {
     ),
   ]);
 
+  const funcCompIds = new Set((funcComp ?? []).map((fc) => fc.id));
+
+  const { data: apontamentosTodos } = await fetchAllRows<ApontamentoLite>(
+    (from, to) =>
+      supabase
+        .from("vt_apontamento")
+        .select(
+          "id, func_comp_id, h50, h70, h100, faltas, dsr, ad_not, premio, dias_reembolso, dias_desconto, arquivo_origem"
+        )
+        .order("id")
+        .range(from, to)
+  );
+
+  const apontamentos = (apontamentosTodos ?? []).filter((a) =>
+    funcCompIds.has(a.func_comp_id)
+  );
+
   return (
-    <VtImportacaoClient
+    <VtApontamentoClient
       competenciaAtual={atual}
       funcComp={funcComp ?? []}
       funcionarios={funcionarios ?? []}
+      apontamentos={apontamentos}
     />
   );
 }

@@ -135,6 +135,10 @@ export type ApontamentoVt = {
   dsr: number;
   ad_not: number;
   premio: number;
+  /** Dias de reembolso VT (Sabados, ou Total M.A quando Sabados vem vazio). */
+  dias_reembolso: number;
+  /** Dias de desconto VT (QTD Desc VT) — usado no cálculo do fechamento. */
+  dias_desconto: number;
   arquivo_origem: string | null;
   importado_em?: string;
 };

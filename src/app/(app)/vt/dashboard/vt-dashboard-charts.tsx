@@ -84,6 +84,11 @@ type FuncCompLite = Pick<
   | "valor_total"
 >;
 
+type ApontamentoLite = Pick<
+  ApontamentoVt,
+  "id" | "func_comp_id" | "h50" | "h70" | "h100" | "faltas" | "dsr" | "ad_not" | "premio"
+>;
+
 export default function VtDashboardClient({
   competencias,
   competenciaAtual,
@@ -94,7 +99,7 @@ export default function VtDashboardClient({
   competencias: Competencia[];
   competenciaAtual: Competencia | null;
   funcComp: FuncCompLite[];
-  apontamentos: ApontamentoVt[];
+  apontamentos: ApontamentoLite[];
   lancamentos: LancamentoVt[];
 }) {
   const { mounted, textColor, gridColor } = useChartTheme();
