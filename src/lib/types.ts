@@ -139,6 +139,10 @@ export type ApontamentoVt = {
   dias_reembolso: number;
   /** Dias de desconto VT (QTD Desc VT) — usado no cálculo do fechamento. */
   dias_desconto: number;
+  /** dias_reembolso x valor_diario, calculado e gravado na importação. */
+  valor_reembolso: number;
+  /** dias_desconto x valor_diario, calculado e gravado na importação. */
+  valor_desconto: number;
   arquivo_origem: string | null;
   importado_em?: string;
 };

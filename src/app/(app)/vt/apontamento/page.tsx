@@ -17,7 +17,7 @@ type FuncionarioLite = Pick<
 
 type FuncCompLite = Pick<
   FuncionarioCompetencia,
-  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot"
+  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot" | "valor_diario"
 >;
 
 type ApontamentoLite = Pick<
@@ -33,11 +33,18 @@ type ApontamentoLite = Pick<
   | "premio"
   | "dias_reembolso"
   | "dias_desconto"
+  | "valor_reembolso"
+  | "valor_desconto"
   | "arquivo_origem"
 >;
 
-export default async function VtApontamentoPage() {
+export default async function VtApontamentoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ competencia?: string }>;
+}) {
   const supabase = await createClient();
+  const { competencia: competenciaIdParam } = await searchParams;
 
   const { data: competencias } = await supabase
     .from("vt_competencias")
@@ -45,12 +52,15 @@ export default async function VtApontamentoPage() {
     .order("ano", { ascending: false })
     .order("mes", { ascending: false });
 
-  const atual = (competencias?.[0] as Competencia | undefined) ?? null;
+  const lista = (competencias as Competencia[]) ?? [];
+  const selecionada =
+    lista.find((c) => c.id === competenciaIdParam) ?? lista[0] ?? null;
 
-  if (!atual) {
+  if (!selecionada) {
     return (
       <VtApontamentoClient
-        competenciaAtual={null}
+        competencias={[]}
+        competenciaSelecionada={null}
         funcComp={[]}
         funcionarios={[]}
         apontamentos={[]}
@@ -62,8 +72,8 @@ export default async function VtApontamentoPage() {
     fetchAllRows<FuncCompLite>((from, to) =>
       supabase
         .from("vt_funcionario_competencia")
-        .select("id, funcionario_id, competencia_id, obra_snapshot")
-        .eq("competencia_id", atual.id)
+        .select("id, funcionario_id, competencia_id, obra_snapshot, valor_diario")
+        .eq("competencia_id", selecionada.id)
         .order("id")
         .range(from, to)
     ),
@@ -83,7 +93,7 @@ export default async function VtApontamentoPage() {
       supabase
         .from("vt_apontamento")
         .select(
-          "id, func_comp_id, h50, h70, h100, faltas, dsr, ad_not, premio, dias_reembolso, dias_desconto, arquivo_origem"
+          "id, func_comp_id, h50, h70, h100, faltas, dsr, ad_not, premio, dias_reembolso, dias_desconto, valor_reembolso, valor_desconto, arquivo_origem"
         )
         .order("id")
         .range(from, to)
@@ -95,7 +105,8 @@ export default async function VtApontamentoPage() {
 
   return (
     <VtApontamentoClient
-      competenciaAtual={atual}
+      competencias={lista}
+      competenciaSelecionada={selecionada}
       funcComp={funcComp ?? []}
       funcionarios={funcionarios ?? []}
       apontamentos={apontamentos}

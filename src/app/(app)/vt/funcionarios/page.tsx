@@ -34,8 +34,13 @@ type LancamentoLite = Pick<
   "id" | "func_comp_id" | "data" | "valor" | "motivo" | "cobrado_cliente"
 >;
 
-export default async function VtFuncionariosPage() {
+export default async function VtFuncionariosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ competencia?: string }>;
+}) {
   const supabase = await createClient();
+  const { competencia: competenciaIdParam } = await searchParams;
 
   const { data: competencias } = await supabase
     .from("vt_competencias")
@@ -43,7 +48,8 @@ export default async function VtFuncionariosPage() {
     .order("ano", { ascending: false })
     .order("mes", { ascending: false });
 
-  const atual = (competencias?.[0] as Competencia | undefined) ?? null;
+  const lista = (competencias as Competencia[]) ?? [];
+  const atual = lista.find((c) => c.id === competenciaIdParam) ?? lista[0] ?? null;
 
   const [{ data: funcionarios }, funcCompResult] = await Promise.all([
     fetchAllRows<FuncionarioLite>((from, to) =>
@@ -87,6 +93,8 @@ export default async function VtFuncionariosPage() {
 
   return (
     <VtFuncionariosClient
+      key={atual?.id ?? "sem-competencia"}
+      competencias={lista}
       competenciaAtual={atual}
       funcionarios={funcionarios ?? []}
       funcComp={funcCompResult.data ?? []}

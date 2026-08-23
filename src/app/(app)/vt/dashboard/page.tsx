@@ -28,8 +28,13 @@ type ApontamentoLite = Pick<
   "id" | "func_comp_id" | "h50" | "h70" | "h100" | "faltas" | "dsr" | "ad_not" | "premio"
 >;
 
-export default async function VtDashboardPage() {
+export default async function VtDashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ competencia?: string }>;
+}) {
   const supabase = await createClient();
+  const { competencia: competenciaIdParam } = await searchParams;
 
   const { data: competencias } = await supabase
     .from("vt_competencias")
@@ -37,12 +42,13 @@ export default async function VtDashboardPage() {
     .order("ano", { ascending: false })
     .order("mes", { ascending: false });
 
-  const atual = (competencias?.[0] as Competencia | undefined) ?? null;
+  const lista = (competencias as Competencia[]) ?? [];
+  const atual = lista.find((c) => c.id === competenciaIdParam) ?? lista[0] ?? null;
 
   if (!atual) {
     return (
       <VtDashboardClient
-        competencias={(competencias as Competencia[]) ?? []}
+        competencias={lista}
         competenciaAtual={null}
         funcComp={[]}
         apontamentos={[]}
@@ -75,9 +81,7 @@ export default async function VtDashboardPage() {
       fetchAllRows<ApontamentoLite>((from, to) =>
         supabase
           .from("vt_apontamento")
-          .select(
-            "id, func_comp_id, h50, h70, h100, faltas, dsr, ad_not, premio, arquivo_origem"
-          )
+          .select("id, func_comp_id, h50, h70, h100, faltas, dsr, ad_not, premio")
           .order("id")
           .range(from, to)
       ),
@@ -99,7 +103,7 @@ export default async function VtDashboardPage() {
 
   return (
     <VtDashboardClient
-      competencias={(competencias as Competencia[]) ?? []}
+      competencias={lista}
       competenciaAtual={atual}
       funcComp={funcComp ?? []}
       apontamentos={apontamentos ?? []}

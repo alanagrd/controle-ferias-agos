@@ -703,49 +703,36 @@ function ApontamentoTab({
     if (matched.length === 0) return;
     setApplying(true);
 
-    const rows = matched.map((c) => ({
-      func_comp_id: c.funcComp!.id,
-      h50: c.linha.h50,
-      h70: c.linha.h70,
-      h100: c.linha.h100,
-      faltas: c.linha.faltas,
-      dsr: c.linha.dsr,
-      ad_not: c.linha.adNot,
-      premio: c.linha.premio,
-      dias_reembolso: c.linha.diasReembolso,
-      dias_desconto: c.linha.diasDesconto,
-      arquivo_origem: fileName,
-    }));
-
-    const { error } = await supabase
-      .from("vt_apontamento")
-      .upsert(rows, { onConflict: "func_comp_id" });
-
-    if (error) {
-      setApplying(false);
-      setResultado(`Erro ao aplicar: ${error.message}`);
-      return;
-    }
-
     // Valor diário: só atualiza quando a planilha de ponto traz um valor
     // diferente do que já está salvo (evita sobrescrever com branco/igual).
     // VR: sempre sobrescreve quando a coluna existe no arquivo, inclusive
     // apagando um VR já cadastrado se a célula vier em branco — confirmado
     // com o Alan que essa é a regra certa (VR é sempre reflexo fiel do que
     // está na planilha de ponto daquele mês).
+    //
+    // Isso roda ANTES de montar as linhas de vt_apontamento porque o valor
+    // de reembolso/desconto (dias x valor diário) precisa usar o valor
+    // diário já atualizado, se for o caso.
     let atualizacoesFuncComp = 0;
+    const valorDiarioFinal = new Map<string, number>();
+
     for (const c of matched) {
       const updates: Record<string, number | null> = {};
-      if (
+      const novoValorDiario =
         colunasEncontradas.valorDiario &&
         c.linha.valorDiario != null &&
         c.linha.valorDiario !== c.funcComp!.valor_diario
-      ) {
-        updates.valor_diario = c.linha.valorDiario;
-      }
-      if (colunasEncontradas.vrValor) {
-        updates.vr_valor = c.linha.vrValor;
-      }
+          ? c.linha.valorDiario
+          : null;
+
+      if (novoValorDiario != null) updates.valor_diario = novoValorDiario;
+      if (colunasEncontradas.vrValor) updates.vr_valor = c.linha.vrValor;
+
+      valorDiarioFinal.set(
+        c.funcComp!.id,
+        novoValorDiario ?? c.funcComp!.valor_diario ?? 0
+      );
+
       if (Object.keys(updates).length > 0) {
         const { error: errUpdate } = await supabase
           .from("vt_funcionario_competencia")
@@ -755,7 +742,35 @@ function ApontamentoTab({
       }
     }
 
+    const rows = matched.map((c) => {
+      const vDiario = valorDiarioFinal.get(c.funcComp!.id) ?? 0;
+      return {
+        func_comp_id: c.funcComp!.id,
+        h50: c.linha.h50,
+        h70: c.linha.h70,
+        h100: c.linha.h100,
+        faltas: c.linha.faltas,
+        dsr: c.linha.dsr,
+        ad_not: c.linha.adNot,
+        premio: c.linha.premio,
+        dias_reembolso: c.linha.diasReembolso,
+        dias_desconto: c.linha.diasDesconto,
+        valor_reembolso: c.linha.diasReembolso * vDiario,
+        valor_desconto: c.linha.diasDesconto * vDiario,
+        arquivo_origem: fileName,
+      };
+    });
+
+    const { error } = await supabase
+      .from("vt_apontamento")
+      .upsert(rows, { onConflict: "func_comp_id" });
+
     setApplying(false);
+    if (error) {
+      setResultado(`Erro ao aplicar: ${error.message}`);
+      return;
+    }
+
     setResultado(
       `${rows.length} apontamento(s) importado(s) para ${obraSelecionada}` +
         (atualizacoesFuncComp > 0

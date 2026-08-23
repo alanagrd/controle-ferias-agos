@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type {
   Competencia,
@@ -49,17 +50,20 @@ const MOTIVO_OPCOES = [
 ] as const;
 
 export default function VtFuncionariosClient({
+  competencias,
   competenciaAtual,
   funcionarios,
   funcComp,
   lancamentos,
 }: {
+  competencias: Competencia[];
   competenciaAtual: Competencia | null;
   funcionarios: FuncionarioLite[];
   funcComp: FuncionarioCompetencia[];
   lancamentos: LancamentoLite[];
 }) {
   const supabase = useMemo(() => createClient(), []);
+  const router = useRouter();
 
   const [funcCompState, setFuncCompState] = useState(funcComp);
   const [lancamentosState, setLancamentosState] = useState(lancamentos);
@@ -212,9 +216,19 @@ export default function VtFuncionariosClient({
           </h1>
           {competenciaAtual && (
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                {nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)}
-              </span>
+              <select
+                value={competenciaAtual.id}
+                onChange={(e) =>
+                  router.push(`/vt/funcionarios?competencia=${e.target.value}`)
+                }
+                className="input w-auto text-xs py-1"
+              >
+                {competencias.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {nomeCompetencia(c.ano, c.mes)}
+                  </option>
+                ))}
+              </select>
               <span
                 className={`text-[11px] font-semibold rounded-full px-2 py-0.5 ${
                   COMPETENCIA_STATUS_BADGE_CLASS[competenciaAtual.status]
@@ -437,6 +451,7 @@ export default function VtFuncionariosClient({
         <AbrirCompetenciaModal
           onClose={() => setShowAbrirCompetencia(false)}
           supabase={supabase}
+          router={router}
         />
       )}
 
@@ -521,9 +536,11 @@ function SortableTh({
 function AbrirCompetenciaModal({
   onClose,
   supabase,
+  router,
 }: {
   onClose: () => void;
   supabase: ReturnType<typeof createClient>;
+  router: ReturnType<typeof useRouter>;
 }) {
   const hoje = new Date();
   const [ano, setAno] = useState(hoje.getFullYear());
@@ -579,7 +596,8 @@ function AbrirCompetenciaModal({
       return;
     }
 
-    window.location.reload();
+    router.push(`/vt/funcionarios?competencia=${competencia.id}`);
+    router.refresh();
   }
 
   return (

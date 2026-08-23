@@ -1,8 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ApontamentoVt, Competencia, Funcionario, FuncionarioCompetencia } from "@/lib/types";
-import { nomeCompetencia } from "@/lib/status-vt";
+import {
+  COMPETENCIA_STATUS_BADGE_CLASS,
+  COMPETENCIA_STATUS_LABEL,
+  nomeCompetencia,
+  fmtMoeda,
+} from "@/lib/status-vt";
 
 type FuncionarioLite = Pick<
   Funcionario,
@@ -11,7 +17,7 @@ type FuncionarioLite = Pick<
 
 type FuncCompLite = Pick<
   FuncionarioCompetencia,
-  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot"
+  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot" | "valor_diario"
 >;
 
 type ApontamentoLite = Pick<
@@ -27,6 +33,8 @@ type ApontamentoLite = Pick<
   | "premio"
   | "dias_reembolso"
   | "dias_desconto"
+  | "valor_reembolso"
+  | "valor_desconto"
   | "arquivo_origem"
 >;
 
@@ -44,16 +52,19 @@ function fmtNum(v: number | undefined): string {
 }
 
 export default function VtApontamentoClient({
-  competenciaAtual,
+  competencias,
+  competenciaSelecionada,
   funcComp,
   funcionarios,
   apontamentos,
 }: {
-  competenciaAtual: Competencia | null;
+  competencias: Competencia[];
+  competenciaSelecionada: Competencia | null;
   funcComp: FuncCompLite[];
   funcionarios: FuncionarioLite[];
   apontamentos: ApontamentoLite[];
 }) {
+  const router = useRouter();
   const [busca, setBusca] = useState("");
   const [obraFilter, setObraFilter] = useState("");
   const [somenteComApontamento, setSomenteComApontamento] = useState(true);
@@ -137,7 +148,7 @@ export default function VtApontamentoClient({
 
   const comApontamento = rows.filter((r) => temApontamento(r.a)).length;
 
-  if (!competenciaAtual) {
+  if (!competenciaSelecionada) {
     return (
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-8 text-center">
         <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -149,14 +160,38 @@ export default function VtApontamentoClient({
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-          Apontamento
-        </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          {nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)} — horas extras,
-          faltas e ocorrências importadas da planilha de ponto de cada obra
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            Apontamento
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Horas extras, faltas e ocorrências importadas da planilha de ponto de
+            cada obra
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <select
+            value={competenciaSelecionada.id}
+            onChange={(e) =>
+              router.push(`/vt/apontamento?competencia=${e.target.value}`)
+            }
+            className="input w-auto"
+          >
+            {competencias.map((c) => (
+              <option key={c.id} value={c.id}>
+                {nomeCompetencia(c.ano, c.mes)}
+              </option>
+            ))}
+          </select>
+          <span
+            className={`text-[11px] font-semibold rounded-full px-2.5 py-1 ${
+              COMPETENCIA_STATUS_BADGE_CLASS[competenciaSelecionada.status]
+            }`}
+          >
+            {COMPETENCIA_STATUS_LABEL[competenciaSelecionada.status]}
+          </span>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-end gap-2">
@@ -227,7 +262,9 @@ export default function VtApontamentoClient({
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Ad.Not</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Prêmio</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Dias reembolso</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Valor reembolso</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Dias desconto</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Valor desconto</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap">Arquivo</th>
               </tr>
             </thead>
@@ -270,8 +307,14 @@ export default function VtApontamentoClient({
                   <td className="py-2 px-3 text-right text-slate-700 dark:text-slate-300">
                     {fmtNum(r.a?.dias_reembolso)}
                   </td>
+                  <td className="py-2 px-3 text-right text-agos-green-dark dark:text-agos-green-light">
+                    {r.a?.valor_reembolso ? fmtMoeda(r.a.valor_reembolso) : "—"}
+                  </td>
                   <td className="py-2 px-3 text-right text-red-600 dark:text-red-400">
                     {fmtNum(r.a?.dias_desconto)}
+                  </td>
+                  <td className="py-2 px-3 text-right text-red-600 dark:text-red-400">
+                    {r.a?.valor_desconto ? fmtMoeda(r.a.valor_desconto) : "—"}
                   </td>
                   <td className="py-2 px-3 text-xs text-slate-400 max-w-[160px] truncate">
                     {r.a?.arquivo_origem ?? "—"}
@@ -280,7 +323,7 @@ export default function VtApontamentoClient({
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={12} className="py-4 px-3 text-slate-500 dark:text-slate-400">
+                  <td colSpan={14} className="py-4 px-3 text-slate-500 dark:text-slate-400">
                     Nenhum funcionário encontrado com esse filtro.
                   </td>
                 </tr>

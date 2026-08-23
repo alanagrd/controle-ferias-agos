@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
   Chart as ChartJS,
@@ -103,10 +104,9 @@ export default function VtDashboardClient({
   lancamentos: LancamentoVt[];
 }) {
   const { mounted, textColor, gridColor } = useChartTheme();
-  const [competenciaId, setCompetenciaId] = useState(competenciaAtual?.id ?? "");
+  const router = useRouter();
 
-  const competenciaSelecionada =
-    competencias.find((c) => c.id === competenciaId) ?? competenciaAtual;
+  const competenciaSelecionada = competenciaAtual;
 
   const totalVt = useMemo(
     () => funcComp.reduce((acc, fc) => acc + (fc.valor_total ?? 0), 0),
@@ -168,8 +168,10 @@ export default function VtDashboardClient({
         <div className="flex items-center gap-2">
           <select
             className="input w-auto"
-            value={competenciaId || competenciaAtual.id}
-            onChange={(e) => setCompetenciaId(e.target.value)}
+            value={competenciaAtual.id}
+            onChange={(e) =>
+              router.push(`/vt/dashboard?competencia=${e.target.value}`)
+            }
           >
             {competencias.map((c) => (
               <option key={c.id} value={c.id}>
