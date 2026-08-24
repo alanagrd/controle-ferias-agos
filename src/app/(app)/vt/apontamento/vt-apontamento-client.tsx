@@ -35,6 +35,7 @@ type ApontamentoLite = Pick<
   | "dias_desconto"
   | "valor_reembolso"
   | "valor_desconto"
+  | "cesta_basica"
   | "arquivo_origem"
 >;
 
@@ -265,6 +266,7 @@ export default function VtApontamentoClient({
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Valor reembolso</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Dias desconto</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Valor desconto</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Cesta Básica</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap">Arquivo</th>
               </tr>
             </thead>
@@ -316,6 +318,9 @@ export default function VtApontamentoClient({
                   <td className="py-2 px-3 text-right text-red-600 dark:text-red-400">
                     {r.a?.valor_desconto ? fmtMoeda(r.a.valor_desconto) : "—"}
                   </td>
+                  <td className="py-2 px-3 text-right text-slate-700 dark:text-slate-300">
+                    {r.a?.cesta_basica ? fmtMoeda(r.a.cesta_basica) : "—"}
+                  </td>
                   <td className="py-2 px-3 text-xs text-slate-400 max-w-[160px] truncate">
                     {r.a?.arquivo_origem ?? "—"}
                   </td>
@@ -323,7 +328,7 @@ export default function VtApontamentoClient({
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={14} className="py-4 px-3 text-slate-500 dark:text-slate-400">
+                  <td colSpan={16} className="py-4 px-3 text-slate-500 dark:text-slate-400">
                     Nenhum funcionário encontrado com esse filtro.
                   </td>
                 </tr>

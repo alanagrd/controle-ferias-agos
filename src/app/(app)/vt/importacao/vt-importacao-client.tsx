@@ -757,6 +757,7 @@ function ApontamentoTab({
         dias_desconto: c.linha.diasDesconto,
         valor_reembolso: c.linha.diasReembolso * vDiario,
         valor_desconto: c.linha.diasDesconto * vDiario,
+        cesta_basica: c.linha.cestaBasica,
         arquivo_origem: fileName,
       };
     });

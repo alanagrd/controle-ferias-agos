@@ -32,6 +32,8 @@ export type LinhaApontamento = {
   dsr: number;
   adNot: number;
   premio: number;
+  /** Valor da Cesta Básica (R$) — coluna "Cesta Básica" da planilha. */
+  cestaBasica: number | null;
 };
 
 function normalizaHeader(s: string): string {
@@ -56,6 +58,7 @@ const HEADER_MATCHERS: Record<CampoNumerico, (c: string) => boolean> = {
   dsr: (c) => c.includes("descdsr") || c.includes("dsr") || c.includes("descontodsr"),
   adNot: (c) => c.includes("adnot") || c.includes("adicionalnoturno") || c.includes("adnoturno"),
   premio: (c) => c.includes("premio") || c.includes("premios"),
+  cestaBasica: (c) => c.includes("cesta"),
 };
 
 // "Total M.A" só é usado como fallback de diasReembolso quando Sabados vem
@@ -172,6 +175,7 @@ export async function parseApontamentoXlsx(
       dsr: colMap.dsr != null ? num(row[colMap.dsr]) : 0,
       adNot: colMap.adNot != null ? num(row[colMap.adNot]) : 0,
       premio: colMap.premio != null ? num(row[colMap.premio]) : 0,
+      cestaBasica: colMap.cestaBasica != null ? numOuNull(row[colMap.cestaBasica]) : null,
     });
   }
 

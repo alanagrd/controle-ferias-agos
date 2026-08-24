@@ -143,6 +143,8 @@ export type ApontamentoVt = {
   valor_reembolso: number;
   /** dias_desconto x valor_diario, calculado e gravado na importação. */
   valor_desconto: number;
+  /** Valor da Cesta Básica (R$) importado da planilha de ponto (coluna Cesta Básica). */
+  cesta_basica: number | null;
   arquivo_origem: string | null;
   importado_em?: string;
 };
