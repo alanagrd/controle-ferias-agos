@@ -8,9 +8,11 @@ import * as XLSX from "xlsx";
  * que já fazia essa mesma sincronização manualmente antes do módulo existir:
  *
  *   V. Unitario        -> valorDiario (só atualiza se vier diferente)
- *   Sabados             -> diasReembolso (dias de reembolso VT)
- *     (ou Total M.A quando Sabados vem vazio — obras de tarifa fixa, ex. MUQUI-ES)
- *   QTD Desc VT         -> diasDesconto (dias de desconto VT)
+ *   Sabados             -> diasReembolso (qtd de dias, apenas informativo)
+ *   Total M.A           -> valorReembolso (VALOR de reembolso VT — a planilha já
+ *                          calcula, então usamos direto, sem multiplicar por dias)
+ *   QTD Desc VT         -> diasDesconto (qtd de dias, apenas informativo)
+ *   Valor Desc VT       -> valorDesconto (VALOR de desconto VT — usado direto)
  *   Vr 277              -> vrValor (sempre sobrescreve)
  *   50% / 70% / 100%    -> horas extras
  *   Faltas / Desc.DSR / Ad.Not / Premio -> apontamento
@@ -24,6 +26,10 @@ export type LinhaApontamento = {
   valorDiario: number | null;
   diasReembolso: number;
   diasDesconto: number;
+  /** Valor de reembolso VT já calculado na planilha (coluna Total M.A). */
+  valorReembolso: number;
+  /** Valor de desconto VT já calculado na planilha (coluna Valor Desc VT). */
+  valorDesconto: number;
   vrValor: number | null;
   h50: number;
   h70: number;
@@ -50,6 +56,8 @@ const HEADER_MATCHERS: Record<CampoNumerico, (c: string) => boolean> = {
   valorDiario: (c) => c.includes("vunitario"),
   diasReembolso: (c) => c.includes("sabados"),
   diasDesconto: (c) => c.includes("qtddescvt"),
+  valorReembolso: (c) => c.includes("totalma"),
+  valorDesconto: (c) => c.includes("valordescvt"),
   vrValor: (c) => /^vr\d*$/.test(c),
   h50: (c) => c.includes("50"),
   h70: (c) => c.includes("70"),
@@ -60,11 +68,6 @@ const HEADER_MATCHERS: Record<CampoNumerico, (c: string) => boolean> = {
   premio: (c) => c.includes("premio") || c.includes("premios"),
   cestaBasica: (c) => c.includes("cesta"),
 };
-
-// "Total M.A" só é usado como fallback de diasReembolso quando Sabados vem
-// vazio (obras de tarifa fixa, ex. MUQUI-ES) — não faz parte do matching
-// genérico acima porque não é 1:1 com um campo de LinhaApontamento.
-const isTotalMA = (c: string) => c.includes("totalma");
 
 const MATRICULA_ALIASES = ["matr", "matricula"];
 
@@ -148,7 +151,6 @@ export async function parseApontamentoXlsx(
   let headerRowIdx = -1;
   let colMap: Partial<Record<CampoNumerico, number>> = {};
   let matrIdxFinal = -1;
-  let totalMAIdx: number | null = null;
 
   for (let i = 0; i < Math.min(raw.length, 20); i++) {
     const row = raw[i];
@@ -163,12 +165,9 @@ export async function parseApontamentoXlsx(
       if (idx !== -1) map[key] = idx;
     });
 
-    const totalMA = normalized.findIndex((c) => isTotalMA(c));
-
     headerRowIdx = i;
     colMap = map;
     matrIdxFinal = matrIdx;
-    totalMAIdx = totalMA !== -1 ? totalMA : null;
     break;
   }
 
@@ -212,19 +211,15 @@ export async function parseApontamentoXlsx(
     if (matrRaw == null || String(matrRaw).trim() === "") continue;
     if (!/^\d+$/.test(String(matrRaw).trim())) continue; // descarta linhas de rodapé/total
 
-    // dias de reembolso: usa Sabados; se vier vazio, cai para Total M.A
-    // (obras de tarifa fixa, ex. MUQUI-ES, onde Sabados fica sempre em branco)
-    const sabadosVal =
-      colMap.diasReembolso != null ? row[colMap.diasReembolso] : null;
-    const totalMAVal = totalMAIdx != null ? row[totalMAIdx] : null;
-    const diasReembolso =
-      sabadosVal != null && sabadosVal !== "" ? num(sabadosVal) : num(totalMAVal);
-
     linhas.push({
       matricula: String(matrRaw).trim(),
       valorDiario: colMap.valorDiario != null ? numOuNull(row[colMap.valorDiario]) : null,
-      diasReembolso,
+      diasReembolso: colMap.diasReembolso != null ? num(row[colMap.diasReembolso]) : 0,
       diasDesconto: colMap.diasDesconto != null ? num(row[colMap.diasDesconto]) : 0,
+      // Valores de reembolso/desconto vêm prontos da planilha (não multiplicamos
+      // por valor diário — a planilha já faz esse cálculo).
+      valorReembolso: colMap.valorReembolso != null ? num(row[colMap.valorReembolso]) : 0,
+      valorDesconto: colMap.valorDesconto != null ? num(row[colMap.valorDesconto]) : 0,
       vrValor: colMap.vrValor != null ? numOuNull(row[colMap.vrValor]) : null,
       h50: colMap.h50 != null ? num(row[colMap.h50]) : 0,
       h70: colMap.h70 != null ? num(row[colMap.h70]) : 0,
@@ -242,8 +237,10 @@ export async function parseApontamentoXlsx(
     avisos,
     colunasEncontradas: {
       valorDiario: colMap.valorDiario !== undefined,
-      diasReembolso: colMap.diasReembolso !== undefined || totalMAIdx !== null,
+      diasReembolso: colMap.diasReembolso !== undefined,
       diasDesconto: colMap.diasDesconto !== undefined,
+      valorReembolso: colMap.valorReembolso !== undefined,
+      valorDesconto: colMap.valorDesconto !== undefined,
       vrValor: colMap.vrValor !== undefined,
     },
     abaLida: nomeAba,

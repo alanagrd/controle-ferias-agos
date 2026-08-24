@@ -718,12 +718,7 @@ function ApontamentoTab({
     // apagando um VR já cadastrado se a célula vier em branco — confirmado
     // com o Alan que essa é a regra certa (VR é sempre reflexo fiel do que
     // está na planilha de ponto daquele mês).
-    //
-    // Isso roda ANTES de montar as linhas de vt_apontamento porque o valor
-    // de reembolso/desconto (dias x valor diário) precisa usar o valor
-    // diário já atualizado, se for o caso.
     let atualizacoesFuncComp = 0;
-    const valorDiarioFinal = new Map<string, number>();
 
     for (const c of matched) {
       const updates: Record<string, number | null> = {};
@@ -737,11 +732,6 @@ function ApontamentoTab({
       if (novoValorDiario != null) updates.valor_diario = novoValorDiario;
       if (colunasEncontradas.vrValor) updates.vr_valor = c.linha.vrValor;
 
-      valorDiarioFinal.set(
-        c.funcComp!.id,
-        novoValorDiario ?? c.funcComp!.valor_diario ?? 0
-      );
-
       if (Object.keys(updates).length > 0) {
         const { error: errUpdate } = await supabase
           .from("vt_funcionario_competencia")
@@ -751,25 +741,23 @@ function ApontamentoTab({
       }
     }
 
-    const rows = matched.map((c) => {
-      const vDiario = valorDiarioFinal.get(c.funcComp!.id) ?? 0;
-      return {
-        func_comp_id: c.funcComp!.id,
-        h50: c.linha.h50,
-        h70: c.linha.h70,
-        h100: c.linha.h100,
-        faltas: c.linha.faltas,
-        dsr: c.linha.dsr,
-        ad_not: c.linha.adNot,
-        premio: c.linha.premio,
-        dias_reembolso: c.linha.diasReembolso,
-        dias_desconto: c.linha.diasDesconto,
-        valor_reembolso: c.linha.diasReembolso * vDiario,
-        valor_desconto: c.linha.diasDesconto * vDiario,
-        cesta_basica: c.linha.cestaBasica,
-        arquivo_origem: fileName,
-      };
-    });
+    const rows = matched.map((c) => ({
+      func_comp_id: c.funcComp!.id,
+      h50: c.linha.h50,
+      h70: c.linha.h70,
+      h100: c.linha.h100,
+      faltas: c.linha.faltas,
+      dsr: c.linha.dsr,
+      ad_not: c.linha.adNot,
+      premio: c.linha.premio,
+      dias_reembolso: c.linha.diasReembolso,
+      dias_desconto: c.linha.diasDesconto,
+      // valores já vêm prontos da planilha (Total M.A / Valor Desc VT) — sem cálculo
+      valor_reembolso: c.linha.valorReembolso,
+      valor_desconto: c.linha.valorDesconto,
+      cesta_basica: c.linha.cestaBasica,
+      arquivo_origem: fileName,
+    }));
 
     const { error } = await supabase
       .from("vt_apontamento")
