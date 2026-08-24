@@ -180,6 +180,7 @@ export default function VtFuncionariosClient({
   }
 
   const totalFiltrado = filtered.reduce((acc, r) => acc + (r.fc.valor_total ?? 0), 0);
+  const totalVr = filtered.reduce((acc, r) => acc + (r.fc.vr_valor ?? 0), 0);
 
   function handleExportar() {
     if (!competenciaAtual) return;
@@ -328,8 +329,46 @@ export default function VtFuncionariosClient({
               />
               Mostrar dispensados
             </label>
-            <div className="ml-auto text-xs text-slate-500 dark:text-slate-400 pb-2">
-              {filtered.length} de {rows.length} funcionário(s) · {fmtMoeda(totalFiltrado)}
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+              <p className="text-[12px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Funcionários
+              </p>
+              <p className="text-[26px] font-bold mt-1 leading-none text-slate-900 dark:text-slate-100">
+                {filtered.length}
+              </p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 truncate">
+                {obraFilter
+                  ? `Obra ${obraFilter}`
+                  : clienteFilter
+                  ? clienteFilter
+                  : "Todas as obras"}{" "}
+                · de {rows.length} no total
+              </p>
+            </div>
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+              <p className="text-[12px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Total VT
+              </p>
+              <p className="text-[26px] font-bold mt-1 leading-none text-slate-900 dark:text-slate-100">
+                {fmtMoeda(totalFiltrado)}
+              </p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+                soma do total VT filtrado
+              </p>
+            </div>
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
+              <p className="text-[12px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Total VR
+              </p>
+              <p className="text-[26px] font-bold mt-1 leading-none text-slate-900 dark:text-slate-100">
+                {fmtMoeda(totalVr)}
+              </p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+                soma do VR filtrado
+              </p>
             </div>
           </div>
 
