@@ -17,7 +17,7 @@ type FuncionarioLite = Pick<
 
 type FuncCompLite = Pick<
   FuncionarioCompetencia,
-  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot" | "valor_diario"
+  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot" | "valor_diario" | "vr_valor"
 >;
 
 type ApontamentoLite = Pick<
@@ -36,6 +36,7 @@ type ApontamentoLite = Pick<
   | "valor_reembolso"
   | "valor_desconto"
   | "cesta_basica"
+  | "reembolso_vr"
   | "arquivo_origem"
 >;
 
@@ -73,7 +74,7 @@ export default async function VtApontamentoPage({
     fetchAllRows<FuncCompLite>((from, to) =>
       supabase
         .from("vt_funcionario_competencia")
-        .select("id, funcionario_id, competencia_id, obra_snapshot, valor_diario")
+        .select("id, funcionario_id, competencia_id, obra_snapshot, valor_diario, vr_valor")
         .eq("competencia_id", selecionada.id)
         .order("id")
         .range(from, to)
@@ -94,7 +95,7 @@ export default async function VtApontamentoPage({
       supabase
         .from("vt_apontamento")
         .select(
-          "id, func_comp_id, h50, h70, h100, faltas, dsr, ad_not, premio, dias_reembolso, dias_desconto, valor_reembolso, valor_desconto, cesta_basica, arquivo_origem"
+          "id, func_comp_id, h50, h70, h100, faltas, dsr, ad_not, premio, dias_reembolso, dias_desconto, valor_reembolso, valor_desconto, cesta_basica, reembolso_vr, arquivo_origem"
         )
         .order("id")
         .range(from, to)

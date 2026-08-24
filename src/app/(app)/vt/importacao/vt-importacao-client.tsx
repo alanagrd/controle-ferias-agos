@@ -756,6 +756,7 @@ function ApontamentoTab({
       valor_reembolso: c.linha.valorReembolso,
       valor_desconto: c.linha.valorDesconto,
       cesta_basica: c.linha.cestaBasica,
+      reembolso_vr: c.linha.reembolsoVr,
       arquivo_origem: fileName,
     }));
 

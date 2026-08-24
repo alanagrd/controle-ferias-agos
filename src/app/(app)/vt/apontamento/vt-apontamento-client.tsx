@@ -17,7 +17,7 @@ type FuncionarioLite = Pick<
 
 type FuncCompLite = Pick<
   FuncionarioCompetencia,
-  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot" | "valor_diario"
+  "id" | "funcionario_id" | "competencia_id" | "obra_snapshot" | "valor_diario" | "vr_valor"
 >;
 
 type ApontamentoLite = Pick<
@@ -36,6 +36,7 @@ type ApontamentoLite = Pick<
   | "valor_reembolso"
   | "valor_desconto"
   | "cesta_basica"
+  | "reembolso_vr"
   | "arquivo_origem"
 >;
 
@@ -262,10 +263,10 @@ export default function VtApontamentoClient({
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">DSR</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Ad.Not</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Prêmio</th>
-                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Dias reembolso</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Valor reembolso</th>
-                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Dias desconto</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Valor desconto</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">VR</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Reembolso VR</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Cesta Básica</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap">Arquivo</th>
               </tr>
@@ -306,17 +307,17 @@ export default function VtApontamentoClient({
                   <td className="py-2 px-3 text-right text-agos-green-dark dark:text-agos-green-light">
                     {fmtNum(r.a?.premio)}
                   </td>
-                  <td className="py-2 px-3 text-right text-slate-700 dark:text-slate-300">
-                    {fmtNum(r.a?.dias_reembolso)}
-                  </td>
                   <td className="py-2 px-3 text-right text-agos-green-dark dark:text-agos-green-light">
                     {r.a?.valor_reembolso ? fmtMoeda(r.a.valor_reembolso) : "—"}
                   </td>
                   <td className="py-2 px-3 text-right text-red-600 dark:text-red-400">
-                    {fmtNum(r.a?.dias_desconto)}
-                  </td>
-                  <td className="py-2 px-3 text-right text-red-600 dark:text-red-400">
                     {r.a?.valor_desconto ? fmtMoeda(r.a.valor_desconto) : "—"}
+                  </td>
+                  <td className="py-2 px-3 text-right text-slate-700 dark:text-slate-300">
+                    {r.fc.vr_valor != null ? fmtMoeda(r.fc.vr_valor) : "—"}
+                  </td>
+                  <td className="py-2 px-3 text-right text-agos-green-dark dark:text-agos-green-light">
+                    {r.a?.reembolso_vr ? fmtMoeda(r.a.reembolso_vr) : "—"}
                   </td>
                   <td className="py-2 px-3 text-right text-slate-700 dark:text-slate-300">
                     {r.a?.cesta_basica ? fmtMoeda(r.a.cesta_basica) : "—"}

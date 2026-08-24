@@ -145,6 +145,8 @@ export type ApontamentoVt = {
   valor_desconto: number;
   /** Valor da Cesta Básica (R$) importado da planilha de ponto (coluna Cesta Básica). */
   cesta_basica: number | null;
+  /** Reembolso de VR ao funcionário (R$) — coluna Vr M.A da planilha de ponto. */
+  reembolso_vr: number | null;
   arquivo_origem: string | null;
   importado_em?: string;
 };
