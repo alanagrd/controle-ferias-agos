@@ -68,19 +68,76 @@ const isTotalMA = (c: string) => c.includes("totalma");
 
 const MATRICULA_ALIASES = ["matr", "matricula"];
 
-/** Lê a primeira planilha do arquivo e localiza a linha de cabeçalho por
- * conter uma coluna de matrícula reconhecível (não assume posição fixa,
- * já que cada obra pode ter linhas de título antes do cabeçalho). */
+const MES_NOMES = [
+  "janeiro", "fevereiro", "marco", "abril", "maio", "junho",
+  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+];
+
+function normalizaNomeAba(s: string): string {
+  return normalizaHeader(s);
+}
+
+/** Escolhe qual aba do arquivo ler. Prioriza a aba cujo nome bate com a
+ * competência informada (ex.: "PARA SETEMBRO 2026" para mes=9, ano=2026) —
+ * importante porque arquivos como o VT_RIO.xlsx mestre têm uma aba por mês
+ * desde 2023, e a primeira aba do arquivo é sempre a mais antiga. Se não
+ * achar um nome batendo exatamente, varre de trás pra frente (mais recente
+ * primeiro) procurando a primeira aba com um cabeçalho de matrícula válido. */
+function escolheAba(
+  wb: XLSX.WorkBook,
+  competenciaHint?: { ano: number; mes: number }
+): { nomeAba: string; sheet: XLSX.WorkSheet } {
+  const nomes = wb.SheetNames;
+
+  if (competenciaHint) {
+    const alvo = normalizaNomeAba(
+      `${MES_NOMES[competenciaHint.mes - 1]}${competenciaHint.ano}`
+    );
+    const encontrada = nomes.find((n) => normalizaNomeAba(n).includes(alvo));
+    if (encontrada) {
+      return { nomeAba: encontrada, sheet: wb.Sheets[encontrada] };
+    }
+  }
+
+  // fallback: varre de trás pra frente (mais recente primeiro) até achar
+  // uma aba com cabeçalho de matrícula reconhecível nas primeiras 20 linhas
+  for (let i = nomes.length - 1; i >= 0; i--) {
+    const sheet = wb.Sheets[nomes[i]];
+    const raw: unknown[][] = XLSX.utils.sheet_to_json(sheet, {
+      header: 1,
+      defval: null,
+      range: 0,
+    });
+    const temMatr = raw.slice(0, 20).some((row) => {
+      if (!row) return false;
+      return row.some(
+        (c) => c != null && MATRICULA_ALIASES.includes(normalizaHeader(String(c)))
+      );
+    });
+    if (temMatr) return { nomeAba: nomes[i], sheet };
+  }
+
+  // nada encontrado — devolve a primeira aba mesmo, o erro de "matrícula
+  // não encontrada" já cobre esse caso de forma clara pro usuário
+  return { nomeAba: nomes[0], sheet: wb.Sheets[nomes[0]] };
+}
+
+/** Lê a aba mais adequada do arquivo (ver `escolheAba`) e localiza a linha
+ * de cabeçalho por conter uma coluna de matrícula reconhecível (não assume
+ * posição fixa, já que cada obra pode ter linhas de título antes do
+ * cabeçalho). */
 export async function parseApontamentoXlsx(
-  file: File
+  file: File,
+  competenciaHint?: { ano: number; mes: number }
 ): Promise<{
   linhas: LinhaApontamento[];
   avisos: string[];
   colunasEncontradas: Partial<Record<CampoNumerico, boolean>>;
+  abaLida: string;
 }> {
   const buf = await file.arrayBuffer();
   const wb = XLSX.read(buf, { type: "array" });
-  const sheet = wb.Sheets[wb.SheetNames[0]];
+  const { nomeAba, sheet } = escolheAba(wb, competenciaHint);
   const raw: unknown[][] = XLSX.utils.sheet_to_json(sheet, {
     header: 1,
     defval: null,
@@ -119,9 +176,10 @@ export async function parseApontamentoXlsx(
     return {
       linhas: [],
       avisos: [
-        "Não encontrei uma coluna de matrícula (Matr/Matrícula) nas primeiras 20 linhas do arquivo.",
+        `Não encontrei uma coluna de matrícula (Matr/Matrícula) nas primeiras 20 linhas da aba "${nomeAba}".`,
       ],
       colunasEncontradas: {},
+      abaLida: nomeAba,
     };
   }
 
@@ -188,5 +246,6 @@ export async function parseApontamentoXlsx(
       diasDesconto: colMap.diasDesconto !== undefined,
       vrValor: colMap.vrValor !== undefined,
     },
+    abaLida: nomeAba,
   };
 }

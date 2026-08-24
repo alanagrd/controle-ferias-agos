@@ -640,6 +640,7 @@ function ApontamentoTab({
   const [colunasEncontradas, setColunasEncontradas] = useState<
     Partial<Record<keyof LinhaApontamento, boolean>>
   >({});
+  const [abaLida, setAbaLida] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [applying, setApplying] = useState(false);
   const [resultado, setResultado] = useState<string | null>(null);
@@ -671,11 +672,19 @@ function ApontamentoTab({
     setResultado(null);
     setFileName(file.name);
 
-    const { linhas, avisos: avisosParser, colunasEncontradas: cols } =
-      await parseApontamentoXlsx(file);
+    const {
+      linhas,
+      avisos: avisosParser,
+      colunasEncontradas: cols,
+      abaLida,
+    } = await parseApontamentoXlsx(file, {
+      ano: competenciaAtual.ano,
+      mes: competenciaAtual.mes,
+    });
     setLinhasArquivo(linhas);
     setAvisos(avisosParser);
     setColunasEncontradas(cols);
+    setAbaLida(abaLida);
     setLoading(false);
   }
 
@@ -845,6 +854,12 @@ function ApontamentoTab({
 
       {loading && (
         <p className="text-sm text-slate-500 dark:text-slate-400">Lendo arquivo...</p>
+      )}
+
+      {abaLida && (
+        <p className="text-xs text-slate-400 dark:text-slate-500">
+          Lendo a aba <span className="font-mono">&quot;{abaLida}&quot;</span> do arquivo.
+        </p>
       )}
 
       {avisos.length > 0 && (
