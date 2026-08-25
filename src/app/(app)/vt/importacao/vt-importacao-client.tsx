@@ -1017,8 +1017,12 @@ function ExportarBittiTab({
     setResumo(null);
     setTotalFuncionarios(null);
 
+    // Só ATIVO na competência: dispensados no mês (mesmo com VR/valores
+    // residuais no snapshot) não entram no fechamento de folha do Bitti.
     const funcCompDaObra = funcComp.filter(
-      (fc) => (fc.obra_snapshot ?? "").trim() === obraSelecionada
+      (fc) =>
+        (fc.obra_snapshot ?? "").trim() === obraSelecionada &&
+        fc.status_no_mes === "ATIVO"
     );
 
     if (funcCompDaObra.length === 0) {
