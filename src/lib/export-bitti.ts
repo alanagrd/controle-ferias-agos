@@ -63,6 +63,11 @@ export const HEADER_BITTI: string[] = [
 export const TAIL_BITTI =
   "1;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;;;;;;;;;;;;;;;;;;;;";
 
+/** Rodapé fixo do CSV do Bitti (última linha, "legenda de formato" das
+ * colunas) — extraído de obras_rio.csv, sempre igual em todo export. */
+export const FOOTER_BITTI =
+  `AAAAMM;9(03);9(02);9(06);"deixar ""0""(zero)";9(03);9(07),99;9(07),99;1;"0 ; 1";0;"0 ; 1";"0 ; 1";"0 ; 1";"0 ; 1";"0 ; 1";"0 ; 1";"0 ; 1";"0 ; 1";"0 ; 1";"0 ; 1";"0 ; 1";Deixar em branco;X(50);"N-NÃO ; S-SIM";"""zero""";AAAAMMDD;;;;;;;;;;;;;Campo ESOCIAL, LAYOUT 2.2. -  Vinculo do Funcionário na outra Empresa.;9(04);1-VT | 2-VR | 3-ALIMENTAÇÃO | 4-CESTA BÁSICA;;;AAAAMMDD;AAAAMMDD`;
+
 /** Formata número no padrão BR (vírgula decimal, sem zeros à direita,
  * inteiros sem casas decimais) — mesma regra do script original. */
 export function fmtNumBitti(v: number): string {
@@ -124,9 +129,10 @@ export function tipoEvento(evento: number): "valor" | "qtd" {
 export function baixarCsvBitti(
   linhas: string[],
   nomeArquivo: string,
-  header: string[] = HEADER_BITTI
+  header: string[] = HEADER_BITTI,
+  footer: string = FOOTER_BITTI
 ) {
-  const conteudo = [...header, ...linhas].join("\r\n") + "\r\n";
+  const conteudo = [...header, ...linhas, footer].join("\r\n") + "\r\n";
   const blob = new Blob(["\uFEFF" + conteudo], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

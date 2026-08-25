@@ -997,7 +997,13 @@ function ExportarBittiTab({
   const [resumo, setResumo] = useState<ResumoEvento[] | null>(null);
   const [totalFuncionarios, setTotalFuncionarios] = useState<number | null>(null);
 
-  const competenciaAAAAMM = `${competenciaAtual.ano}${String(competenciaAtual.mes).padStart(2, "0")}`;
+  // A competência do Bitti é o mês de fechamento da folha (mês corrente), que é
+  // o mês ANTERIOR ao da competência de VT — ela é nomeada "PARA <mês seguinte>".
+  // Ex.: competência SETEMBRO/2026 → folha fechada em 202608.
+  const bittiAno =
+    competenciaAtual.mes === 1 ? competenciaAtual.ano - 1 : competenciaAtual.ano;
+  const bittiMes = competenciaAtual.mes === 1 ? 12 : competenciaAtual.mes - 1;
+  const competenciaAAAAMM = `${bittiAno}${String(bittiMes).padStart(2, "0")}`;
 
   const obras = useMemo(
     () =>
