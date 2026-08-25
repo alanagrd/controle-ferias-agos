@@ -755,6 +755,9 @@ function ApontamentoTab({
           : null;
 
       if (novoValorDiario != null) updates.valor_diario = novoValorDiario;
+      // Dias úteis de VT: a planilha de ponto é a fonte da verdade (inclui 0 pra
+      // quem não recebe VT). O banco recalcula valor_total a partir de dias_uteis.
+      if (colunasEncontradas.dias) updates.dias_uteis = c.linha.dias;
       if (colunasEncontradas.vrValor) updates.vr_valor = c.linha.vrValor;
 
       if (Object.keys(updates).length > 0) {

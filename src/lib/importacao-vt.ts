@@ -24,6 +24,8 @@ import * as XLSX from "xlsx";
 export type LinhaApontamento = {
   matricula: string;
   valorDiario: number | null;
+  /** Qtd de dias úteis de VT (coluna Qtd) — o banco recalcula valor_total. */
+  dias: number;
   diasReembolso: number;
   diasDesconto: number;
   /** Valor de reembolso VT já calculado na planilha (coluna Total M.A). */
@@ -56,6 +58,7 @@ type CampoNumerico = Exclude<keyof LinhaApontamento, "matricula">;
 
 const HEADER_MATCHERS: Record<CampoNumerico, (c: string) => boolean> = {
   valorDiario: (c) => c.includes("vunitario"),
+  dias: (c) => c === "qtd",
   diasReembolso: (c) => c.includes("sabados"),
   diasDesconto: (c) => c.includes("qtddescvt"),
   valorReembolso: (c) => c.includes("totalma"),
@@ -218,6 +221,7 @@ export async function parseApontamentoXlsx(
     linhas.push({
       matricula: String(matrRaw).trim(),
       valorDiario: colMap.valorDiario != null ? numOuNull(row[colMap.valorDiario]) : null,
+      dias: colMap.dias != null ? num(row[colMap.dias]) : 0,
       diasReembolso: colMap.diasReembolso != null ? num(row[colMap.diasReembolso]) : 0,
       diasDesconto: colMap.diasDesconto != null ? num(row[colMap.diasDesconto]) : 0,
       // Valores de reembolso/desconto vêm prontos da planilha (não multiplicamos
@@ -242,6 +246,7 @@ export async function parseApontamentoXlsx(
     avisos,
     colunasEncontradas: {
       valorDiario: colMap.valorDiario !== undefined,
+      dias: colMap.dias !== undefined,
       diasReembolso: colMap.diasReembolso !== undefined,
       diasDesconto: colMap.diasDesconto !== undefined,
       valorReembolso: colMap.valorReembolso !== undefined,
