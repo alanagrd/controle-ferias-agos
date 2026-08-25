@@ -1105,7 +1105,15 @@ function ExportarBittiTab({
       add(277, matricula, fc.vr_valor);
       add(271, matricula, apt?.valor_reembolso);
       add(903, matricula, apt?.valor_desconto);
-      add(278, matricula, apt?.cesta_basica);
+      // Cesta Básica (278): sempre lançada, mesmo com valor 0 (vira "278;;0").
+      if (matricula) {
+        linhasEvento.push({
+          matricula,
+          evento: 278,
+          tipo: tipoEvento(278),
+          valor: apt?.cesta_basica ?? 0,
+        });
+      }
       add(150, matricula, apt?.h50);
       add(146, matricula, apt?.h70);
       add(153, matricula, apt?.h100);

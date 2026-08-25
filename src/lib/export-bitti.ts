@@ -53,6 +53,10 @@ const EVENTOS_TIPO: Record<number, "valor" | "qtd"> = {
   909: "valor",
 };
 
+/** Eventos que devem ser SEMPRE lançados no CSV, mesmo com valor zero (o
+ * Bitti exige a linha do benefício zerado). Cesta Básica (278) é um deles. */
+const SEMPRE_LANCAR = new Set<number>([278]);
+
 /** Cabeçalho fixo do CSV do Bitti (2 linhas), extraído de obras_rio.csv. */
 export const HEADER_BITTI: string[] = [
   ';;;;;;;;;"Aplicar Lançamento nos seguintes cálculos ( 0-NÃO ; 1-SIM )";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;',
@@ -87,7 +91,7 @@ export function gerarLinhasCsvBitti(
 ): { linhas: string[]; resumo: ResumoEvento[] } {
   const porEvento = new Map<number, LinhaEventoBitti[]>();
   linhasEvento.forEach((l) => {
-    if (!l.valor) return;
+    if (!l.valor && !SEMPRE_LANCAR.has(l.evento)) return;
     const arr = porEvento.get(l.evento) ?? [];
     arr.push(l);
     porEvento.set(l.evento, arr);
@@ -103,7 +107,9 @@ export function gerarLinhasCsvBitti(
     if (!items || items.length === 0) return;
 
     items.forEach((l) => {
-      const valorFmt = fmtNumBitti(l.valor);
+      // Eventos "sempre lançar" com valor 0 saem como "0" (não em branco).
+      const valorFmt =
+        !l.valor && SEMPRE_LANCAR.has(l.evento) ? "0" : fmtNumBitti(l.valor);
       const qtdCol = l.tipo === "qtd" ? valorFmt : "";
       const valorCol = l.tipo === "valor" ? valorFmt : "";
       linhas.push(
