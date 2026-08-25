@@ -6,6 +6,13 @@ import type { Competencia, Funcionario, FuncionarioCompetencia } from "@/lib/typ
 import { nomeCompetencia } from "@/lib/status-vt";
 import { parseApontamentoXlsx, type LinhaApontamento } from "@/lib/importacao-vt";
 import { parseAtivosVtFile, type LinhaAtivoVt } from "@/lib/importacao-ativos-vt";
+import {
+  gerarLinhasCsvBitti,
+  baixarCsvBitti,
+  tipoEvento,
+  type LinhaEventoBitti,
+  type ResumoEvento,
+} from "@/lib/export-bitti";
 
 type FuncionarioLite = Pick<
   Funcionario,
@@ -20,6 +27,8 @@ type FuncCompLite = Pick<
   | "obra_snapshot"
   | "status_no_mes"
   | "valor_diario"
+  | "valor_total"
+  | "vr_valor"
 >;
 
 export default function VtImportacaoClient({
@@ -31,7 +40,7 @@ export default function VtImportacaoClient({
   funcComp: FuncCompLite[];
   funcionarios: FuncionarioLite[];
 }) {
-  const [tab, setTab] = useState<"ativos" | "apontamento">("ativos");
+  const [tab, setTab] = useState<"ativos" | "apontamento" | "bitti">("ativos");
 
   if (!competenciaAtual) {
     return (
@@ -75,6 +84,16 @@ export default function VtImportacaoClient({
         >
           Apontamento
         </button>
+        <button
+          onClick={() => setTab("bitti")}
+          className={
+            tab === "bitti"
+              ? "px-3.5 py-2 text-sm font-semibold text-slate-900 dark:text-slate-100 border-b-2 border-agos-green"
+              : "px-3.5 py-2 text-sm font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+          }
+        >
+          Exportar Bitti
+        </button>
       </div>
 
       {tab === "ativos" ? (
@@ -83,8 +102,14 @@ export default function VtImportacaoClient({
           funcComp={funcComp}
           funcionarios={funcionarios}
         />
-      ) : (
+      ) : tab === "apontamento" ? (
         <ApontamentoTab
+          competenciaAtual={competenciaAtual}
+          funcComp={funcComp}
+          funcionarios={funcionarios}
+        />
+      ) : (
+        <ExportarBittiTab
           competenciaAtual={competenciaAtual}
           funcComp={funcComp}
           funcionarios={funcionarios}
@@ -943,6 +968,233 @@ function ApontamentoTab({
             </button>
           </div>
         </>
+      )}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------------
+// Aba: Exportar Bitti — gera o CSV de fechamento de folha a partir do banco
+// ------------------------------------------------------------------------
+
+function ExportarBittiTab({
+  competenciaAtual,
+  funcComp,
+  funcionarios,
+}: {
+  competenciaAtual: Competencia;
+  funcComp: FuncCompLite[];
+  funcionarios: FuncionarioLite[];
+}) {
+  const supabase = useMemo(() => createClient(), []);
+
+  const [obraSelecionada, setObraSelecionada] = useState("");
+  const [avisos, setAvisos] = useState<string[]>([]);
+  const [gerando, setGerando] = useState(false);
+  const [resumo, setResumo] = useState<ResumoEvento[] | null>(null);
+  const [totalFuncionarios, setTotalFuncionarios] = useState<number | null>(null);
+
+  const competenciaAAAAMM = `${competenciaAtual.ano}${String(competenciaAtual.mes).padStart(2, "0")}`;
+
+  const obras = useMemo(
+    () =>
+      Array.from(
+        new Set(funcComp.map((fc) => (fc.obra_snapshot ?? "").trim()).filter(Boolean))
+      ).sort((a, b) => a.localeCompare(b, "pt-BR")),
+    [funcComp]
+  );
+
+  const funcionariosPorId = useMemo(() => {
+    const map = new Map<string, FuncionarioLite>();
+    funcionarios.forEach((f) => map.set(f.id, f));
+    return map;
+  }, [funcionarios]);
+
+  async function handleGerar() {
+    if (!obraSelecionada) return;
+    setGerando(true);
+    setAvisos([]);
+    setResumo(null);
+    setTotalFuncionarios(null);
+
+    const funcCompDaObra = funcComp.filter(
+      (fc) => (fc.obra_snapshot ?? "").trim() === obraSelecionada
+    );
+
+    if (funcCompDaObra.length === 0) {
+      setAvisos([`Nenhum funcionário encontrado na obra "${obraSelecionada}" nesta competência.`]);
+      setGerando(false);
+      return;
+    }
+
+    const funcCompIds = funcCompDaObra.map((fc) => fc.id);
+
+    const [{ data: apontamentos, error: errApt }, { data: lancamentos, error: errLanc }] =
+      await Promise.all([
+        supabase
+          .from("vt_apontamento")
+          .select(
+            "func_comp_id, valor_reembolso, valor_desconto, cesta_basica, h50, h70, h100, faltas, dsr, ad_not, premio"
+          )
+          .in("func_comp_id", funcCompIds),
+        supabase
+          .from("vt_lancamentos")
+          .select("func_comp_id, motivo, valor")
+          .in("func_comp_id", funcCompIds),
+      ]);
+
+    if (errApt || errLanc) {
+      setAvisos([
+        `Erro ao buscar dados: ${errApt?.message ?? errLanc?.message}`,
+      ]);
+      setGerando(false);
+      return;
+    }
+
+    const apontamentoPorFuncComp = new Map(
+      (apontamentos ?? []).map((a) => [a.func_comp_id, a])
+    );
+
+    const reembolsoVtPorFuncComp = new Map<string, number>();
+    const reembolsoVrPorFuncComp = new Map<string, number>();
+    (lancamentos ?? []).forEach((l) => {
+      if (l.motivo === "Reembolso VT") {
+        reembolsoVtPorFuncComp.set(
+          l.func_comp_id,
+          (reembolsoVtPorFuncComp.get(l.func_comp_id) ?? 0) + l.valor
+        );
+      } else if (l.motivo === "Reembolso VR") {
+        reembolsoVrPorFuncComp.set(
+          l.func_comp_id,
+          (reembolsoVrPorFuncComp.get(l.func_comp_id) ?? 0) + l.valor
+        );
+      }
+    });
+
+    const linhasEvento: LinhaEventoBitti[] = [];
+
+    function add(evento: number, matricula: string | null, valor: number | null | undefined) {
+      if (!matricula || !valor) return;
+      linhasEvento.push({
+        matricula,
+        evento,
+        tipo: tipoEvento(evento),
+        valor,
+      });
+    }
+
+    funcCompDaObra.forEach((fc) => {
+      const f = funcionariosPorId.get(fc.funcionario_id);
+      const matricula = f?.codigo ?? null;
+      const apt = apontamentoPorFuncComp.get(fc.id);
+
+      add(276, matricula, fc.valor_total);
+      add(277, matricula, fc.vr_valor);
+      add(271, matricula, apt?.valor_reembolso);
+      add(903, matricula, apt?.valor_desconto);
+      add(278, matricula, apt?.cesta_basica);
+      add(150, matricula, apt?.h50);
+      add(146, matricula, apt?.h70);
+      add(153, matricula, apt?.h100);
+      add(553, matricula, apt?.faltas);
+      add(191, matricula, apt?.dsr);
+      add(184, matricula, apt?.ad_not);
+      add(909, matricula, apt?.premio);
+      add(901, matricula, reembolsoVtPorFuncComp.get(fc.id));
+      add(904, matricula, reembolsoVrPorFuncComp.get(fc.id));
+    });
+
+    const { linhas, resumo: resumoGerado } = gerarLinhasCsvBitti(
+      linhasEvento,
+      competenciaAAAAMM
+    );
+
+    if (linhas.length === 0) {
+      setAvisos([
+        "Nenhum valor encontrado para gerar linhas — confira se o apontamento e os lançamentos avulsos dessa obra já foram importados.",
+      ]);
+      setGerando(false);
+      return;
+    }
+
+    baixarCsvBitti(
+      linhas,
+      `bitti_${obraSelecionada.replace(/\s+/g, "_")}_${competenciaAAAAMM}.csv`
+    );
+
+    setResumo(resumoGerado);
+    setTotalFuncionarios(funcCompDaObra.length);
+    setGerando(false);
+  }
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-slate-500 dark:text-slate-400">
+        {nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)} — gera o CSV de
+        importação de eventos do Bitti (competência {competenciaAAAAMM}) a partir dos
+        dados já lançados no sistema para a obra escolhida.
+      </p>
+
+      <div className="flex flex-col gap-1 max-w-xs">
+        <label className="text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          Obra
+        </label>
+        <select
+          value={obraSelecionada}
+          onChange={(e) => setObraSelecionada(e.target.value)}
+          className="input w-full"
+        >
+          <option value="">Selecione a obra...</option>
+          {obras.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {avisos.length > 0 && (
+        <div className="rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950 p-3 text-xs text-amber-700 dark:text-amber-400">
+          {avisos.map((a, i) => (
+            <p key={i}>{a}</p>
+          ))}
+        </div>
+      )}
+
+      <button
+        onClick={handleGerar}
+        disabled={gerando || !obraSelecionada}
+        className="bg-agos-green hover:bg-agos-green-dark text-white text-sm font-semibold rounded-lg px-4 py-2 disabled:opacity-60"
+      >
+        {gerando ? "Gerando..." : "Gerar e baixar CSV"}
+      </button>
+
+      {resumo && totalFuncionarios != null && (
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="px-4 py-2.5 text-xs font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
+            {totalFuncionarios} funcionário(s) na obra · CSV gerado com sucesso
+          </div>
+          <table className="w-full text-sm">
+            <tbody>
+              {resumo.map((r) => (
+                <tr
+                  key={r.evento}
+                  className="border-b border-slate-50 dark:border-slate-800/60 last:border-0"
+                >
+                  <td className="py-2 px-3 font-mono text-xs text-slate-500 w-16">
+                    {r.evento}
+                  </td>
+                  <td className="py-2 px-3 text-slate-700 dark:text-slate-300">
+                    {r.descricao}
+                  </td>
+                  <td className="py-2 px-3 text-right text-xs text-slate-400">
+                    {r.qtd} funcionário(s)
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
