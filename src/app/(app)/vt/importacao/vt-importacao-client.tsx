@@ -270,6 +270,10 @@ function ConciliacaoAtivosTab({
       const { data: novo, error: errNovo } = await supabase
         .from("rh_funcionarios")
         .insert({
+          // grava o código (zero-padded 6, padrão do banco) — sem isso o
+          // funcionário fica com codigo NULL, nunca casa por matrícula e
+          // acaba duplicado/sem apontamento nas importações seguintes.
+          codigo: item.linha.codigo.padStart(6, "0"),
           nome: item.linha.nome,
           cliente_razao_social: item.linha.cliente,
           obra: item.linha.ccusto || null,
