@@ -13,7 +13,6 @@ import {
   type LinhaEventoBitti,
   type ResumoEvento,
 } from "@/lib/export-bitti";
-import type { LinhaPlanilhaVt } from "@/lib/export-planilha-vt";
 
 type FuncionarioLite = Pick<
   Funcionario,
@@ -126,7 +125,6 @@ export default function VtImportacaoClient({
         <ExportarPlanilhaTab
           competenciaAtual={competenciaAtual}
           funcComp={funcComp}
-          funcionarios={funcionarios}
         />
       ) : tab === "apontamento" ? (
         <ApontamentoTab
@@ -1013,22 +1011,13 @@ function ApontamentoTab({
 function ExportarPlanilhaTab({
   competenciaAtual,
   funcComp,
-  funcionarios,
 }: {
   competenciaAtual: Competencia;
   funcComp: FuncCompLite[];
-  funcionarios: FuncionarioLite[];
 }) {
-  const supabase = useMemo(() => createClient(), []);
   const [obraSelecionada, setObraSelecionada] = useState("");
   const [gerando, setGerando] = useState(false);
   const [resultado, setResultado] = useState<string | null>(null);
-
-  const funcionariosPorId = useMemo(() => {
-    const m = new Map<string, FuncionarioLite>();
-    funcionarios.forEach((f) => m.set(f.id, f));
-    return m;
-  }, [funcionarios]);
 
   const obras = useMemo(
     () =>
@@ -1038,60 +1027,27 @@ function ExportarPlanilhaTab({
     [funcComp]
   );
 
-  const ativos = useMemo(
+  const qtdAtivos = useMemo(
     () =>
       funcComp.filter(
         (fc) =>
           fc.status_no_mes === "ATIVO" &&
           (!obraSelecionada || (fc.obra_snapshot ?? "").trim() === obraSelecionada)
-      ),
+      ).length,
     [funcComp, obraSelecionada]
   );
 
   async function handleGerar() {
     setGerando(true);
     setResultado(null);
-
-    // Cesta Básica vem do apontamento já importado, se houver.
-    const ids = ativos.map((fc) => fc.id);
-    const cestaPorFc = new Map<string, number | null>();
-    if (ids.length > 0) {
-      const { data } = await supabase
-        .from("vt_apontamento")
-        .select("func_comp_id, cesta_basica")
-        .in("func_comp_id", ids);
-      (data ?? []).forEach((a) => cestaPorFc.set(a.func_comp_id, a.cesta_basica));
-    }
-
-    const linhas: LinhaPlanilhaVt[] = ativos
-      .map((fc) => {
-        const f = funcionariosPorId.get(fc.funcionario_id);
-        return {
-          cod: f?.cliente_codigo ? String(Number(f.cliente_codigo)) : null,
-          obra: fc.obra_snapshot,
-          matricula: f?.codigo ? String(Number(f.codigo)) : null,
-          nome: f?.nome ?? "",
-          valorDiario: fc.valor_diario,
-          dias: fc.dias_uteis,
-          vr: fc.vr_valor,
-          cesta: cestaPorFc.get(fc.id) ?? null,
-        };
-      })
-      .sort(
-        (a, b) =>
-          (a.obra ?? "").localeCompare(b.obra ?? "", "pt-BR") ||
-          a.nome.localeCompare(b.nome, "pt-BR")
-      );
-
     const sufixo = obraSelecionada ? ` ${obraSelecionada}` : "";
     try {
       const res = await fetch("/api/vt/planilha", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ano: competenciaAtual.ano,
-          mes: competenciaAtual.mes,
-          linhas,
+          competenciaId: competenciaAtual.id,
+          obra: obraSelecionada || undefined,
         }),
       });
       if (!res.ok) {
@@ -1110,7 +1066,7 @@ function ExportarPlanilhaTab({
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      setResultado(`Planilha gerada com ${linhas.length} funcionário(s).`);
+      setResultado("Planilha gerada com sucesso.");
     } catch (e) {
       setResultado(e instanceof Error ? e.message : "Erro ao gerar a planilha.");
     } finally {
@@ -1152,10 +1108,10 @@ function ExportarPlanilhaTab({
         </div>
         <button
           onClick={handleGerar}
-          disabled={gerando || ativos.length === 0}
+          disabled={gerando || qtdAtivos === 0}
           className="bg-agos-green hover:bg-agos-green-dark text-white text-sm font-semibold rounded-lg px-4 py-2 disabled:opacity-60"
         >
-          {gerando ? "Gerando..." : `Gerar planilha (${ativos.length})`}
+          {gerando ? "Gerando..." : `Gerar planilha (${qtdAtivos})`}
         </button>
       </div>
 
