@@ -56,12 +56,11 @@ function bordaFina(): Partial<ExcelJS.Borders> {
   return { top: s, left: s, bottom: s, right: s };
 }
 
-export async function exportarPlanilhaVtParaObras(
+export async function construirPlanilhaVtBuffer(
   ano: number,
   mes: number,
-  linhas: LinhaPlanilhaVt[],
-  nomeArquivo: string
-): Promise<void> {
+  linhas: LinhaPlanilhaVt[]
+): Promise<ArrayBuffer> {
   const ExcelJSmod = (await import("exceljs")).default;
   const wb = new ExcelJSmod.Workbook();
   const nomeAba = `PARA ${MES_NOMES[mes - 1]} ${ano}`;
@@ -141,15 +140,5 @@ export async function exportarPlanilhaVtParaObras(
   ws.autoFilter = { from: { row: 6, column: 1 }, to: { row: 6, column: 24 } };
 
   const buf = await wb.xlsx.writeBuffer();
-  const blob = new Blob([buf], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = nomeArquivo;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  return buf as ArrayBuffer;
 }

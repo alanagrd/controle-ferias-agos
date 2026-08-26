@@ -13,14 +13,17 @@ import {
   type LinhaEventoBitti,
   type ResumoEvento,
 } from "@/lib/export-bitti";
-import {
-  exportarPlanilhaVtParaObras,
-  type LinhaPlanilhaVt,
-} from "@/lib/export-planilha-vt";
+import type { LinhaPlanilhaVt } from "@/lib/export-planilha-vt";
 
 type FuncionarioLite = Pick<
   Funcionario,
-  "id" | "codigo" | "nome" | "obra" | "status" | "cliente_razao_social"
+  | "id"
+  | "codigo"
+  | "nome"
+  | "obra"
+  | "status"
+  | "cliente_razao_social"
+  | "cliente_codigo"
 >;
 
 type FuncCompLite = Pick<
@@ -1064,7 +1067,7 @@ function ExportarPlanilhaTab({
       .map((fc) => {
         const f = funcionariosPorId.get(fc.funcionario_id);
         return {
-          cod: null,
+          cod: f?.cliente_codigo ? String(Number(f.cliente_codigo)) : null,
           obra: fc.obra_snapshot,
           matricula: f?.codigo ? String(Number(f.codigo)) : null,
           nome: f?.nome ?? "",
@@ -1081,15 +1084,38 @@ function ExportarPlanilhaTab({
       );
 
     const sufixo = obraSelecionada ? ` ${obraSelecionada}` : "";
-    await exportarPlanilhaVtParaObras(
-      competenciaAtual.ano,
-      competenciaAtual.mes,
-      linhas,
-      `VT ${nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)}${sufixo}.xlsx`
-    );
-
-    setGerando(false);
-    setResultado(`Planilha gerada com ${linhas.length} funcionário(s).`);
+    try {
+      const res = await fetch("/api/vt/planilha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ano: competenciaAtual.ano,
+          mes: competenciaAtual.mes,
+          linhas,
+        }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error ?? "Erro ao gerar a planilha.");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `VT ${nomeCompetencia(
+        competenciaAtual.ano,
+        competenciaAtual.mes
+      )}${sufixo}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setResultado(`Planilha gerada com ${linhas.length} funcionário(s).`);
+    } catch (e) {
+      setResultado(e instanceof Error ? e.message : "Erro ao gerar a planilha.");
+    } finally {
+      setGerando(false);
+    }
   }
 
   return (

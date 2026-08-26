@@ -7,7 +7,13 @@ export const dynamic = "force-dynamic";
 
 type FuncionarioLite = Pick<
   Funcionario,
-  "id" | "codigo" | "nome" | "obra" | "status" | "cliente_razao_social"
+  | "id"
+  | "codigo"
+  | "nome"
+  | "obra"
+  | "status"
+  | "cliente_razao_social"
+  | "cliente_codigo"
 >;
 
 type FuncCompLite = Pick<
@@ -54,7 +60,7 @@ export default async function VtImportacaoPage() {
     fetchAllRows<FuncionarioLite>((from, to) =>
       supabase
         .from("rh_funcionarios")
-        .select("id, codigo, nome, obra, status, cliente_razao_social")
+        .select("id, codigo, nome, obra, status, cliente_razao_social, cliente_codigo")
         .order("id")
         .range(from, to)
     ),
