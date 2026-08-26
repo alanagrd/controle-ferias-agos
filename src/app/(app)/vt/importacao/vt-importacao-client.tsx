@@ -13,6 +13,10 @@ import {
   type LinhaEventoBitti,
   type ResumoEvento,
 } from "@/lib/export-bitti";
+import {
+  exportarPlanilhaVtParaObras,
+  type LinhaPlanilhaVt,
+} from "@/lib/export-planilha-vt";
 
 type FuncionarioLite = Pick<
   Funcionario,
@@ -29,6 +33,7 @@ type FuncCompLite = Pick<
   | "valor_diario"
   | "valor_total"
   | "vr_valor"
+  | "dias_uteis"
 >;
 
 export default function VtImportacaoClient({
@@ -40,7 +45,9 @@ export default function VtImportacaoClient({
   funcComp: FuncCompLite[];
   funcionarios: FuncionarioLite[];
 }) {
-  const [tab, setTab] = useState<"ativos" | "apontamento" | "bitti">("ativos");
+  const [tab, setTab] = useState<
+    "ativos" | "planilha" | "apontamento" | "bitti"
+  >("ativos");
 
   if (!competenciaAtual) {
     return (
@@ -75,6 +82,16 @@ export default function VtImportacaoClient({
           Ativos (admissões, dispensas e transferências)
         </button>
         <button
+          onClick={() => setTab("planilha")}
+          className={
+            tab === "planilha"
+              ? "px-3.5 py-2 text-sm font-semibold text-slate-900 dark:text-slate-100 border-b-2 border-agos-green"
+              : "px-3.5 py-2 text-sm font-medium text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+          }
+        >
+          Exportar planilha
+        </button>
+        <button
           onClick={() => setTab("apontamento")}
           className={
             tab === "apontamento"
@@ -98,6 +115,12 @@ export default function VtImportacaoClient({
 
       {tab === "ativos" ? (
         <ConciliacaoAtivosTab
+          competenciaAtual={competenciaAtual}
+          funcComp={funcComp}
+          funcionarios={funcionarios}
+        />
+      ) : tab === "planilha" ? (
+        <ExportarPlanilhaTab
           competenciaAtual={competenciaAtual}
           funcComp={funcComp}
           funcionarios={funcionarios}
@@ -975,6 +998,145 @@ function ApontamentoTab({
             </button>
           </div>
         </>
+      )}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------------
+// Aba: Exportar planilha — gera a planilha de VT (formato VT RIO) pra obra
+// ------------------------------------------------------------------------
+
+function ExportarPlanilhaTab({
+  competenciaAtual,
+  funcComp,
+  funcionarios,
+}: {
+  competenciaAtual: Competencia;
+  funcComp: FuncCompLite[];
+  funcionarios: FuncionarioLite[];
+}) {
+  const supabase = useMemo(() => createClient(), []);
+  const [obraSelecionada, setObraSelecionada] = useState("");
+  const [gerando, setGerando] = useState(false);
+  const [resultado, setResultado] = useState<string | null>(null);
+
+  const funcionariosPorId = useMemo(() => {
+    const m = new Map<string, FuncionarioLite>();
+    funcionarios.forEach((f) => m.set(f.id, f));
+    return m;
+  }, [funcionarios]);
+
+  const obras = useMemo(
+    () =>
+      Array.from(
+        new Set(funcComp.map((fc) => (fc.obra_snapshot ?? "").trim()).filter(Boolean))
+      ).sort((a, b) => a.localeCompare(b, "pt-BR")),
+    [funcComp]
+  );
+
+  const ativos = useMemo(
+    () =>
+      funcComp.filter(
+        (fc) =>
+          fc.status_no_mes === "ATIVO" &&
+          (!obraSelecionada || (fc.obra_snapshot ?? "").trim() === obraSelecionada)
+      ),
+    [funcComp, obraSelecionada]
+  );
+
+  async function handleGerar() {
+    setGerando(true);
+    setResultado(null);
+
+    // Cesta Básica vem do apontamento já importado, se houver.
+    const ids = ativos.map((fc) => fc.id);
+    const cestaPorFc = new Map<string, number | null>();
+    if (ids.length > 0) {
+      const { data } = await supabase
+        .from("vt_apontamento")
+        .select("func_comp_id, cesta_basica")
+        .in("func_comp_id", ids);
+      (data ?? []).forEach((a) => cestaPorFc.set(a.func_comp_id, a.cesta_basica));
+    }
+
+    const linhas: LinhaPlanilhaVt[] = ativos
+      .map((fc) => {
+        const f = funcionariosPorId.get(fc.funcionario_id);
+        return {
+          cod: null,
+          obra: fc.obra_snapshot,
+          matricula: f?.codigo ? String(Number(f.codigo)) : null,
+          nome: f?.nome ?? "",
+          valorDiario: fc.valor_diario,
+          dias: fc.dias_uteis,
+          vr: fc.vr_valor,
+          cesta: cestaPorFc.get(fc.id) ?? null,
+        };
+      })
+      .sort(
+        (a, b) =>
+          (a.obra ?? "").localeCompare(b.obra ?? "", "pt-BR") ||
+          a.nome.localeCompare(b.nome, "pt-BR")
+      );
+
+    const sufixo = obraSelecionada ? ` ${obraSelecionada}` : "";
+    await exportarPlanilhaVtParaObras(
+      competenciaAtual.ano,
+      competenciaAtual.mes,
+      linhas,
+      `VT ${nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)}${sufixo}.xlsx`
+    );
+
+    setGerando(false);
+    setResultado(`Planilha gerada com ${linhas.length} funcionário(s).`);
+  }
+
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 space-y-4">
+      <div>
+        <h2 className="text-[14.5px] font-semibold text-slate-900 dark:text-slate-100">
+          Planilha de VT para as obras
+        </h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          Gera a planilha no formato de sempre (VT RIO), já preenchida com os
+          funcionários ativos, valor diário, VR, Cesta e dias — para os ADMs das
+          obras preencherem o apontamento. Depois é só reimportar na aba
+          Apontamento. As colunas que a obra preenche vêm destacadas em amarelo.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-1">
+          <label className="text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Obra (opcional)
+          </label>
+          <select
+            value={obraSelecionada}
+            onChange={(e) => setObraSelecionada(e.target.value)}
+            className="input min-w-[220px]"
+          >
+            <option value="">Todas as obras</option>
+            {obras.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
+        <button
+          onClick={handleGerar}
+          disabled={gerando || ativos.length === 0}
+          className="bg-agos-green hover:bg-agos-green-dark text-white text-sm font-semibold rounded-lg px-4 py-2 disabled:opacity-60"
+        >
+          {gerando ? "Gerando..." : `Gerar planilha (${ativos.length})`}
+        </button>
+      </div>
+
+      {resultado && (
+        <p className="text-sm text-agos-green-dark dark:text-agos-green-light">
+          {resultado}
+        </p>
       )}
     </div>
   );

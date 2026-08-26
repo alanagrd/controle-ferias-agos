@@ -20,6 +20,7 @@ type FuncCompLite = Pick<
   | "valor_diario"
   | "valor_total"
   | "vr_valor"
+  | "dias_uteis"
 >;
 
 export default async function VtImportacaoPage() {
@@ -44,7 +45,7 @@ export default async function VtImportacaoPage() {
       supabase
         .from("vt_funcionario_competencia")
         .select(
-          "id, funcionario_id, competencia_id, obra_snapshot, status_no_mes, valor_diario, valor_total, vr_valor"
+          "id, funcionario_id, competencia_id, obra_snapshot, status_no_mes, valor_diario, valor_total, vr_valor, dias_uteis"
         )
         .eq("competencia_id", atual.id)
         .order("id")
