@@ -22,6 +22,10 @@ export type LinhaPlanilhaVt = {
   dias: number | null;
   vr: number | null;
   cesta: number | null;
+  /** Reembolso VT avulso (evento 901) — vem do sistema, não da obra. */
+  reembolsoVt: number | null;
+  /** Reembolso VR avulso (Vr M.A 904 AGOS) — vem do sistema, não da obra. */
+  reembolsoVr: number | null;
 };
 
 const MES_NOMES = [
@@ -49,7 +53,9 @@ const AMBAR = "FFFFF3D6";
 // 1-based: colunas monetárias / de dias / preenchidas pela obra.
 const COLS_MOEDA = new Set([6, 8, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]);
 const COLS_INT = new Set([7, 9, 11]);
-const COLS_PREENCHER = new Set([7, 9, 11, 13, 16, 17, 18, 19, 20, 21, 22, 23, 24]);
+// Colunas que a obra preenche (destaque âmbar). M(13)=Reembolso 901 e
+// Q(17)=Vr M.A 904 AGOS saem preenchidas pelo sistema, então não entram aqui.
+const COLS_PREENCHER = new Set([7, 9, 11, 16, 18, 19, 20, 21, 22, 23, 24]);
 
 function bordaFina(): Partial<ExcelJS.Borders> {
   const s = { style: "thin" as const, color: { argb: "FFD9D9D9" } };
@@ -124,8 +130,10 @@ export async function construirPlanilhaVtBuffer(
     row.getCell(8).value = { formula: `F${r}*G${r}` }; // Total VT
     row.getCell(10).value = { formula: `F${r}*I${r}` }; // Total M.A
     row.getCell(12).value = { formula: `K${r}*F${r}` }; // Valor Desc VT
+    row.getCell(13).value = ln.reembolsoVt; // Reembolso 901 (sistema)
     row.getCell(14).value = ln.vr;
     row.getCell(15).value = ln.cesta;
+    row.getCell(17).value = ln.reembolsoVr; // Vr M.A 904 AGOS (sistema)
 
     for (let c = 1; c <= 24; c++) {
       const cell = row.getCell(c);
