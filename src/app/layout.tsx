@@ -3,8 +3,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Controle de Férias — Agos",
-  description: "Sistema de RH: controle de férias e ASOs",
+  title: "Controle RH — Agos",
+  description: "Sistema de RH: controle de Férias, ASO e Vale-Transporte",
 };
 
 export default function RootLayout({
