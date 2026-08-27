@@ -22,6 +22,7 @@ export type ResumoEvento = { evento: number; descricao: string; qtd: number };
 const EVENTOS_DESCRICAO: Record<number, string> = {
   276: "Total VT",
   271: "Total M.A. (reembolso VT do apontamento)",
+  274: "Reembolso VR (apontamento)",
   903: "Desconto VT",
   901: "Reembolso VT (avulso)",
   277: "Vale Refeição",
@@ -39,6 +40,7 @@ const EVENTOS_DESCRICAO: Record<number, string> = {
 const EVENTOS_TIPO: Record<number, "valor" | "qtd"> = {
   276: "valor",
   271: "valor",
+  274: "valor",
   903: "valor",
   901: "valor",
   277: "valor",
@@ -97,7 +99,7 @@ export function gerarLinhasCsvBitti(
     porEvento.set(l.evento, arr);
   });
 
-  const ordemEventos = [276, 271, 903, 901, 277, 278, 904, 150, 146, 153, 553, 191, 184, 909];
+  const ordemEventos = [276, 271, 274, 903, 901, 277, 278, 904, 150, 146, 153, 553, 191, 184, 909];
 
   const linhas: string[] = [];
   const resumo: ResumoEvento[] = [];

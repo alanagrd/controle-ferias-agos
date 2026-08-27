@@ -1195,7 +1195,7 @@ function ExportarBittiTab({
         supabase
           .from("vt_apontamento")
           .select(
-            "func_comp_id, valor_reembolso, valor_desconto, cesta_basica, h50, h70, h100, faltas, dsr, ad_not, premio"
+            "func_comp_id, valor_reembolso, valor_desconto, cesta_basica, reembolso_vr, h50, h70, h100, faltas, dsr, ad_not, premio"
           )
           .in("func_comp_id", funcCompIds),
         supabase
@@ -1252,6 +1252,7 @@ function ExportarBittiTab({
       add(276, matricula, fc.valor_total);
       add(277, matricula, fc.vr_valor);
       add(271, matricula, apt?.valor_reembolso);
+      add(274, matricula, apt?.reembolso_vr);
       add(903, matricula, apt?.valor_desconto);
       // Cesta Básica (278): sempre lançada, mesmo com valor 0 (vira "278;;0").
       if (matricula) {
