@@ -584,12 +584,20 @@ function AbrirCompetenciaModal({
   const hoje = new Date();
   const [ano, setAno] = useState(hoje.getFullYear());
   const [mes, setMes] = useState(hoje.getMonth() + 1);
+  const [diasUteis, setDiasUteis] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleConfirm() {
     setLoading(true);
     setError(null);
+
+    const nDias = diasUteis.trim() === "" ? null : Number(diasUteis);
+    if (nDias != null && (!Number.isInteger(nDias) || nDias <= 0 || nDias > 31)) {
+      setError("Dias úteis inválido (informe de 1 a 31, ou deixe em branco).");
+      setLoading(false);
+      return;
+    }
 
     const { data: competencia, error: errComp } = await supabase
       .from("vt_competencias")
@@ -603,6 +611,45 @@ function AbrirCompetenciaModal({
       return;
     }
 
+    // Espelha o mês anterior: acha a competência mais recente antes desta e
+    // carrega o setup (valor diário, dias, VR, tipo) de cada funcionário.
+    const novoKey = ano * 12 + mes;
+    const { data: comps } = await supabase
+      .from("vt_competencias")
+      .select("id, ano, mes");
+    const prev = (comps ?? []).reduce<
+      { id: string; ano: number; mes: number } | null
+    >((best, c) => {
+      const k = c.ano * 12 + c.mes;
+      if (k >= novoKey) return best;
+      if (best === null || k > best.ano * 12 + best.mes) return c;
+      return best;
+    }, null);
+
+    const prevMap = new Map<
+      string,
+      {
+        valor_diario: number | null;
+        dias_uteis: number | null;
+        vr_valor: number | null;
+        tipo_vt: "DIARIO" | "MENSAL";
+      }
+    >();
+    if (prev) {
+      const { data: prevFc } = await supabase
+        .from("vt_funcionario_competencia")
+        .select("funcionario_id, valor_diario, dias_uteis, vr_valor, tipo_vt")
+        .eq("competencia_id", prev.id);
+      (prevFc ?? []).forEach((fc) =>
+        prevMap.set(fc.funcionario_id, {
+          valor_diario: fc.valor_diario,
+          dias_uteis: fc.dias_uteis,
+          vr_valor: fc.vr_valor,
+          tipo_vt: fc.tipo_vt,
+        })
+      );
+    }
+
     const { data: ativos, error: errAtivos } = await supabase
       .from("rh_funcionarios")
       .select("id, obra")
@@ -614,13 +661,19 @@ function AbrirCompetenciaModal({
       return;
     }
 
-    const rows = (ativos ?? []).map((f) => ({
-      funcionario_id: f.id,
-      competencia_id: competencia.id,
-      obra_snapshot: f.obra,
-      status_no_mes: "ATIVO" as const,
-      tipo_vt: "DIARIO" as const,
-    }));
+    const rows = (ativos ?? []).map((f) => {
+      const p = prevMap.get(f.id);
+      return {
+        funcionario_id: f.id,
+        competencia_id: competencia.id,
+        obra_snapshot: f.obra,
+        status_no_mes: "ATIVO" as const,
+        tipo_vt: (p?.tipo_vt ?? "DIARIO") as "DIARIO" | "MENSAL",
+        valor_diario: p?.valor_diario ?? null,
+        vr_valor: p?.vr_valor ?? null,
+        dias_uteis: p?.dias_uteis ?? nDias,
+      };
+    });
 
     const { error: errSnapshot } = await supabase
       .from("vt_funcionario_competencia")
@@ -629,12 +682,28 @@ function AbrirCompetenciaModal({
         ignoreDuplicates: true,
       });
 
-    setLoading(false);
     if (errSnapshot) {
       setError(errSnapshot.message);
+      setLoading(false);
       return;
     }
 
+    // Dias úteis do mês: aplica só a quem tem mais de 18 dias (mês cheio); os
+    // casos especiais (1, 2 dias, etc.) ficam intactos.
+    if (nDias != null) {
+      const { error: errDias } = await supabase
+        .from("vt_funcionario_competencia")
+        .update({ dias_uteis: nDias })
+        .eq("competencia_id", competencia.id)
+        .gt("dias_uteis", 18);
+      if (errDias) {
+        setError(errDias.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    setLoading(false);
     router.push(`/vt/funcionarios?competencia=${competencia.id}`);
     router.refresh();
   }
@@ -652,8 +721,9 @@ function AbrirCompetenciaModal({
           Abrir competência
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-          Cria a competência (se ainda não existir) e faz o snapshot de todos os
-          funcionários com status ATIVO no cadastro de RH.
+          Cria a competência e <strong>espelha o mês anterior</strong> (valor
+          diário, dias, VR e tipo de cada funcionário). Informe os dias úteis do
+          mês para ajustar quem trabalha o mês cheio.
         </p>
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
@@ -684,6 +754,23 @@ function AbrirCompetenciaModal({
             />
           </label>
         </div>
+        <label className="block mt-3">
+          <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+            Dias úteis do mês
+          </span>
+          <input
+            type="number"
+            value={diasUteis}
+            onChange={(e) => setDiasUteis(e.target.value)}
+            placeholder="Ex.: 22"
+            className="input w-full"
+          />
+          <span className="block text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+            Aplica esse número só a quem trabalha o mês cheio (mais de 18 dias). Quem
+            tem quantidade menor (casos especiais) não é alterado. Em branco, só
+            espelha o mês anterior.
+          </span>
+        </label>
         {error && <p className="text-xs text-red-600 mt-3">{error}</p>}
         <div className="flex justify-end gap-2 mt-5">
           <button
