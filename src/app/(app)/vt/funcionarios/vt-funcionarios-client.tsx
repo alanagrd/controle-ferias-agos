@@ -824,6 +824,7 @@ function NovoFuncionarioModal({
 
   // Campos do cadastro novo em rh_funcionarios (modo "criar")
   const [novoNome, setNovoNome] = useState("");
+  const [novaMatricula, setNovaMatricula] = useState("");
   const [novoCliente, setNovoCliente] = useState("");
   const [novoCargo, setNovoCargo] = useState("");
   const [novoSetor, setNovoSetor] = useState("");
@@ -919,12 +920,36 @@ function NovoFuncionarioModal({
       setError("Informe o nome do funcionário.");
       return;
     }
+    const matrRaw = novaMatricula.trim();
+    if (!/^\d+$/.test(matrRaw)) {
+      setError(
+        "Informe a matrícula (só números) — ela é necessária para casar o apontamento na importação."
+      );
+      return;
+    }
+    // Código no padrão do banco: zero-padded em 6 dígitos.
+    const codigo = matrRaw.padStart(6, "0");
     setLoading(true);
     setError(null);
+
+    // Impede matrícula duplicada (o casamento do apontamento é por código).
+    const { data: jaExiste } = await supabase
+      .from("rh_funcionarios")
+      .select("nome")
+      .eq("codigo", codigo)
+      .maybeSingle();
+    if (jaExiste) {
+      setError(
+        `Já existe um funcionário com a matrícula ${matrRaw} (${jaExiste.nome}).`
+      );
+      setLoading(false);
+      return;
+    }
 
     const { data: novoFuncionario, error: errNovo } = await supabase
       .from("rh_funcionarios")
       .insert({
+        codigo,
         nome: novoNome.trim(),
         cliente_razao_social: novoCliente.trim() || null,
         obra: obra.trim() || null,
@@ -1047,6 +1072,21 @@ function NovoFuncionarioModal({
                 onChange={(e) => setNovoNome(e.target.value)}
                 className="input w-full"
               />
+            </label>
+            <label className="block">
+              <span className="block text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">
+                Matrícula
+              </span>
+              <input
+                value={novaMatricula}
+                onChange={(e) => setNovaMatricula(e.target.value)}
+                placeholder="Ex: 9552"
+                inputMode="numeric"
+                className="input w-full"
+              />
+              <span className="block text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+                Obrigatória — é por ela que o apontamento casa na importação.
+              </span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               <label className="block">
