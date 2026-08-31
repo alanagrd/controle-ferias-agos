@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type {
   Competencia,
@@ -40,16 +41,19 @@ const MOTIVO_OPCOES = [
 ] as const;
 
 export default function VtLancamentosClient({
+  competencias,
   competenciaAtual,
   lancamentos,
   funcComp,
   funcionarios,
 }: {
+  competencias: Competencia[];
   competenciaAtual: Competencia | null;
   lancamentos: LancamentoLite[];
   funcComp: FuncCompLite[];
   funcionarios: FuncionarioLite[];
 }) {
+  const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const [lancamentosState, setLancamentosState] = useState(lancamentos);
   const [filtroCobranca, setFiltroCobranca] = useState<"" | "sim" | "nao">("");
@@ -99,15 +103,29 @@ export default function VtLancamentosClient({
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-          Lançamentos avulsos
-        </h1>
-        {competenciaAtual && (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            Lançamentos avulsos
+          </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            {nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)} — reembolsos e
-            descontos de VT solicitados durante o mês
+            Reembolsos e descontos de VT solicitados durante o mês.
           </p>
+        </div>
+        {competenciaAtual && (
+          <select
+            value={competenciaAtual.id}
+            onChange={(e) =>
+              router.push(`/vt/lancamentos?competencia=${e.target.value}`)
+            }
+            className="input w-auto"
+          >
+            {competencias.map((c) => (
+              <option key={c.id} value={c.id}>
+                {nomeCompetencia(c.ano, c.mes)}
+              </option>
+            ))}
+          </select>
         )}
       </div>
 
