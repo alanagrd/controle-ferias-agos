@@ -29,8 +29,13 @@ type FuncCompLite = Pick<
   | "dias_uteis"
 >;
 
-export default async function VtImportacaoPage() {
+export default async function VtImportacaoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ competencia?: string }>;
+}) {
   const supabase = await createClient();
+  const { competencia: competenciaIdParam } = await searchParams;
 
   const { data: competencias } = await supabase
     .from("vt_competencias")
@@ -38,11 +43,17 @@ export default async function VtImportacaoPage() {
     .order("ano", { ascending: false })
     .order("mes", { ascending: false });
 
-  const atual = (competencias?.[0] as Competencia | undefined) ?? null;
+  const lista = (competencias as Competencia[]) ?? [];
+  const atual = lista.find((c) => c.id === competenciaIdParam) ?? lista[0] ?? null;
 
   if (!atual) {
     return (
-      <VtImportacaoClient competenciaAtual={null} funcComp={[]} funcionarios={[]} />
+      <VtImportacaoClient
+        competencias={[]}
+        competenciaAtual={null}
+        funcComp={[]}
+        funcionarios={[]}
+      />
     );
   }
 
@@ -68,6 +79,7 @@ export default async function VtImportacaoPage() {
 
   return (
     <VtImportacaoClient
+      competencias={lista}
       competenciaAtual={atual}
       funcComp={funcComp ?? []}
       funcionarios={funcionarios ?? []}

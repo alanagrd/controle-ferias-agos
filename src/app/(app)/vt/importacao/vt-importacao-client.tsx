@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Competencia, Funcionario, FuncionarioCompetencia } from "@/lib/types";
 import { nomeCompetencia } from "@/lib/status-vt";
@@ -39,14 +40,17 @@ type FuncCompLite = Pick<
 >;
 
 export default function VtImportacaoClient({
+  competencias,
   competenciaAtual,
   funcComp,
   funcionarios,
 }: {
+  competencias: Competencia[];
   competenciaAtual: Competencia | null;
   funcComp: FuncCompLite[];
   funcionarios: FuncionarioLite[];
 }) {
+  const router = useRouter();
   const [tab, setTab] = useState<
     "ativos" | "planilha" | "apontamento" | "bitti"
   >("ativos");
@@ -63,13 +67,23 @@ export default function VtImportacaoClient({
 
   return (
     <div className="space-y-4">
-      <div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
           Importação
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          {nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)}
-        </p>
+        <select
+          value={competenciaAtual.id}
+          onChange={(e) =>
+            router.push(`/vt/importacao?competencia=${e.target.value}`)
+          }
+          className="input w-auto"
+        >
+          {competencias.map((c) => (
+            <option key={c.id} value={c.id}>
+              {nomeCompetencia(c.ano, c.mes)}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex gap-1 border-b border-slate-200 dark:border-slate-800">
