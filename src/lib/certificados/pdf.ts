@@ -65,21 +65,93 @@ export async function preloadCertificadoAssets() {
   ]);
 }
 
-function montarParagrafo(modelo: CertificadoModelo, dados: DadosEmissao): string {
+/** A run of text with a weight — os dados digitados/variáveis saem em negrito. */
+type Run = { text: string; bold: boolean };
+
+function montarParagrafoRuns(
+  modelo: CertificadoModelo,
+  dados: DadosEmissao
+): Run[] {
   const temFim =
     dados.data_treinamento_fim &&
     dados.data_treinamento_fim !== dados.data_treinamento;
-  const periodo = temFim
-    ? `no período de ${fmtDDMMYYYY(dados.data_treinamento)} a ${fmtDDMMYYYY(
-        dados.data_treinamento_fim!
-      )}`
-    : `no dia ${fmtDDMMYYYY(dados.data_treinamento)}`;
 
-  return (
-    `Certificamos que ${dados.nome_funcionario}, CPF ${dados.cpf}, concluiu com aproveitamento satisfatório o curso de capacitação de ${modelo.nome_curso}, ${periodo}, ` +
-    `com carga horária de ${modelo.carga_horaria} horas de treinamento, conforme conteúdo programático no verso em conformidade com ${modelo.normas_aplicaveis}, ` +
-    `promovido pelo setor de Segurança do Trabalho da Empresa AGOS Serviços Auxiliares da Construção LTDA, Rua Coral, 234 - Jardim do Mar, São Bernardo do Campo - SP - CEP: 09725-650.`
-  );
+  const runs: Run[] = [
+    { text: "Certificamos que ", bold: false },
+    { text: dados.nome_funcionario, bold: true },
+    { text: ", CPF ", bold: false },
+    { text: dados.cpf, bold: true },
+    {
+      text: `, concluiu com aproveitamento satisfatório o curso de capacitação de ${modelo.nome_curso}, `,
+      bold: false,
+    },
+  ];
+
+  if (temFim) {
+    runs.push({ text: "no período de ", bold: false });
+    runs.push({ text: fmtDDMMYYYY(dados.data_treinamento), bold: true });
+    runs.push({ text: " a ", bold: false });
+    runs.push({ text: fmtDDMMYYYY(dados.data_treinamento_fim!), bold: true });
+  } else {
+    runs.push({ text: "no dia ", bold: false });
+    runs.push({ text: fmtDDMMYYYY(dados.data_treinamento), bold: true });
+  }
+
+  runs.push({
+    text: `, com carga horária de ${modelo.carga_horaria} horas de treinamento, conforme conteúdo programático no verso em conformidade com ${modelo.normas_aplicaveis}, promovido pelo setor de Segurança do Trabalho da Empresa AGOS Serviços Auxiliares da Construção LTDA, Rua Coral, 234 - Jardim do Mar, São Bernardo do Campo - SP - CEP: 09725-650.`,
+    bold: false,
+  });
+
+  return runs;
+}
+
+/** Renders styled runs with manual word-wrapping, switching Times between
+ *  italic and bold-italic per run. Returns the baseline Y of the last line. */
+function desenharTextoRico(
+  doc: import("jspdf").jsPDF,
+  runs: Run[],
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  fontSize: number
+): number {
+  doc.setFontSize(fontSize);
+
+  // Quebra os runs em palavras, guardando se cada palavra é precedida de espaço.
+  const tokens: { text: string; bold: boolean; space: boolean }[] = [];
+  let pendingSpace = false;
+  for (const run of runs) {
+    for (const parte of run.text.split(/(\s+)/)) {
+      if (parte === "") continue;
+      if (/^\s+$/.test(parte)) {
+        pendingSpace = true;
+        continue;
+      }
+      tokens.push({ text: parte, bold: run.bold, space: pendingSpace });
+      pendingSpace = false;
+    }
+  }
+
+  let curX = x;
+  let curY = y;
+  for (const t of tokens) {
+    doc.setFont("times", t.bold ? "bolditalic" : "italic");
+    const larguraPalavra = doc.getTextWidth(t.text);
+    const larguraEspaco = t.space ? doc.getTextWidth(" ") : 0;
+    if (curX > x && curX + larguraEspaco + larguraPalavra > x + maxWidth) {
+      // quebra de linha: a palavra vai pro começo da próxima, sem espaço à esquerda
+      curX = x;
+      curY += lineHeight;
+      doc.text(t.text, curX, curY);
+      curX += larguraPalavra;
+    } else {
+      curX += larguraEspaco;
+      doc.text(t.text, curX, curY);
+      curX += larguraPalavra;
+    }
+  }
+  return curY;
 }
 
 /** Draws the classic double-line certificate border frame. */
@@ -116,22 +188,19 @@ async function gerarFrente(
   doc.setTextColor(20, 20, 20);
   doc.text("CERTIFICADO DE CONCLUSÃO", w / 2, 48, { align: "center" });
 
-  doc.setFont("times", "italic");
-  doc.setFontSize(13);
   doc.setTextColor(30, 30, 30);
-  const paragrafo = montarParagrafo(modelo, dados);
-  const linhas = doc.splitTextToSize(paragrafo, w - 50);
-  doc.text(linhas, 25, 68);
+  const runs = montarParagrafoRuns(modelo, dados);
+  const ultimaLinhaY = desenharTextoRico(doc, runs, 25, 68, w - 50, 6.2, 13);
 
   const dataAssinaturaBase =
     dados.data_treinamento_fim || dados.data_treinamento;
-  doc.setFont("times", "italic");
-  doc.setFontSize(12);
-  doc.text(
-    `${dados.cidade}, ${fmtDiaMesExtensoAno(dataAssinaturaBase)}.`,
-    25,
-    68 + linhas.length * 6.2 + 10
-  );
+  const cidadeRuns: Run[] = [
+    { text: dados.cidade, bold: true },
+    { text: ", ", bold: false },
+    { text: fmtDiaMesExtensoAno(dataAssinaturaBase), bold: true },
+    { text: ".", bold: false },
+  ];
+  desenharTextoRico(doc, cidadeRuns, 25, ultimaLinhaY + 12, w - 50, 6, 12);
 
   // Signature block(s) — evenly spaced columns that always stay inside the
   // frame. NR12 = dois instrutores + aluno (3 colunas); NR35 = um instrutor +
