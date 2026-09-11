@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { CertificadoModelo } from "@/lib/certificados/types";
 import { gerarCertificadoPdf, nomeArquivoCertificado } from "@/lib/certificados/pdf";
+import { formatCpf } from "@/lib/certificados/cpf";
 
 export default function EmitirClient({
   modelos,
@@ -16,6 +17,7 @@ export default function EmitirClient({
   const [cidade, setCidade] = useState("");
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
+  const [tambemNr35, setTambemNr35] = useState(false);
   const [gerando, setGerando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [sucesso, setSucesso] = useState<string | null>(null);
@@ -23,6 +25,12 @@ export default function EmitirClient({
   const modelo = useMemo(
     () => modelos.find((m) => m.id === modeloId) ?? null,
     [modeloId, modelos]
+  );
+
+  // Único modelo NR35 do sistema ("Trabalho em Altura") — usado no emitir-junto.
+  const modeloNr35 = useMemo(
+    () => modelos.find((m) => m.norma === "NR35") ?? null,
+    [modelos]
   );
 
   const porNorma = useMemo(() => {
@@ -48,6 +56,18 @@ export default function EmitirClient({
       return;
     }
 
+    // Emite o modelo escolhido e, opcionalmente, também o NR35 para a mesma
+    // pessoa (mesmos dados) — atalho comum para operador de máquina que também
+    // faz Trabalho em Altura.
+    const aEmitir: CertificadoModelo[] = [modelo];
+    if (tambemNr35 && modelo.norma === "NR12") {
+      if (!modeloNr35) {
+        setErro("Modelo NR35 (Trabalho em Altura) não encontrado.");
+        return;
+      }
+      aEmitir.push(modeloNr35);
+    }
+
     setGerando(true);
     try {
       const dados = {
@@ -58,25 +78,42 @@ export default function EmitirClient({
         data_treinamento_fim: dataFim || null,
       };
 
-      const doc = await gerarCertificadoPdf(modelo, dados);
-      doc.save(nomeArquivoCertificado(modelo, dados));
+      const gerados = [];
+      for (const m of aEmitir) {
+        const doc = await gerarCertificadoPdf(m, dados);
+        gerados.push({ doc, nome: nomeArquivoCertificado(m, dados) });
+      }
+      // Salva um a um; um pequeno intervalo evita que o navegador bloqueie o
+      // segundo download quando são dois certificados.
+      for (let i = 0; i < gerados.length; i++) {
+        gerados[i].doc.save(gerados[i].nome);
+        if (i < gerados.length - 1)
+          await new Promise((r) => setTimeout(r, 700));
+      }
 
       const supabase = createClient();
-      const { error } = await supabase.from("certificados_emitidos").insert({
-        modelo_id: modelo.id,
-        nome_funcionario: dados.nome_funcionario,
-        cpf: dados.cpf,
-        cidade: dados.cidade,
-        data_treinamento: dados.data_treinamento,
-        data_treinamento_fim: dados.data_treinamento_fim,
-      });
+      const { error } = await supabase.from("certificados_emitidos").insert(
+        aEmitir.map((m) => ({
+          modelo_id: m.id,
+          nome_funcionario: dados.nome_funcionario,
+          cpf: dados.cpf,
+          cidade: dados.cidade,
+          data_treinamento: dados.data_treinamento,
+          data_treinamento_fim: dados.data_treinamento_fim,
+        }))
+      );
       if (error) throw error;
 
-      setSucesso("Certificado gerado e registrado no histórico.");
+      setSucesso(
+        aEmitir.length > 1
+          ? `${aEmitir.length} certificados gerados (NR12 + NR35) e registrados no histórico.`
+          : "Certificado gerado e registrado no histórico."
+      );
       setNome("");
       setCpf("");
       setDataInicio("");
       setDataFim("");
+      setTambemNr35(false);
     } catch (err) {
       console.error(err);
       setErro("Não foi possível gerar o certificado. Tente novamente.");
@@ -157,8 +194,10 @@ export default function EmitirClient({
             <input
               className="input w-full"
               value={cpf}
-              onChange={(e) => setCpf(e.target.value)}
+              onChange={(e) => setCpf(formatCpf(e.target.value))}
               placeholder="000.000.000-00"
+              inputMode="numeric"
+              maxLength={14}
               required
             />
           </div>
@@ -202,6 +241,21 @@ export default function EmitirClient({
           </div>
         </div>
 
+        {modelo?.norma === "NR12" && modeloNr35 && (
+          <label className="flex items-start gap-2 text-sm bg-agos-gray-light dark:bg-slate-800 rounded-md p-3 cursor-pointer">
+            <input
+              type="checkbox"
+              className="mt-0.5"
+              checked={tambemNr35}
+              onChange={(e) => setTambemNr35(e.target.checked)}
+            />
+            <span>
+              Emitir também o <strong>NR35 – Trabalho em Altura</strong> para
+              esta pessoa (mesmos dados). Serão gerados dois PDFs.
+            </span>
+          </label>
+        )}
+
         {erro && (
           <div className="text-sm text-red-600 dark:text-red-400">{erro}</div>
         )}
@@ -216,7 +270,11 @@ export default function EmitirClient({
           disabled={gerando}
           className="w-full bg-agos-green hover:bg-agos-green-dark disabled:opacity-60 text-white font-semibold rounded-md py-2.5 transition"
         >
-          {gerando ? "Gerando..." : "Gerar certificado (PDF)"}
+          {gerando
+            ? "Gerando..."
+            : tambemNr35 && modelo?.norma === "NR12"
+            ? "Gerar certificados (NR12 + NR35)"
+            : "Gerar certificado (PDF)"}
         </button>
       </form>
     </div>

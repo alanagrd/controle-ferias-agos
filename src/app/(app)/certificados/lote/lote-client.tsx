@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { CertificadoModelo } from "@/lib/certificados/types";
 import { gerarCertificadoPdf, nomeArquivoCertificado } from "@/lib/certificados/pdf";
+import { formatCpf } from "@/lib/certificados/cpf";
 
 type Linha = { nome: string; cpf: string };
 
@@ -231,8 +232,12 @@ export default function LoteClient({
                 <input
                   className="input w-48"
                   placeholder="CPF"
+                  inputMode="numeric"
+                  maxLength={14}
                   value={linha.cpf}
-                  onChange={(e) => atualizarLinha(i, "cpf", e.target.value)}
+                  onChange={(e) =>
+                    atualizarLinha(i, "cpf", formatCpf(e.target.value))
+                  }
                 />
                 <button
                   type="button"
