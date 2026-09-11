@@ -6,6 +6,18 @@ import type { CertificadoModelo } from "@/lib/certificados/types";
 import { gerarCertificadoPdf, nomeArquivoCertificado } from "@/lib/certificados/pdf";
 import { formatCpf } from "@/lib/certificados/cpf";
 
+/** Soma `dias` a uma data "YYYY-MM-DD" e devolve no mesmo formato,
+ *  construindo em horário local para não escorregar de dia por fuso. */
+function addDiasIso(iso: string, dias: number): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + dias);
+  const yy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, "0");
+  const dd = String(dt.getDate()).padStart(2, "0");
+  return `${yy}-${mm}-${dd}`;
+}
+
 export default function EmitirClient({
   modelos,
 }: {
@@ -70,18 +82,42 @@ export default function EmitirClient({
 
     setGerando(true);
     try {
-      const dados = {
+      const base = {
         nome_funcionario: nome.trim().toUpperCase(),
         cpf: cpf.trim(),
         cidade: cidade.trim(),
-        data_treinamento: dataInicio,
-        data_treinamento_fim: dataFim || null,
+      };
+      // Datas por modelo: o NR35 emitido junto acontece sempre 1 dia após o
+      // término do NR12 (dia único), então sua data é derivada, não a mesma.
+      const dadosDoModelo = (m: CertificadoModelo) => {
+        if (m.norma === "NR35" && modelo.norma === "NR12") {
+          return {
+            ...base,
+            data_treinamento: addDiasIso(dataFim || dataInicio, 1),
+            data_treinamento_fim: null,
+          };
+        }
+        return {
+          ...base,
+          data_treinamento: dataInicio,
+          data_treinamento_fim: dataFim || null,
+        };
       };
 
-      const gerados = [];
+      const gerados: { doc: Awaited<ReturnType<typeof gerarCertificadoPdf>>; nome: string }[] = [];
+      const registros = [];
       for (const m of aEmitir) {
+        const dados = dadosDoModelo(m);
         const doc = await gerarCertificadoPdf(m, dados);
         gerados.push({ doc, nome: nomeArquivoCertificado(m, dados) });
+        registros.push({
+          modelo_id: m.id,
+          nome_funcionario: dados.nome_funcionario,
+          cpf: dados.cpf,
+          cidade: dados.cidade,
+          data_treinamento: dados.data_treinamento,
+          data_treinamento_fim: dados.data_treinamento_fim,
+        });
       }
       // Salva um a um; um pequeno intervalo evita que o navegador bloqueie o
       // segundo download quando são dois certificados.
@@ -92,16 +128,9 @@ export default function EmitirClient({
       }
 
       const supabase = createClient();
-      const { error } = await supabase.from("certificados_emitidos").insert(
-        aEmitir.map((m) => ({
-          modelo_id: m.id,
-          nome_funcionario: dados.nome_funcionario,
-          cpf: dados.cpf,
-          cidade: dados.cidade,
-          data_treinamento: dados.data_treinamento,
-          data_treinamento_fim: dados.data_treinamento_fim,
-        }))
-      );
+      const { error } = await supabase
+        .from("certificados_emitidos")
+        .insert(registros);
       if (error) throw error;
 
       setSucesso(
@@ -251,7 +280,8 @@ export default function EmitirClient({
             />
             <span>
               Emitir também o <strong>NR35 – Trabalho em Altura</strong> para
-              esta pessoa (mesmos dados). Serão gerados dois PDFs.
+              esta pessoa. A data do NR35 é <strong>1 dia após</strong> o
+              término do NR12. Serão gerados dois PDFs.
             </span>
           </label>
         )}
