@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type Modulo = "ferias" | "aso" | "vt";
+type Modulo = "ferias" | "aso" | "vt" | "certificados";
 
 const MODULE_LINKS: Record<
   Modulo,
@@ -26,12 +26,19 @@ const MODULE_LINKS: Record<
     { href: "/vt/lancamentos", label: "Lançamentos avulsos" },
     { href: "/vt/importacao", label: "Importação" },
   ],
+  certificados: [
+    { href: "/certificados/emitir", label: "Emitir certificado" },
+    { href: "/certificados/lote", label: "Emitir em lote" },
+    { href: "/certificados/historico", label: "Histórico" },
+    { href: "/certificados/modelos", label: "Funções / Modelos" },
+  ],
 };
 
 const MODULE_TABS: { id: Modulo; href: string; label: string }[] = [
   { id: "ferias", href: "/dashboard", label: "Férias" },
   { id: "aso", href: "/aso/dashboard", label: "ASO" },
   { id: "vt", href: "/vt/dashboard", label: "VT" },
+  { id: "certificados", href: "/certificados/emitir", label: "Certificados" },
 ];
 
 export function ModuleNav() {
@@ -40,6 +47,8 @@ export function ModuleNav() {
     ? "aso"
     : pathname?.startsWith("/vt")
     ? "vt"
+    : pathname?.startsWith("/certificados")
+    ? "certificados"
     : "ferias";
 
   return (
