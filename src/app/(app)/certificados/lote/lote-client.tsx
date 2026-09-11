@@ -224,15 +224,18 @@ export default function LoteClient({
           </label>
           <div className="space-y-2">
             {linhas.map((linha, i) => (
-              <div key={i} className="flex gap-2">
+              <div
+                key={i}
+                className="grid grid-cols-[1fr_11rem_auto] gap-2 items-center"
+              >
                 <input
-                  className="input flex-1"
+                  className="input"
                   placeholder="Nome completo"
                   value={linha.nome}
                   onChange={(e) => atualizarLinha(i, "nome", e.target.value)}
                 />
                 <input
-                  className="input w-48"
+                  className="input"
                   placeholder="CPF"
                   inputMode="numeric"
                   maxLength={14}
