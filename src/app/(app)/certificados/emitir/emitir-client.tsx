@@ -20,8 +20,10 @@ function addDiasIso(iso: string, dias: number): string {
 
 export default function EmitirClient({
   modelos,
+  textoFrente,
 }: {
   modelos: CertificadoModelo[];
+  textoFrente: string | null;
 }) {
   const [modeloId, setModeloId] = useState("");
   const [nome, setNome] = useState("");
@@ -108,7 +110,7 @@ export default function EmitirClient({
       const registros = [];
       for (const m of aEmitir) {
         const dados = dadosDoModelo(m);
-        const doc = await gerarCertificadoPdf(m, dados);
+        const doc = await gerarCertificadoPdf(m, dados, textoFrente);
         gerados.push({ doc, nome: nomeArquivoCertificado(m, dados) });
         registros.push({
           modelo_id: m.id,

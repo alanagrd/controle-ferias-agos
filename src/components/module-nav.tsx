@@ -31,6 +31,7 @@ const MODULE_LINKS: Record<
     { href: "/certificados/lote", label: "Emitir em lote" },
     { href: "/certificados/historico", label: "Histórico" },
     { href: "/certificados/modelos", label: "Funções / Modelos" },
+    { href: "/certificados/config", label: "Configuração" },
   ],
 };
 

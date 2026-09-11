@@ -10,8 +10,10 @@ type Linha = { nome: string; cpf: string };
 
 export default function LoteClient({
   modelos,
+  textoFrente,
 }: {
   modelos: CertificadoModelo[];
+  textoFrente: string | null;
 }) {
   const [modeloId, setModeloId] = useState("");
   const [cidade, setCidade] = useState("");
@@ -91,7 +93,7 @@ export default function LoteClient({
           data_treinamento: dataInicio,
           data_treinamento_fim: dataFim || null,
         };
-        const doc = await gerarCertificadoPdf(modelo, dados);
+        const doc = await gerarCertificadoPdf(modelo, dados, textoFrente);
         const blob = doc.output("blob");
         zip.file(nomeArquivoCertificado(modelo, dados), blob);
         registros.push({

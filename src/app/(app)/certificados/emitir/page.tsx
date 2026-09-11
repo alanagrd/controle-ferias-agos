@@ -6,12 +6,24 @@ export const dynamic = "force-dynamic";
 
 export default async function EmitirCertificadoPage() {
   const supabase = await createClient();
-  const { data: modelos } = await supabase
-    .from("certificados_modelos")
-    .select("*")
-    .eq("ativo", true)
-    .order("norma")
-    .order("nome_funcao");
+  const [{ data: modelos }, { data: cfg }] = await Promise.all([
+    supabase
+      .from("certificados_modelos")
+      .select("*")
+      .eq("ativo", true)
+      .order("norma")
+      .order("nome_funcao"),
+    supabase
+      .from("certificados_config")
+      .select("texto_frente")
+      .eq("id", "default")
+      .maybeSingle(),
+  ]);
 
-  return <EmitirClient modelos={(modelos as CertificadoModelo[]) ?? []} />;
+  return (
+    <EmitirClient
+      modelos={(modelos as CertificadoModelo[]) ?? []}
+      textoFrente={(cfg?.texto_frente as string | undefined) ?? null}
+    />
+  );
 }

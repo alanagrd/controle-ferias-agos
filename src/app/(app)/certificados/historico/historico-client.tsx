@@ -11,8 +11,10 @@ function fmtData(value: string) {
 
 export default function HistoricoClient({
   registros,
+  textoFrente,
 }: {
   registros: CertificadoEmitido[];
+  textoFrente: string | null;
 }) {
   const [busca, setBusca] = useState("");
   const [baixandoId, setBaixandoId] = useState<string | null>(null);
@@ -43,7 +45,8 @@ export default function HistoricoClient({
       };
       const doc = await gerarCertificadoPdf(
         registro.certificados_modelos,
-        dados
+        dados,
+        textoFrente
       );
       doc.save(nomeArquivoCertificado(registro.certificados_modelos, dados));
     } finally {

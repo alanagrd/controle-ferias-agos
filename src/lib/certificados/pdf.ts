@@ -68,40 +68,83 @@ export async function preloadCertificadoAssets() {
 /** A run of text with a weight — os dados digitados/variáveis saem em negrito. */
 type Run = { text: string; bold: boolean };
 
-function montarParagrafoRuns(
+/** Texto padrão da frente (fallback). O texto real fica editável no banco
+ *  (tabela certificados_config), com marcadores interpolados abaixo. */
+export const DEFAULT_TEXTO_FRENTE =
+  "Certificamos que {nome}, CPF {cpf}, concluiu com aproveitamento satisfatório o curso de capacitação de {curso}, {data}, com carga horária de {carga} horas de treinamento, conforme conteúdo programático no verso em conformidade com {normas}, promovido pelo setor de Segurança do Trabalho da Empresa AGOS Serviços Auxiliares da Construção LTDA, Rua Coral, 234 - Jardim do Mar, São Bernardo do Campo - SP - CEP: 09725-650.";
+
+/** Marcadores aceitos no texto da frente (usado também na tela de configuração). */
+export const MARCADORES_FRENTE = [
+  "nome",
+  "cpf",
+  "curso",
+  "data",
+  "carga",
+  "normas",
+  "cidade",
+] as const;
+
+/** Expande um marcador {chave} nos runs correspondentes; os dados digitados
+ *  (nome, cpf, data, cidade) saem em negrito. Retorna null se for desconhecido. */
+function expandirMarcador(
+  chave: string,
   modelo: CertificadoModelo,
   dados: DadosEmissao
-): Run[] {
-  const temFim =
-    dados.data_treinamento_fim &&
-    dados.data_treinamento_fim !== dados.data_treinamento;
-
-  const runs: Run[] = [
-    { text: "Certificamos que ", bold: false },
-    { text: dados.nome_funcionario, bold: true },
-    { text: ", CPF ", bold: false },
-    { text: dados.cpf, bold: true },
-    {
-      text: `, concluiu com aproveitamento satisfatório o curso de capacitação de ${modelo.nome_curso}, `,
-      bold: false,
-    },
-  ];
-
-  if (temFim) {
-    runs.push({ text: "no período de ", bold: false });
-    runs.push({ text: fmtDDMMYYYY(dados.data_treinamento), bold: true });
-    runs.push({ text: " a ", bold: false });
-    runs.push({ text: fmtDDMMYYYY(dados.data_treinamento_fim!), bold: true });
-  } else {
-    runs.push({ text: "no dia ", bold: false });
-    runs.push({ text: fmtDDMMYYYY(dados.data_treinamento), bold: true });
+): Run[] | null {
+  switch (chave) {
+    case "nome":
+      return [{ text: dados.nome_funcionario, bold: true }];
+    case "cpf":
+      return [{ text: dados.cpf, bold: true }];
+    case "cidade":
+      return [{ text: dados.cidade, bold: true }];
+    case "curso":
+      return [{ text: modelo.nome_curso, bold: false }];
+    case "carga":
+      return [{ text: String(modelo.carga_horaria), bold: false }];
+    case "normas":
+      return [{ text: modelo.normas_aplicaveis, bold: false }];
+    case "data": {
+      const temFim =
+        dados.data_treinamento_fim &&
+        dados.data_treinamento_fim !== dados.data_treinamento;
+      if (temFim)
+        return [
+          { text: "no período de ", bold: false },
+          { text: fmtDDMMYYYY(dados.data_treinamento), bold: true },
+          { text: " a ", bold: false },
+          { text: fmtDDMMYYYY(dados.data_treinamento_fim!), bold: true },
+        ];
+      return [
+        { text: "no dia ", bold: false },
+        { text: fmtDDMMYYYY(dados.data_treinamento), bold: true },
+      ];
+    }
+    default:
+      return null;
   }
+}
 
-  runs.push({
-    text: `, com carga horária de ${modelo.carga_horaria} horas de treinamento, conforme conteúdo programático no verso em conformidade com ${modelo.normas_aplicaveis}, promovido pelo setor de Segurança do Trabalho da Empresa AGOS Serviços Auxiliares da Construção LTDA, Rua Coral, 234 - Jardim do Mar, São Bernardo do Campo - SP - CEP: 09725-650.`,
-    bold: false,
-  });
-
+/** Monta os runs da frente a partir do template editável, interpolando os
+ *  marcadores {chave}. Marcador desconhecido é mantido literal (fica visível). */
+function montarParagrafoRuns(
+  modelo: CertificadoModelo,
+  dados: DadosEmissao,
+  template: string
+): Run[] {
+  const runs: Run[] = [];
+  for (const parte of template.split(/(\{[a-zA-Z]+\})/)) {
+    if (parte === "") continue;
+    const m = parte.match(/^\{([a-zA-Z]+)\}$/);
+    if (m) {
+      const expandido = expandirMarcador(m[1], modelo, dados);
+      if (expandido) {
+        runs.push(...expandido);
+        continue;
+      }
+    }
+    runs.push({ text: parte, bold: false });
+  }
   return runs;
 }
 
@@ -169,7 +212,8 @@ function desenharMoldura(doc: import("jspdf").jsPDF) {
 async function gerarFrente(
   doc: import("jspdf").jsPDF,
   modelo: CertificadoModelo,
-  dados: DadosEmissao
+  dados: DadosEmissao,
+  textoFrente: string
 ) {
   const w = doc.internal.pageSize.getWidth();
   desenharMoldura(doc);
@@ -189,7 +233,7 @@ async function gerarFrente(
   doc.text("CERTIFICADO DE CONCLUSÃO", w / 2, 48, { align: "center" });
 
   doc.setTextColor(30, 30, 30);
-  const runs = montarParagrafoRuns(modelo, dados);
+  const runs = montarParagrafoRuns(modelo, dados, textoFrente);
   const ultimaLinhaY = desenharTextoRico(doc, runs, 25, 68, w - 50, 6.2, 13);
 
   const dataAssinaturaBase =
@@ -305,11 +349,12 @@ function gerarVerso(doc: import("jspdf").jsPDF, modelo: CertificadoModelo) {
 
 export async function gerarCertificadoPdf(
   modelo: CertificadoModelo,
-  dados: DadosEmissao
+  dados: DadosEmissao,
+  textoFrente?: string | null
 ): Promise<import("jspdf").jsPDF> {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-  await gerarFrente(doc, modelo, dados);
+  await gerarFrente(doc, modelo, dados, textoFrente?.trim() || DEFAULT_TEXTO_FRENTE);
   gerarVerso(doc, modelo);
   return doc;
 }

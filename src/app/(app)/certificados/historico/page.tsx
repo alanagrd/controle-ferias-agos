@@ -8,15 +8,22 @@ export const dynamic = "force-dynamic";
 export default async function HistoricoCertificadosPage() {
   const supabase = await createClient();
 
-  const { data } = await fetchAllRows<Record<string, unknown>>((from, to) =>
+  const [{ data }, { data: cfg }] = await Promise.all([
+    fetchAllRows<Record<string, unknown>>((from, to) =>
+      supabase
+        .from("certificados_emitidos")
+        .select(
+          "id, modelo_id, nome_funcionario, cpf, cidade, data_treinamento, data_treinamento_fim, emitido_em, certificados_modelos(id, norma, nome_funcao, nome_curso, normas_aplicaveis, carga_horaria, tipo, conteudo_programatico, ativo)"
+        )
+        .order("emitido_em", { ascending: false })
+        .range(from, to)
+    ),
     supabase
-      .from("certificados_emitidos")
-      .select(
-        "id, modelo_id, nome_funcionario, cpf, cidade, data_treinamento, data_treinamento_fim, emitido_em, certificados_modelos(id, norma, nome_funcao, nome_curso, normas_aplicaveis, carga_horaria, tipo, conteudo_programatico, ativo)"
-      )
-      .order("emitido_em", { ascending: false })
-      .range(from, to)
-  );
+      .from("certificados_config")
+      .select("texto_frente")
+      .eq("id", "default")
+      .maybeSingle(),
+  ]);
 
   // Supabase's generated types can't express the to-one cardinality of this
   // FK join, so it infers `certificados_modelos` as an array — normalize it
@@ -29,5 +36,10 @@ export default async function HistoricoCertificadosPage() {
     } as CertificadoEmitido;
   });
 
-  return <HistoricoClient registros={registros} />;
+  return (
+    <HistoricoClient
+      registros={registros}
+      textoFrente={(cfg?.texto_frente as string | undefined) ?? null}
+    />
+  );
 }
