@@ -17,10 +17,6 @@ function fmtComp(ym: string): string {
   const [ano, mes] = ym.split("-");
   return `${mes}/${ano}`;
 }
-function fmtMoeda(v: number | null): string {
-  if (v === null || v === undefined) return "—";
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
 
 export default function HoleritesFuncionariosClient({
   obras,
@@ -196,7 +192,6 @@ export default function HoleritesFuncionariosClient({
                   <th className="px-4 py-2">Matrícula</th>
                   <th className="px-4 py-2">Nome</th>
                   <th className="px-4 py-2">Holerite {fmtComp(competencia)}</th>
-                  <th className="px-4 py-2 text-right">Líquido</th>
                   <th className="px-4 py-2"></th>
                 </tr>
               </thead>
@@ -218,9 +213,6 @@ export default function HoleritesFuncionariosClient({
                           ✗ Falta
                         </span>
                       )}
-                    </td>
-                    <td className="px-4 py-2 text-right">
-                      {fmtMoeda(f.liquido)}
                     </td>
                     <td className="px-4 py-2 text-right whitespace-nowrap">
                       {f.temHolerite ? (
@@ -261,7 +253,7 @@ export default function HoleritesFuncionariosClient({
                 {filtrados.length === 0 && (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={4}
                       className="px-4 py-8 text-center text-slate-400"
                     >
                       Nenhum funcionário.
