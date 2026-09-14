@@ -5,10 +5,7 @@ import { usePathname } from "next/navigation";
 
 type Modulo = "ferias" | "aso" | "vt" | "certificados" | "holerites";
 
-const MODULE_LINKS: Record<
-  Modulo,
-  { href: string; label: string }[]
-> = {
+const MODULE_LINKS: Record<Modulo, { href: string; label: string }[]> = {
   ferias: [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/funcionarios", label: "Funcionários" },
@@ -48,46 +45,61 @@ const MODULE_TABS: { id: Modulo; href: string; label: string }[] = [
   { id: "holerites", href: "/holerites/funcionarios", label: "Holerites" },
 ];
 
-export function ModuleNav() {
-  const pathname = usePathname();
-  const activeModule: Modulo = pathname?.startsWith("/aso")
-    ? "aso"
-    : pathname?.startsWith("/vt")
-    ? "vt"
-    : pathname?.startsWith("/certificados")
-    ? "certificados"
-    : pathname?.startsWith("/holerites")
-    ? "holerites"
-    : "ferias";
+function moduloAtivo(pathname: string | null): Modulo {
+  if (pathname?.startsWith("/aso")) return "aso";
+  if (pathname?.startsWith("/vt")) return "vt";
+  if (pathname?.startsWith("/certificados")) return "certificados";
+  if (pathname?.startsWith("/holerites")) return "holerites";
+  return "ferias";
+}
 
+/** Abas de módulo — barra escura do topo. */
+export function ModuleTabs() {
+  const active = moduloAtivo(usePathname());
   return (
-    <>
-      <nav className="flex items-center gap-1 border-b border-white/10">
-        {MODULE_TABS.map((tab) => (
-          <Link
-            key={tab.id}
-            href={tab.href}
-            className={
-              activeModule === tab.id
-                ? "px-3.5 py-2 text-[13px] font-semibold text-white border-b-2 border-agos-green"
-                : "px-3.5 py-2 text-[13px] font-semibold text-white/40 hover:text-white/70"
-            }
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </nav>
-      <nav className="hidden sm:flex items-center gap-1 text-sm">
-        {MODULE_LINKS[activeModule].map((link) => (
+    <nav className="flex items-center gap-0.5">
+      {MODULE_TABS.map((tab) => (
+        <Link
+          key={tab.id}
+          href={tab.href}
+          className={
+            "px-3 py-1.5 text-[13px] rounded-full transition-colors whitespace-nowrap " +
+            (active === tab.id
+              ? "bg-white/12 text-white font-semibold"
+              : "text-white/50 hover:text-white/90 hover:bg-white/5 font-medium")
+          }
+        >
+          {tab.label}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+/** Sub-navegação do módulo ativo — barra clara. */
+export function ModuleSubNav() {
+  const pathname = usePathname();
+  const active = moduloAtivo(pathname);
+  return (
+    <nav className="flex items-center gap-1 overflow-x-auto -mb-px">
+      {MODULE_LINKS[active].map((link) => {
+        const isActive =
+          pathname === link.href || pathname?.startsWith(link.href + "/");
+        return (
           <Link
             key={link.href}
             href={link.href}
-            className="px-3 py-1.5 rounded-md text-white/70 hover:bg-white/10 hover:text-white transition"
+            className={
+              "px-3 py-2.5 text-[13px] border-b-2 whitespace-nowrap transition-colors " +
+              (isActive
+                ? "border-agos-green text-agos-charcoal dark:text-white font-semibold"
+                : "border-transparent text-slate-500 dark:text-slate-400 hover:text-agos-charcoal dark:hover:text-slate-200 font-medium")
+            }
           >
             {link.label}
           </Link>
-        ))}
-      </nav>
-    </>
+        );
+      })}
+    </nav>
   );
 }

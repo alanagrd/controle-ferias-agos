@@ -169,13 +169,14 @@ export default function HoleritesFuncionariosClient({
         </div>
       ) : (
         <>
-          <div className="flex flex-wrap gap-2 text-xs mb-3">
-            <span className="px-2 py-0.5 rounded-full bg-agos-green/15 text-agos-green-dark dark:text-agos-green">
-              {comHolerite} com holerite
-            </span>
-            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
-              {faltando} faltando
-            </span>
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            <StatCard valor={funcionarios.length} rotulo="Funcionários" />
+            <StatCard
+              valor={comHolerite}
+              rotulo="Com holerite"
+              tom="green"
+            />
+            <StatCard valor={faltando} rotulo="Faltando" tom="amber" />
           </div>
 
           <input
@@ -265,6 +266,40 @@ export default function HoleritesFuncionariosClient({
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+function StatCard({
+  valor,
+  rotulo,
+  tom = "neutral",
+}: {
+  valor: number;
+  rotulo: string;
+  tom?: "neutral" | "green" | "amber";
+}) {
+  const cor =
+    tom === "green"
+      ? "text-agos-green-dark dark:text-agos-green"
+      : tom === "amber"
+      ? "text-amber-600 dark:text-amber-400"
+      : "text-agos-charcoal dark:text-white";
+  const ponto =
+    tom === "green"
+      ? "bg-agos-green"
+      : tom === "amber"
+      ? "bg-amber-500"
+      : "bg-slate-300 dark:bg-slate-600";
+  return (
+    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3.5">
+      <div className="flex items-center gap-1.5 mb-1">
+        <span className={`inline-block w-1.5 h-1.5 rounded-full ${ponto}`} />
+        <span className="text-[11px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+          {rotulo}
+        </span>
+      </div>
+      <div className={`text-2xl font-semibold tabular-nums ${cor}`}>{valor}</div>
     </div>
   );
 }
