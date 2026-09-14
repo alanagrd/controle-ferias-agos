@@ -89,13 +89,13 @@ export default function EmitirClient({
         cpf: cpf.trim(),
         cidade: cidade.trim(),
       };
-      // Datas por modelo: o NR35 emitido junto acontece sempre 1 dia após o
-      // término do NR12 (dia único), então sua data é derivada, não a mesma.
+      // Datas por modelo: o NR35 emitido junto acontece sempre 1 dia antes do
+      // início do NR12 (dia único), então sua data é derivada, não a mesma.
       const dadosDoModelo = (m: CertificadoModelo) => {
         if (m.norma === "NR35" && modelo.norma === "NR12") {
           return {
             ...base,
-            data_treinamento: addDiasIso(dataFim || dataInicio, 1),
+            data_treinamento: addDiasIso(dataInicio, -1),
             data_treinamento_fim: null,
           };
         }
@@ -282,8 +282,8 @@ export default function EmitirClient({
             />
             <span>
               Emitir também o <strong>NR35 – Trabalho em Altura</strong> para
-              esta pessoa. A data do NR35 é <strong>1 dia após</strong> o
-              término do NR12. Serão gerados dois PDFs.
+              esta pessoa. A data do NR35 é <strong>1 dia antes</strong> do
+              início do NR12. Serão gerados dois PDFs.
             </span>
           </label>
         )}
