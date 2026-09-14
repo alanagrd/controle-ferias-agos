@@ -256,8 +256,7 @@ async function gerarFrente(
   type ColunaAssinatura = {
     img?: string;
     imgFmt?: "JPEG" | "PNG";
-    imgW?: number;
-    imgH?: number;
+    imgAspect?: number; // largura/altura nativa da imagem (mantém a proporção)
     role: string;
     linhas: string[];
   };
@@ -267,8 +266,7 @@ async function gerarFrente(
     {
       img: thiago,
       imgFmt: "JPEG",
-      imgW: 40,
-      imgH: 11, // 354x97 → mantém a proporção
+      imgAspect: 354 / 97,
       role: "Instrutor Qualificado",
       linhas: [
         "Thiago Batisteli Camini – RG 32967131-5",
@@ -283,8 +281,7 @@ async function gerarFrente(
     colunas.push({
       img: demetrio,
       imgFmt: "PNG",
-      imgW: 40,
-      imgH: 10.4, // 341x89 → mantém a proporção
+      imgAspect: 341 / 89,
       role: "Responsável Técnico / Instrutor",
       linhas: [
         "Demétrio Vilhena Gozzo",
@@ -309,9 +306,11 @@ async function gerarFrente(
 
   colunas.forEach((col, i) => {
     const x = leftX + i * (colW + gap);
-    if (col.img && col.imgFmt) {
-      const iw = col.imgW ?? 34;
-      const ih = col.imgH ?? 12;
+    if (col.img && col.imgFmt && col.imgAspect) {
+      // A assinatura ocupa ~72% da largura da coluna (limitada a 66mm), então
+      // aproveita o espaço — bem maior no NR35 (coluna larga) — sem distorcer.
+      const iw = Math.min(colW * 0.72, 66);
+      const ih = iw / col.imgAspect;
       doc.addImage(col.img, col.imgFmt, x + colW / 2 - iw / 2, baseY - ih - 1, iw, ih);
     }
     doc.line(x, baseY, x + colW, baseY);
