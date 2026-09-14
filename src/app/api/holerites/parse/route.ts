@@ -124,7 +124,9 @@ export async function POST(req: NextRequest) {
       console.error("Falha ao processar holerite", file.name, e);
       resultados.push({
         arquivo: file.name,
-        erro: "Não foi possível ler este PDF.",
+        erro: `Não foi possível ler este PDF: ${
+          e instanceof Error ? e.message : String(e)
+        }`,
         obra: null,
         competencia: null,
         totalPaginas: 0,
