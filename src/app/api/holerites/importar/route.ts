@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "node:crypto";
-import { PDFDocument } from "pdf-lib";
+import * as mupdf from "mupdf";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
@@ -95,7 +95,8 @@ export async function POST(req: NextRequest) {
 
     let parsed;
     try {
-      parsed = await parseHoleritesPdf(bytes);
+      // cópia: o pdfjs pode "neutralizar" o buffer; o original fica para o mupdf.
+      parsed = await parseHoleritesPdf(bytes.slice());
     } catch {
       erros.push({ arquivo: file.name, motivo: "Não foi possível ler o PDF." });
       continue;
@@ -105,7 +106,12 @@ export async function POST(req: NextRequest) {
       continue;
     }
     const competenciaYm = parsed.competencia.slice(0, 7); // AAAA-MM
-    const src = await PDFDocument.load(bytes);
+    // mupdf abre o PDF do Bitti (criptografado, senha vazia) e descriptografa —
+    // o pdf-lib não descriptografa e geraria PDFs corrompidos.
+    const src = mupdf.PDFDocument.openDocument(
+      bytes,
+      "application/pdf"
+    ) as mupdf.PDFDocument;
     let okArq = 0;
 
     for (let idx = 0; idx < parsed.funcionarios.length; idx++) {
@@ -128,13 +134,14 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // 1) Recorta as páginas do funcionário num PDF próprio.
+      // 1) Recorta as páginas do funcionário num PDF próprio (descriptografado).
       let outBytes: Uint8Array;
       try {
-        const out = await PDFDocument.create();
-        const pages = await out.copyPages(src, f.paginas);
-        pages.forEach((p) => out.addPage(p));
-        outBytes = await out.save();
+        const dst = new mupdf.PDFDocument();
+        for (const pg of f.paginas) dst.graftPage(-1, src, pg);
+        // copia para fora da heap do WASM (o upload é assíncrono).
+        outBytes = new Uint8Array(dst.saveToBuffer("compress").asUint8Array());
+        dst.destroy();
       } catch {
         erros.push({
           arquivo: file.name,
@@ -254,6 +261,8 @@ export async function POST(req: NextRequest) {
       detalhe_pendentes: parsed.pendentes,
       criado_por: user.id,
     });
+
+    src.destroy();
   }
 
   return NextResponse.json({ importados, pulados, credenciais, erros });
