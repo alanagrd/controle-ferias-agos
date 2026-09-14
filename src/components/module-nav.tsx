@@ -34,6 +34,7 @@ const MODULE_LINKS: Record<
     { href: "/certificados/config", label: "Configuração" },
   ],
   holerites: [
+    { href: "/holerites/funcionarios", label: "Funcionários" },
     { href: "/holerites/importacao", label: "Importação" },
     { href: "/holerites/acessos", label: "Acessos" },
   ],
@@ -44,7 +45,7 @@ const MODULE_TABS: { id: Modulo; href: string; label: string }[] = [
   { id: "aso", href: "/aso/dashboard", label: "ASO" },
   { id: "vt", href: "/vt/dashboard", label: "VT" },
   { id: "certificados", href: "/certificados/emitir", label: "Certificados" },
-  { id: "holerites", href: "/holerites/importacao", label: "Holerites" },
+  { id: "holerites", href: "/holerites/funcionarios", label: "Holerites" },
 ];
 
 export function ModuleNav() {

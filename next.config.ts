@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
       "./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs",
       "./node_modules/mupdf/dist/mupdf-wasm.wasm",
     ],
+    "/api/holerites/upload-manual": [
+      "./node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs",
+      "./node_modules/mupdf/dist/mupdf-wasm.wasm",
+    ],
   },
 };
 
