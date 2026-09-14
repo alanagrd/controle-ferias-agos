@@ -181,6 +181,11 @@ export default function HoleritesImportacaoClient() {
             />
           ))}
 
+          {erro && (
+            <div className="text-sm text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 rounded-md p-3">
+              {erro}
+            </div>
+          )}
           <div className="sticky bottom-0 bg-agos-gray-light/90 dark:bg-slate-950/90 backdrop-blur border-t border-slate-200 dark:border-slate-800 py-3 flex items-center justify-between">
             <span className="text-sm text-slate-600 dark:text-slate-300">
               {totalImportaveis} funcionário(s) serão importados.

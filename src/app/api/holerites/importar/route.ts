@@ -63,6 +63,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  try {
   const form = await req.formData();
   const files = form.getAll("files").filter((f): f is File => f instanceof File);
   const decisoes: DecisoesArquivo[] = JSON.parse(
@@ -256,4 +257,11 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ importados, pulados, credenciais, erros });
+  } catch (e) {
+    console.error("Falha na importação de holerites", e);
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : String(e) },
+      { status: 500 }
+    );
+  }
 }
