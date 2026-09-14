@@ -30,3 +30,27 @@ export type ArquivoPreview = {
 };
 
 export type ParsePreviewResposta = { arquivos: ArquivoPreview[] };
+
+// ---- Importação (commit) ----
+export type Decisao = { skip?: boolean; matricula?: string };
+export type DecisoesArquivo = { funcionarios: Decisao[] };
+
+export type CredencialNova = {
+  nome: string;
+  matricula: string;
+  usuario: string;
+  senha: string;
+};
+
+export type ErroImportacao = {
+  arquivo: string;
+  funcionario?: string;
+  motivo: string;
+};
+
+export type ImportarResposta = {
+  importados: number;
+  pulados: number;
+  credenciais: CredencialNova[];
+  erros: ErroImportacao[];
+};
