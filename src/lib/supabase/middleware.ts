@@ -29,17 +29,29 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isAuthRoute = request.nextUrl.pathname.startsWith("/login");
+  const path = request.nextUrl.pathname;
+  const isAdminLogin = path === "/login";
+  const isColabLogin = path === "/colaborador/login";
+  const isColabArea = path.startsWith("/colaborador");
 
-  if (!user && !isAuthRoute) {
+  // Sem sessão: manda para o login da área correspondente (admin x colaborador).
+  if (!user) {
+    if (isAdminLogin || isColabLogin) return supabaseResponse;
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = isColabArea ? "/colaborador/login" : "/login";
     return NextResponse.redirect(url);
   }
 
-  if (user && isAuthRoute) {
+  // Com sessão numa tela de login: sai dela. O layout de cada área faz o
+  // ajuste fino de papel (admin em área de colaborador e vice-versa).
+  if (isAdminLogin) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+  if (isColabLogin) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/colaborador/holerites";
     return NextResponse.redirect(url);
   }
 

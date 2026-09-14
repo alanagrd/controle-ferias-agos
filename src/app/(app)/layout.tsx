@@ -18,6 +18,16 @@ export default async function AppLayout({
     redirect("/login");
   }
 
+  // Área administrativa: colaboradores (não-admin) nunca entram aqui.
+  const { data: adminRow } = await supabase
+    .from("admin_users")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (!adminRow) {
+    redirect("/colaborador/holerites");
+  }
+
   return (
     <div className="min-h-screen bg-agos-gray-light dark:bg-slate-950 transition-colors">
       {/* Navbar sempre em carvão escuro (identidade AGOS), independente do
