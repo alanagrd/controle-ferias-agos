@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-type Modulo = "ferias" | "aso" | "vt" | "certificados";
+type Modulo = "ferias" | "aso" | "vt" | "certificados" | "holerites";
 
 const MODULE_LINKS: Record<
   Modulo,
@@ -33,6 +33,9 @@ const MODULE_LINKS: Record<
     { href: "/certificados/modelos", label: "Funções / Modelos" },
     { href: "/certificados/config", label: "Configuração" },
   ],
+  holerites: [
+    { href: "/holerites/importacao", label: "Importação" },
+  ],
 };
 
 const MODULE_TABS: { id: Modulo; href: string; label: string }[] = [
@@ -40,6 +43,7 @@ const MODULE_TABS: { id: Modulo; href: string; label: string }[] = [
   { id: "aso", href: "/aso/dashboard", label: "ASO" },
   { id: "vt", href: "/vt/dashboard", label: "VT" },
   { id: "certificados", href: "/certificados/emitir", label: "Certificados" },
+  { id: "holerites", href: "/holerites/importacao", label: "Holerites" },
 ];
 
 export function ModuleNav() {
@@ -50,6 +54,8 @@ export function ModuleNav() {
     ? "vt"
     : pathname?.startsWith("/certificados")
     ? "certificados"
+    : pathname?.startsWith("/holerites")
+    ? "holerites"
     : "ferias";
 
   return (
