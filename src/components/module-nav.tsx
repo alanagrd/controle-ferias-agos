@@ -35,6 +35,7 @@ const MODULE_LINKS: Record<
   ],
   holerites: [
     { href: "/holerites/importacao", label: "Importação" },
+    { href: "/holerites/acessos", label: "Acessos" },
   ],
 };
 

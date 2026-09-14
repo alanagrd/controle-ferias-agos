@@ -398,9 +398,9 @@ function ResultadoImportacao({
 
   const linhasCsv = () =>
     [
-      "Nome;Matrícula;Usuário;Senha temporária",
-      ...r.credenciais.map(
-        (c) => `${c.nome};${c.matricula};${c.usuario};${c.senha}`
+      "Nome;Matrícula;Usuário;Senha inicial",
+      ...r.acessos.map(
+        (c) => `${c.nome};${c.matricula};${c.usuario};CPF (só números)`
       ),
     ].join("\n");
 
@@ -447,15 +447,16 @@ function ResultadoImportacao({
         </div>
       </div>
 
-      {r.credenciais.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-800 rounded-lg overflow-hidden">
-          <div className="px-5 py-3 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
-            <div className="font-semibold text-amber-800 dark:text-amber-200">
-              {r.credenciais.length} acesso(s) novo(s) — anote agora
+      {r.acessos.length > 0 && (
+        <div className="bg-white dark:bg-slate-900 border border-agos-green/40 rounded-lg overflow-hidden">
+          <div className="px-5 py-3 bg-agos-green/10 border-b border-agos-green/30">
+            <div className="font-semibold text-agos-green-dark dark:text-agos-green">
+              {r.acessos.length} acesso(s) novo(s) criado(s)
             </div>
-            <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
-              Estas senhas <strong>não podem ser recuperadas depois</strong>. Copie
-              ou exporte e repasse ao colaborador; ele troca a senha no 1º acesso.
+            <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
+              A senha inicial de cada um é o <strong>CPF (somente números)</strong>.
+              No primeiro acesso o funcionário troca a senha. Login em{" "}
+              <span className="font-mono">/colaborador/login</span> com a matrícula.
             </p>
           </div>
           <div className="px-5 py-3 flex gap-2">
@@ -463,7 +464,7 @@ function ResultadoImportacao({
               onClick={copiar}
               className="text-sm bg-agos-green hover:bg-agos-green-dark text-white font-semibold rounded-md px-4 py-1.5"
             >
-              {copiado ? "Copiado!" : "Copiar"}
+              {copiado ? "Copiado!" : "Copiar lista"}
             </button>
             <button
               onClick={exportarCsv}
@@ -479,11 +480,10 @@ function ResultadoImportacao({
                   <th className="px-4 py-2">Nome</th>
                   <th className="px-4 py-2">Matrícula</th>
                   <th className="px-4 py-2">Usuário</th>
-                  <th className="px-4 py-2">Senha temporária</th>
                 </tr>
               </thead>
               <tbody>
-                {r.credenciais.map((c, i) => (
+                {r.acessos.map((c, i) => (
                   <tr
                     key={i}
                     className="border-b border-slate-100 dark:border-slate-800 last:border-0"
@@ -491,9 +491,6 @@ function ResultadoImportacao({
                     <td className="px-4 py-2">{c.nome}</td>
                     <td className="px-4 py-2 font-mono">{c.matricula}</td>
                     <td className="px-4 py-2 font-mono">{c.usuario}</td>
-                    <td className="px-4 py-2 font-mono font-semibold">
-                      {c.senha}
-                    </td>
                   </tr>
                 ))}
               </tbody>

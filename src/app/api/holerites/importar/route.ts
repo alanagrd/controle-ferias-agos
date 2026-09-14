@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomBytes } from "node:crypto";
 import * as mupdf from "mupdf";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import { parseHoleritesPdf } from "@/lib/holerites/parse";
 import type {
-  CredencialNova,
+  AcessoCriado,
   DecisoesArquivo,
   ErroImportacao,
 } from "@/lib/holerites/types";
@@ -20,15 +19,6 @@ type FuncLite = {
   nome: string;
   status: string | null;
 };
-
-// Senha temporária forte (sem caracteres ambíguos); trocada no 1º acesso.
-function gerarSenha(): string {
-  const abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghijkmnpqrstuvwxyz";
-  const b = randomBytes(12);
-  let s = "";
-  for (let i = 0; i < 12; i++) s += abc[b[i] % abc.length];
-  return s;
-}
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -83,7 +73,7 @@ export async function POST(req: NextRequest) {
     if (f.codigo) porMatricula.set(f.codigo.padStart(6, "0"), f);
   }
 
-  const credenciais: CredencialNova[] = [];
+  const acessos: AcessoCriado[] = [];
   const erros: ErroImportacao[] = [];
   let importados = 0;
   let pulados = 0;
@@ -193,19 +183,28 @@ export async function POST(req: NextRequest) {
       }
 
       // 4) Provisiona acesso do colaborador, se ainda não tiver.
+      const cpfDigitos = f.cpf.replace(/\D/g, "");
       const { data: pa } = await admin
         .from("portal_acessos")
-        .select("funcionario_id")
+        .select("funcionario_id, cpf")
         .eq("funcionario_id", sis.id)
         .maybeSingle();
 
+      if (pa && !(pa as { cpf: string | null }).cpf) {
+        // acesso antigo sem CPF salvo: preenche para permitir reset pelo ADM.
+        await admin
+          .from("portal_acessos")
+          .update({ cpf: cpfDigitos })
+          .eq("funcionario_id", sis.id);
+      }
+
       if (!pa) {
         const email = `${matr}@agos.internal`;
-        const senha = gerarSenha();
+        // Senha inicial = CPF (só dígitos). Troca obrigatória no 1º acesso.
         const { data: created, error: cErr } =
           await admin.auth.admin.createUser({
             email,
-            password: senha,
+            password: cpfDigitos,
             email_confirm: true,
             user_metadata: {
               funcionario_id: sis.id,
@@ -226,6 +225,7 @@ export async function POST(req: NextRequest) {
             funcionario_id: sis.id,
             auth_user_id: created.user.id,
             senha_temporaria: true,
+            cpf: cpfDigitos,
           });
           if (paErr) {
             // desfaz o usuário órfão para permitir nova tentativa limpa
@@ -236,11 +236,10 @@ export async function POST(req: NextRequest) {
               motivo: `Holerite gravado, mas falhou ao vincular acesso: ${paErr.message}`,
             });
           } else {
-            credenciais.push({
+            acessos.push({
               nome: sis.nome,
               matricula: matr,
               usuario: email,
-              senha,
             });
           }
         }
@@ -265,7 +264,7 @@ export async function POST(req: NextRequest) {
     src.destroy();
   }
 
-  return NextResponse.json({ importados, pulados, credenciais, erros });
+  return NextResponse.json({ importados, pulados, acessos, erros });
   } catch (e) {
     console.error("Falha na importação de holerites", e);
     return NextResponse.json(
