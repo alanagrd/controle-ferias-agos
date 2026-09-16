@@ -360,12 +360,22 @@ function ConciliacaoAtivosTab({
   }
 
   async function aplicarDispensado(item: ItemDispensado) {
-    const { error } = await supabase
-      .from("vt_funcionario_competencia")
-      .update({ status_no_mes: "DISPENSADO" })
-      .eq("id", item.fc.id);
+    // Dispensa no VT do mês E marca INATIVO no cadastro (a planilha de ativos do
+    // VT é a lista completa da empresa) — assim Férias/ASO refletem. O trigger de
+    // banco cobre as demais competências abertas.
+    const [{ error: e1 }, { error: e2 }] = await Promise.all([
+      supabase
+        .from("vt_funcionario_competencia")
+        .update({ status_no_mes: "DISPENSADO" })
+        .eq("id", item.fc.id),
+      supabase
+        .from("rh_funcionarios")
+        .update({ status: "INATIVO" })
+        .eq("id", item.fc.funcionario_id),
+    ]);
+    const error = e1 || e2;
     if (error) {
-      setResultado(`Erro ao marcar ${item.funcionario?.nome} como dispensado: ${error.message}`);
+      setResultado(`Erro ao dispensar ${item.funcionario?.nome}: ${error.message}`);
       return;
     }
     setDispensadosAplicados((prev) => new Set(prev).add(item.fc.id));
@@ -377,7 +387,9 @@ function ConciliacaoAtivosTab({
       if (!dispensadosAplicados.has(item.fc.id)) await aplicarDispensado(item);
     }
     setApplyingDispensados(false);
-    setResultado(`${dispensados.length} dispensa(s) aplicada(s) (só no VT desta competência).`);
+    setResultado(
+      `${dispensados.length} dispensa(s) aplicada(s) — no VT e no cadastro (Férias/ASO).`
+    );
   }
 
   async function aplicarTransferencia(item: ItemTransferencia) {
@@ -521,7 +533,7 @@ function ConciliacaoAtivosTab({
 
           <ConciliacaoSecao
             titulo="Dispensados"
-            descricao="Estavam ATIVO(a)s na competência mas sumiram do arquivo, dentro de um centro de custo que o arquivo cobre."
+            descricao="Estavam ATIVO(a)s na competência mas sumiram do arquivo, dentro de um centro de custo que o arquivo cobre. Ao aplicar, também são marcados INATIVO no cadastro (refletindo em Férias/ASO) — confira a lista antes."
             total={dispensados.length}
             aplicados={dispensadosAplicados.size}
             onAplicarTodos={aplicarTodosDispensados}
@@ -545,7 +557,7 @@ function ConciliacaoAtivosTab({
                     {item.fc.obra_snapshot}
                   </td>
                   <td className="py-2 px-3 text-xs text-slate-400">
-                    Marca como dispensado só nesta competência do VT
+                    Dispensa no VT e marca INATIVO no cadastro (Férias/ASO)
                   </td>
                   <td className="py-2 px-3 text-right">
                     {aplicado ? (
