@@ -27,7 +27,9 @@ export default async function DashboardPage() {
     fetchAllRows<DashFuncionario>((from, to) =>
       supabase
         .from("rh_funcionarios")
+        // Só ativos: dispensados/inativos não entram nos vencimentos do dashboard.
         .select("id, nome, status, cliente_razao_social")
+        .eq("status", "ATIVO")
         .order("id")
         .range(from, to)
     ),
