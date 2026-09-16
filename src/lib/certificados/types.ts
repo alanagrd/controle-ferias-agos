@@ -1,5 +1,9 @@
-export type NormaCertificado = "NR35" | "NR12";
+// `norma` é o TIPO/categoria do certificado (agrupa a lista de funções):
+// NR05, NR07, NR10, NR12, NR17, NR20, NR23, NR33, NR34, NR35, FISPQ,
+// Profissionalizante, etc. Texto livre.
+export type NormaCertificado = string;
 export type TipoTreinamento = "inicial" | "periodico";
+export type DocTipo = "CPF" | "RG";
 
 export type CertificadoModelo = {
   id: string;
@@ -11,6 +15,13 @@ export type CertificadoModelo = {
   tipo: TipoTreinamento;
   conteudo_programatico: string;
   ativo: boolean;
+  // Texto da frente específico do modelo (com marcadores). Null = usa o global.
+  texto_frente?: string | null;
+  // Documento de identificação usado no certificado: "CPF" (padrão) ou "RG".
+  doc_tipo?: DocTipo | null;
+  // Assinantes (chaves separadas por vírgula): "thiago" | "thiago,demetrio" |
+  // "thiago,jose". Null = "thiago".
+  assinantes?: string | null;
   created_at?: string;
 };
 

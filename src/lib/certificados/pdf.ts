@@ -55,6 +55,49 @@ const ASSETS = {
   logo: "/certificados/logo-agos.jpg",
   assinaturaThiago: "/certificados/assinatura-thiago.jpg",
   assinaturaDemetrio: "/certificados/assinatura-demetrio.png",
+  assinaturaJose: "/certificados/assinatura-jose-rinaldo.png",
+};
+
+// Assinantes possíveis, por chave (o modelo guarda a lista em `assinantes`,
+// ex.: "thiago" | "thiago,demetrio" | "thiago,jose").
+const ASSINANTES: Record<
+  string,
+  {
+    role: string;
+    linhas: string[];
+    imgUrl: string;
+    imgFmt: "JPEG" | "PNG";
+    imgAspect: number;
+  }
+> = {
+  thiago: {
+    role: "Instrutor Qualificado",
+    linhas: [
+      "Thiago Batisteli Camini – RG 32967131-5",
+      "Engenheiro Civil / Eng. de Segurança do Trabalho / Tecnólogo em Gestão Amb.",
+      "CREA nº 5070650830 · Téc. Seg. Trabalho nº 0043324",
+    ],
+    imgUrl: ASSETS.assinaturaThiago,
+    imgFmt: "JPEG",
+    imgAspect: 354 / 97,
+  },
+  demetrio: {
+    role: "Responsável Técnico / Instrutor",
+    linhas: [
+      "Demétrio Vilhena Gozzo",
+      "Eng. de Produção Mecânico – CREA 5063501970",
+    ],
+    imgUrl: ASSETS.assinaturaDemetrio,
+    imgFmt: "PNG",
+    imgAspect: 341 / 89,
+  },
+  jose: {
+    role: "Eng.º Eletricista e de Seg. do Trabalho",
+    linhas: ["José Rinaldo Maniezo", "CREA 1402051913"],
+    imgUrl: ASSETS.assinaturaJose,
+    imgFmt: "PNG",
+    imgAspect: 432 / 101,
+  },
 };
 
 export async function preloadCertificadoAssets() {
@@ -62,6 +105,7 @@ export async function preloadCertificadoAssets() {
     loadImageAsDataUrl(ASSETS.logo),
     loadImageAsDataUrl(ASSETS.assinaturaThiago),
     loadImageAsDataUrl(ASSETS.assinaturaDemetrio),
+    loadImageAsDataUrl(ASSETS.assinaturaJose),
   ]);
 }
 
@@ -76,6 +120,7 @@ export const DEFAULT_TEXTO_FRENTE =
 /** Marcadores aceitos no texto da frente (usado também na tela de configuração). */
 export const MARCADORES_FRENTE = [
   "nome",
+  "doc",
   "cpf",
   "curso",
   "data",
@@ -95,6 +140,7 @@ function expandirMarcador(
     case "nome":
       return [{ text: dados.nome_funcionario, bold: true }];
     case "cpf":
+    case "doc": // número do documento (CPF ou RG), conforme o modelo
       return [{ text: dados.cpf, bold: true }];
     case "cidade":
       return [{ text: dados.cidade, bold: true }];
@@ -246,11 +292,9 @@ async function gerarFrente(
   ];
   desenharTextoRico(doc, cidadeRuns, 25, ultimaLinhaY + 12, w - 50, 6, 12);
 
-  // Signature block(s) — evenly spaced columns that always stay inside the
-  // frame. NR12 = dois instrutores + aluno (3 colunas); NR35 = um instrutor +
-  // aluno (2 colunas). As linhas de detalhe quebram na largura da coluna, então
-  // títulos longos nunca invadem a coluna vizinha nem passam da borda.
-  const temSegundoInstrutor = modelo.norma === "NR12";
+  // Signature block(s) — colunas espaçadas dentro da moldura. Os instrutores
+  // vêm da lista `assinantes` do modelo (1 ou 2 instrutores) + a coluna do
+  // Aluno. As linhas de detalhe quebram na largura da coluna.
   const baseY = 150;
 
   type ColunaAssinatura = {
@@ -261,38 +305,28 @@ async function gerarFrente(
     linhas: string[];
   };
 
-  const thiago = await loadImageAsDataUrl(ASSETS.assinaturaThiago);
-  const colunas: ColunaAssinatura[] = [
-    {
-      img: thiago,
-      imgFmt: "JPEG",
-      imgAspect: 354 / 97,
-      role: "Instrutor Qualificado",
-      linhas: [
-        "Thiago Batisteli Camini – RG 32967131-5",
-        "Engenheiro Civil / Eng. de Segurança do Trabalho / Tecnólogo em Gestão Amb.",
-        "CREA nº 5070650830 · Téc. Seg. Trabalho nº 0043324",
-      ],
-    },
-  ];
+  const chavesAssinantes = (modelo.assinantes || "thiago")
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => ASSINANTES[s]);
+  if (chavesAssinantes.length === 0) chavesAssinantes.push("thiago");
 
-  if (temSegundoInstrutor) {
-    const demetrio = await loadImageAsDataUrl(ASSETS.assinaturaDemetrio);
+  const colunas: ColunaAssinatura[] = [];
+  for (const chave of chavesAssinantes) {
+    const a = ASSINANTES[chave];
     colunas.push({
-      img: demetrio,
-      imgFmt: "PNG",
-      imgAspect: 341 / 89,
-      role: "Responsável Técnico / Instrutor",
-      linhas: [
-        "Demétrio Vilhena Gozzo",
-        "Eng. de Produção Mecânico – CREA 5063501970",
-      ],
+      img: await loadImageAsDataUrl(a.imgUrl),
+      imgFmt: a.imgFmt,
+      imgAspect: a.imgAspect,
+      role: a.role,
+      linhas: a.linhas,
     });
   }
 
+  const docTipo = modelo.doc_tipo || "CPF";
   colunas.push({
     role: "Aluno",
-    linhas: [dados.nome_funcionario, `CPF ${dados.cpf}`],
+    linhas: [dados.nome_funcionario, `${docTipo} ${dados.cpf}`],
   });
 
   const leftX = 20;
@@ -353,7 +387,11 @@ export async function gerarCertificadoPdf(
 ): Promise<import("jspdf").jsPDF> {
   const { jsPDF } = await import("jspdf");
   const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-  await gerarFrente(doc, modelo, dados, textoFrente?.trim() || DEFAULT_TEXTO_FRENTE);
+  // Prioridade do texto da frente: o do próprio modelo → o passado (config
+  // global) → o padrão embutido.
+  const template =
+    modelo.texto_frente?.trim() || textoFrente?.trim() || DEFAULT_TEXTO_FRENTE;
+  await gerarFrente(doc, modelo, dados, template);
   gerarVerso(doc, modelo);
   return doc;
 }

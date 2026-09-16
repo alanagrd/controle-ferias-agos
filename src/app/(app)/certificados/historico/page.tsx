@@ -13,7 +13,7 @@ export default async function HistoricoCertificadosPage() {
       supabase
         .from("certificados_emitidos")
         .select(
-          "id, modelo_id, nome_funcionario, cpf, cidade, data_treinamento, data_treinamento_fim, emitido_em, certificados_modelos(id, norma, nome_funcao, nome_curso, normas_aplicaveis, carga_horaria, tipo, conteudo_programatico, ativo)"
+          "id, modelo_id, nome_funcionario, cpf, cidade, data_treinamento, data_treinamento_fim, emitido_em, certificados_modelos(id, norma, nome_funcao, nome_curso, normas_aplicaveis, carga_horaria, tipo, conteudo_programatico, ativo, texto_frente, doc_tipo, assinantes)"
         )
         .order("emitido_em", { ascending: false })
         .range(from, to)
