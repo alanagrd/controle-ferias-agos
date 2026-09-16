@@ -388,14 +388,14 @@ export default function VtFuncionariosClient({
                     <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Avulso VT</th>
                     <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Avulso VR</th>
                     <th className="py-2.5 px-3 font-medium whitespace-nowrap">Status</th>
-                    <th className="py-2.5 px-3 font-medium whitespace-nowrap"></th>
+                    <th className="py-2.5 px-3 font-medium whitespace-nowrap sticky right-0 bg-slate-50 dark:bg-slate-800 z-[2] border-l border-slate-100 dark:border-slate-700"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((r) => (
                     <tr
                       key={r.fc.id}
-                      className="border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                      className="group border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/60"
                     >
                       <td className="py-2 px-3 font-mono text-xs text-slate-500 dark:text-slate-400">
                         {r.fc.obra_snapshot ?? "—"}
@@ -454,7 +454,7 @@ export default function VtFuncionariosClient({
                           {r.fc.status_no_mes === "ATIVO" ? "Ativo" : "Dispensado"}
                         </span>
                       </td>
-                      <td className="py-2 px-3">
+                      <td className="py-2 px-3 sticky right-0 whitespace-nowrap bg-white dark:bg-slate-900 group-hover:bg-slate-50 dark:group-hover:bg-slate-800/60 border-l border-slate-100 dark:border-slate-800">
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => setEditRow(r)}
