@@ -25,6 +25,7 @@ export default function EmitirClient({
   modelos: CertificadoModelo[];
   textoFrente: string | null;
 }) {
+  const [tipoSel, setTipoSel] = useState("");
   const [modeloId, setModeloId] = useState("");
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
@@ -47,14 +48,23 @@ export default function EmitirClient({
     [modelos]
   );
 
-  const porNorma = useMemo(() => {
-    const grupos: Record<string, CertificadoModelo[]> = {};
-    for (const m of modelos) {
-      grupos[m.norma] = grupos[m.norma] ?? [];
-      grupos[m.norma].push(m);
-    }
-    return grupos;
-  }, [modelos]);
+  // Passo 1: tipos (normas) distintos. Passo 2: funções daquele tipo.
+  const tipos = useMemo(
+    () =>
+      Array.from(new Set(modelos.map((m) => m.norma))).sort((a, b) =>
+        a.localeCompare(b, "pt-BR")
+      ),
+    [modelos]
+  );
+  const funcoesDoTipo = useMemo(
+    () =>
+      modelos
+        .filter((m) => m.norma === tipoSel)
+        .sort((a, b) => a.nome_funcao.localeCompare(b.nome_funcao, "pt-BR")),
+    [modelos, tipoSel]
+  );
+
+  const docTipo = modelo?.doc_tipo === "RG" ? "RG" : "CPF";
 
   async function handleGerar(e: React.FormEvent) {
     e.preventDefault();
@@ -166,28 +176,50 @@ export default function EmitirClient({
         onSubmit={handleGerar}
         className="space-y-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5"
       >
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Função / curso
-          </label>
-          <select
-            className="input w-full"
-            value={modeloId}
-            onChange={(e) => setModeloId(e.target.value)}
-            required
-          >
-            <option value="">Selecione...</option>
-            {Object.entries(porNorma).map(([norma, lista]) => (
-              <optgroup key={norma} label={norma}>
-                {lista.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.nome_funcao}
-                    {m.tipo === "periodico" ? " (Periódico)" : ""}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Tipo de certificado
+            </label>
+            <select
+              className="input w-full"
+              value={tipoSel}
+              onChange={(e) => {
+                setTipoSel(e.target.value);
+                setModeloId("");
+              }}
+              required
+            >
+              <option value="">Selecione...</option>
+              {tipos.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Função / curso
+            </label>
+            <select
+              className="input w-full"
+              value={modeloId}
+              onChange={(e) => setModeloId(e.target.value)}
+              required
+              disabled={!tipoSel}
+            >
+              <option value="">
+                {tipoSel ? "Selecione..." : "Escolha o tipo primeiro"}
+              </option>
+              {funcoesDoTipo.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.nome_funcao}
+                  {m.tipo === "periodico" ? " (Periódico)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {modelo && (
@@ -221,14 +253,20 @@ export default function EmitirClient({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">CPF</label>
+            <label className="block text-sm font-medium mb-1">{docTipo}</label>
             <input
               className="input w-full"
               value={cpf}
-              onChange={(e) => setCpf(formatCpf(e.target.value))}
-              placeholder="000.000.000-00"
-              inputMode="numeric"
-              maxLength={14}
+              onChange={(e) =>
+                setCpf(
+                  docTipo === "CPF" ? formatCpf(e.target.value) : e.target.value
+                )
+              }
+              placeholder={
+                docTipo === "CPF" ? "000.000.000-00" : "Número do RG"
+              }
+              inputMode={docTipo === "CPF" ? "numeric" : "text"}
+              maxLength={docTipo === "CPF" ? 14 : 20}
               required
             />
           </div>
