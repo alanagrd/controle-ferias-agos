@@ -35,6 +35,7 @@ export default function HoleritesImportacaoClient() {
   // decisões por "fi:idx"
   const [decisoes, setDecisoes] = useState<Record<string, Decisao>>({});
   const [importando, setImportando] = useState(false);
+  const [progresso, setProgresso] = useState("");
   const [resultado, setResultado] = useState<ImportarResposta | null>(null);
 
   function getDecisao(fi: number, idx: number): Decisao {
@@ -59,22 +60,32 @@ export default function HoleritesImportacaoClient() {
     }
     setAnalisando(true);
     try {
-      const form = new FormData();
-      for (const f of arquivos) form.append("files", f);
-      const res = await fetch("/api/holerites/parse", {
-        method: "POST",
-        body: form,
-      });
-      if (!res.ok) {
-        const j = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(j?.error ?? `Erro ${res.status}`);
+      // Um arquivo por requisição: funções serverless têm limite de ~4,5 MB
+      // por request; enviar vários PDFs juntos estoura (erro 413).
+      const resultados: ArquivoPreview[] = [];
+      for (let i = 0; i < arquivos.length; i++) {
+        setProgresso(`Analisando ${i + 1} de ${arquivos.length}...`);
+        const form = new FormData();
+        form.append("files", arquivos[i]);
+        const res = await fetch("/api/holerites/parse", {
+          method: "POST",
+          body: form,
+        });
+        if (!res.ok) {
+          const j = (await res.json().catch(() => null)) as {
+            error?: string;
+          } | null;
+          throw new Error(j?.error ?? `Erro ${res.status}`);
+        }
+        const data = (await res.json()) as ParsePreviewResposta;
+        resultados.push(...data.arquivos);
       }
-      const data = (await res.json()) as ParsePreviewResposta;
-      setPreview(data.arquivos);
+      setPreview(resultados);
     } catch (e) {
       setErro(e instanceof Error ? e.message : "Falha ao analisar.");
     } finally {
       setAnalisando(false);
+      setProgresso("");
     }
   }
 
@@ -83,30 +94,47 @@ export default function HoleritesImportacaoClient() {
     setErro(null);
     setImportando(true);
     try {
-      const decisoesArquivos: DecisoesArquivo[] = preview.map((arq, fi) => ({
-        funcionarios: arq.funcionarios.map((_, idx) => {
-          const d = getDecisao(fi, idx);
-          return { skip: d.skip, matricula: d.matricula.trim() || undefined };
-        }),
-      }));
-      const form = new FormData();
-      for (const f of arquivos) form.append("files", f);
-      form.append("decisoes", JSON.stringify(decisoesArquivos));
-      const res = await fetch("/api/holerites/importar", {
-        method: "POST",
-        body: form,
-      });
-      if (!res.ok) {
-        const j = (await res.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(j?.error ?? `Erro ${res.status}`);
+      // Também um arquivo por requisição (limite de ~4,5 MB por request).
+      const agregado: ImportarResposta = {
+        importados: 0,
+        pulados: 0,
+        acessos: [],
+        erros: [],
+      };
+      for (let i = 0; i < preview.length; i++) {
+        setProgresso(`Importando ${i + 1} de ${preview.length}...`);
+        const arq = preview[i];
+        const decisoesArquivo: DecisoesArquivo = {
+          funcionarios: arq.funcionarios.map((_, idx) => {
+            const d = getDecisao(i, idx);
+            return { skip: d.skip, matricula: d.matricula.trim() || undefined };
+          }),
+        };
+        const form = new FormData();
+        form.append("files", arquivos[i]);
+        form.append("decisoes", JSON.stringify([decisoesArquivo]));
+        const res = await fetch("/api/holerites/importar", {
+          method: "POST",
+          body: form,
+        });
+        const j = (await res.json().catch(() => null)) as
+          | (ImportarResposta & { error?: string })
+          | null;
+        if (!res.ok || !j) {
+          throw new Error(j?.error ?? `Erro ${res.status}`);
+        }
+        agregado.importados += j.importados;
+        agregado.pulados += j.pulados;
+        agregado.acessos.push(...j.acessos);
+        agregado.erros.push(...j.erros);
       }
-      const data = (await res.json()) as ImportarResposta;
-      setResultado(data);
+      setResultado(agregado);
       setPreview(null); // some o preview; mostra o resultado
     } catch (e) {
       setErro(e instanceof Error ? e.message : "Falha ao importar.");
     } finally {
       setImportando(false);
+      setProgresso("");
     }
   }
 
@@ -159,7 +187,7 @@ export default function HoleritesImportacaoClient() {
             disabled={analisando}
             className="bg-agos-green hover:bg-agos-green-dark disabled:opacity-60 text-white font-semibold rounded-md px-5 py-2 text-sm transition"
           >
-            {analisando ? "Analisando..." : "Analisar PDFs"}
+            {analisando ? progresso || "Analisando..." : "Analisar PDFs"}
           </button>
         </div>
       )}
@@ -195,7 +223,7 @@ export default function HoleritesImportacaoClient() {
               disabled={importando || totalImportaveis === 0}
               className="bg-agos-green hover:bg-agos-green-dark disabled:opacity-60 text-white font-semibold rounded-md px-5 py-2.5 text-sm transition"
             >
-              {importando ? "Importando..." : "Confirmar importação"}
+              {importando ? progresso || "Importando..." : "Confirmar importação"}
             </button>
           </div>
         </div>
