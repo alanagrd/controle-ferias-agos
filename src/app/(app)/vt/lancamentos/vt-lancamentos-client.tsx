@@ -57,6 +57,7 @@ export default function VtLancamentosClient({
   const supabase = useMemo(() => createClient(), []);
   const [lancamentosState, setLancamentosState] = useState(lancamentos);
   const [filtroCobranca, setFiltroCobranca] = useState<"" | "sim" | "nao">("");
+  const [ordenacao, setOrdenacao] = useState<"data" | "nome">("data");
   const [editRow, setEditRow] = useState<Row | null>(null);
 
   const funcCompPorId = useMemo(() => {
@@ -86,6 +87,13 @@ export default function VtLancamentosClient({
     if (filtroCobranca === "nao" && r.l.cobrado_cliente) return false;
     return true;
   });
+
+  const ordenados =
+    ordenacao === "nome"
+      ? [...filtered].sort((a, b) =>
+          (a.f?.nome ?? "").localeCompare(b.f?.nome ?? "", "pt-BR")
+        )
+      : filtered;
 
   const totalCobrar = filtered
     .filter((r) => r.l.cobrado_cliente)
@@ -154,6 +162,21 @@ export default function VtLancamentosClient({
                 <option value="nao">Interno</option>
               </select>
             </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                Ordenar por
+              </label>
+              <select
+                value={ordenacao}
+                onChange={(e) =>
+                  setOrdenacao(e.target.value as "data" | "nome")
+                }
+                className="input min-w-[160px]"
+              >
+                <option value="data">Data (mais recente)</option>
+                <option value="nome">Nome (A→Z)</option>
+              </select>
+            </div>
             <div className="ml-auto text-xs text-slate-500 dark:text-slate-400 pb-2">
               {filtered.length} lançamento(s) · {fmtMoeda(totalCobrar)} a cobrar do cliente
             </div>
@@ -173,7 +196,7 @@ export default function VtLancamentosClient({
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((r) => (
+                {ordenados.map((r) => (
                   <tr
                     key={r.l.id}
                     className="border-b border-slate-50 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/60"
