@@ -96,7 +96,7 @@ const ASSINANTES: Record<
     linhas: ["José Rinaldo Maniezo", "CREA 1402051913"],
     imgUrl: ASSETS.assinaturaJose,
     imgFmt: "PNG",
-    imgAspect: 432 / 101,
+    imgAspect: 331 / 109,
   },
 };
 
