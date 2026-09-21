@@ -27,6 +27,7 @@ type FuncRow = {
 };
 type AptRow = { func_comp_id: string; cesta_basica: number | null };
 type LancRow = { func_comp_id: string; motivo: string | null; valor: number };
+type CestaRow = { obra: string; valor: number };
 
 export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as {
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
     { data: funcionarios },
     { data: apontamentos },
     { data: lancamentos },
+    { data: cestas },
   ] = await Promise.all([
     fetchAllRows<FcRow>((from, to) =>
       supabase
@@ -93,12 +95,20 @@ export async function POST(req: NextRequest) {
         .order("func_comp_id")
         .range(from, to)
     ),
+    // Cadastro de Cesta Básica por obra (poucas dezenas de linhas).
+    supabase.from("vt_cesta_obra").select("obra, valor"),
   ]);
 
   const funcById = new Map((funcionarios ?? []).map((f) => [f.id, f]));
   const cestaByFc = new Map(
     (apontamentos ?? []).map((a) => [a.func_comp_id, a.cesta_basica])
   );
+  // Cesta cadastrada por obra (chave normalizada: trim + maiúsculas).
+  const cestaPorObra = new Map<string, number>();
+  ((cestas ?? []) as CestaRow[]).forEach((c) => {
+    const k = (c.obra ?? "").trim().toUpperCase();
+    if (k) cestaPorObra.set(k, c.valor);
+  });
 
   // Reembolso VT (901) e VR (904) avulsos por func_comp — vêm do sistema.
   const fcIds = new Set((funcComp ?? []).map((fc) => fc.id));
@@ -154,7 +164,9 @@ export async function POST(req: NextRequest) {
         valorDiario: fc.valor_diario,
         dias: fc.dias_uteis,
         vr: fc.vr_valor,
-        cesta: cestaByFc.get(fc.id) ?? null,
+        // Cesta vem do cadastro por obra; se a obra não estiver cadastrada,
+        // cai no valor do apontamento (reimportado), senão em branco.
+        cesta: cestaPorObra.get(obraK.toUpperCase()) ?? cestaByFc.get(fc.id) ?? null,
         reembolsoVt: reembVtByFc.get(fc.id) ?? null,
         reembolsoVr: reembVrByFc.get(fc.id) ?? null,
       };

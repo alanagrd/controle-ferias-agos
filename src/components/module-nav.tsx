@@ -21,6 +21,7 @@ const MODULE_LINKS: Record<Modulo, { href: string; label: string }[]> = {
     { href: "/vt/funcionarios", label: "Funcionários & VT" },
     { href: "/vt/apontamento", label: "Apontamento" },
     { href: "/vt/lancamentos", label: "Lançamentos avulsos" },
+    { href: "/vt/cesta", label: "Cesta por obra" },
     { href: "/vt/importacao", label: "Importação" },
   ],
   certificados: [
