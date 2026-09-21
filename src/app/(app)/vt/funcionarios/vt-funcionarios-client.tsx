@@ -16,7 +16,6 @@ import {
   nomeCompetencia,
 } from "@/lib/status-vt";
 import { fmtDate } from "@/lib/status";
-import { exportarPlanilhaVt } from "@/lib/export-vt";
 
 type FuncionarioLite = Pick<
   Funcionario,
@@ -74,6 +73,7 @@ export default function VtFuncionariosClient({
   const [mostrarDispensados, setMostrarDispensados] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("nome");
   const [sortDir, setSortDir] = useState<1 | -1>(1);
+  const [exportando, setExportando] = useState(false);
 
   const [showAbrirCompetencia, setShowAbrirCompetencia] = useState(false);
   const [showNovoFuncionario, setShowNovoFuncionario] = useState(false);
@@ -182,30 +182,43 @@ export default function VtFuncionariosClient({
   const totalFiltrado = filtered.reduce((acc, r) => acc + (r.fc.valor_total ?? 0), 0);
   const totalVr = filtered.reduce((acc, r) => acc + (r.fc.vr_valor ?? 0), 0);
 
-  function handleExportar() {
-    if (!competenciaAtual) return;
-    exportarPlanilhaVt(
-      filtered.map((r) => ({
-        clienteCodigo: null,
-        obra: r.fc.obra_snapshot,
-        matricula: r.f?.codigo ?? null,
-        nome: r.f?.nome ?? "",
-        valorDiario: r.fc.valor_diario,
-        dias: r.fc.dias_uteis,
-        totalVt: r.fc.valor_total,
-        vr: r.fc.vr_valor,
-        reembolsoVt: Math.max(r.vtAvulso, 0),
-        descontoVt: Math.max(-r.vtAvulso, 0),
-        h50: 0,
-        h70: 0,
-        h100: 0,
-        faltas: 0,
-        dsr: 0,
-        adNot: 0,
-        premio: 0,
-      })),
-      `VT ${nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)}.xlsx`
-    );
+  async function handleExportar() {
+    if (!competenciaAtual || exportando) return;
+    const obra = obraFilter.trim();
+    const sufixo = obra ? ` ${obra}` : "";
+    setExportando(true);
+    try {
+      // Usa a mesma exportação rica da tela de Importação (formato VT RIO,
+      // com fórmulas e todas as colunas). Respeita o filtro de obra da tela.
+      const res = await fetch("/api/vt/planilha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          competenciaId: competenciaAtual.id,
+          obra: obra || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.error ?? "Erro ao gerar a planilha.");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `VT ${nomeCompetencia(
+        competenciaAtual.ano,
+        competenciaAtual.mes
+      )}${sufixo}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Erro ao gerar a planilha.");
+    } finally {
+      setExportando(false);
+    }
   }
 
   return (
@@ -245,9 +258,10 @@ export default function VtFuncionariosClient({
             <>
               <button
                 onClick={handleExportar}
-                className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700"
+                disabled={exportando}
+                className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Exportar planilha
+                {exportando ? "Exportando…" : "Exportar planilha"}
               </button>
               <button
                 onClick={() => setShowNovoFuncionario(true)}
