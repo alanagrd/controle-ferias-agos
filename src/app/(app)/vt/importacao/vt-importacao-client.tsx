@@ -311,10 +311,13 @@ function ConciliacaoAtivosTab({
     if (!linhasArquivo) return;
     setSyncSalarios("saving");
     setSalariosResultado(null);
-    const payload = linhasArquivo
-      .filter((l) => l.salario != null)
-      .map((l) => ({ codigo: l.codigo, salario: l.salario }));
-    const { data, error } = await supabase.rpc("vt_sync_salarios_ativos", {
+    const payload = linhasArquivo.map((l) => ({
+      codigo: l.codigo,
+      salario: l.salario,
+      cliente_codigo: l.clienteCodigo,
+      cliente_razao: l.cliente,
+    }));
+    const { data, error } = await supabase.rpc("vt_sync_ativos_cadastro", {
       payload,
     });
     if (error) {
@@ -324,7 +327,7 @@ function ConciliacaoAtivosTab({
     }
     setSyncSalarios("done");
     setSalariosResultado(
-      `Salários atualizados: ${data ?? 0} funcionário(s) (de ${payload.length} no arquivo).`
+      `Salários e códigos de cliente atualizados: ${data ?? 0} funcionário(s).`
     );
   }
 
@@ -340,6 +343,9 @@ function ConciliacaoAtivosTab({
           // acaba duplicado/sem apontamento nas importações seguintes.
           codigo: item.linha.codigo.padStart(6, "0"),
           nome: item.linha.nome,
+          cliente_codigo: item.linha.clienteCodigo
+            ? item.linha.clienteCodigo.replace(/\D/g, "").padStart(6, "0")
+            : null,
           cliente_razao_social: item.linha.cliente,
           obra: item.linha.ccusto || null,
           cargo: item.linha.funcao || null,
@@ -512,10 +518,11 @@ function ConciliacaoAtivosTab({
           <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
             <div className="text-xs text-slate-500 dark:text-slate-400 max-w-md">
               <span className="font-semibold text-slate-700 dark:text-slate-200">
-                Salários
+                Salários e dados do cliente
               </span>{" "}
-              — atualiza o salário de todos os funcionários do arquivo no
-              cadastro (usado no cálculo da cesta de 6% do salário).
+              — atualiza o salário de todos (usado na cesta de 6%) e preenche o
+              código do cliente de quem está sem (usado na coluna Cod da
+              planilha).
             </div>
             <div className="flex items-center gap-3">
               {salariosResultado && (
