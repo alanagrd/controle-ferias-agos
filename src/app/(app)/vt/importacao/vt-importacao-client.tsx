@@ -206,6 +206,10 @@ function ConciliacaoAtivosTab({
   const [transferenciasAplicadas, setTransferenciasAplicadas] = useState<
     Set<string>
   >(new Set());
+  const [syncSalarios, setSyncSalarios] = useState<
+    "idle" | "saving" | "done"
+  >("idle");
+  const [salariosResultado, setSalariosResultado] = useState<string | null>(null);
 
   const funcionariosPorCodigo = useMemo(() => {
     const map = new Map<string, FuncionarioLite>();
@@ -234,6 +238,8 @@ function ConciliacaoAtivosTab({
     setNovosAplicados(new Set());
     setDispensadosAplicados(new Set());
     setTransferenciasAplicadas(new Set());
+    setSyncSalarios("idle");
+    setSalariosResultado(null);
 
     const { linhas, avisos: avisosParser } = await parseAtivosVtFile(file);
     setLinhasArquivo(linhas);
@@ -301,6 +307,27 @@ function ConciliacaoAtivosTab({
     return { novos, dispensados, transferencias, obrasNoArquivo };
   }, [linhasArquivo, funcionariosPorCodigo, funcionariosPorId, funcCompPorFuncionarioId, funcComp]);
 
+  async function atualizarSalarios() {
+    if (!linhasArquivo) return;
+    setSyncSalarios("saving");
+    setSalariosResultado(null);
+    const payload = linhasArquivo
+      .filter((l) => l.salario != null)
+      .map((l) => ({ codigo: l.codigo, salario: l.salario }));
+    const { data, error } = await supabase.rpc("vt_sync_salarios_ativos", {
+      payload,
+    });
+    if (error) {
+      setSyncSalarios("idle");
+      setSalariosResultado(`Erro ao atualizar salários: ${error.message}`);
+      return;
+    }
+    setSyncSalarios("done");
+    setSalariosResultado(
+      `Salários atualizados: ${data ?? 0} funcionário(s) (de ${payload.length} no arquivo).`
+    );
+  }
+
   async function aplicarNovo(item: ItemNovo, key: string) {
     let funcionarioId = item.funcionario?.id;
 
@@ -317,6 +344,7 @@ function ConciliacaoAtivosTab({
           obra: item.linha.ccusto || null,
           cargo: item.linha.funcao || null,
           admissao: item.linha.admissao,
+          salario: item.linha.salario,
           status: "ATIVO",
         })
         .select("id")
@@ -479,6 +507,40 @@ function ConciliacaoAtivosTab({
           <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-xs text-slate-500 dark:text-slate-400">
             {linhasArquivo.length} linha(s) no arquivo · {obrasNoArquivo.size} centro(s) de
             custo cobertos por ele
+          </div>
+
+          <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="text-xs text-slate-500 dark:text-slate-400 max-w-md">
+              <span className="font-semibold text-slate-700 dark:text-slate-200">
+                Salários
+              </span>{" "}
+              — atualiza o salário de todos os funcionários do arquivo no
+              cadastro (usado no cálculo da cesta de 6% do salário).
+            </div>
+            <div className="flex items-center gap-3">
+              {salariosResultado && (
+                <span
+                  className={`text-xs ${
+                    syncSalarios === "done"
+                      ? "text-agos-green-dark dark:text-agos-green-light"
+                      : "text-rose-500"
+                  }`}
+                >
+                  {salariosResultado}
+                </span>
+              )}
+              <button
+                onClick={atualizarSalarios}
+                disabled={syncSalarios === "saving"}
+                className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {syncSalarios === "saving"
+                  ? "Atualizando…"
+                  : syncSalarios === "done"
+                  ? "Atualizar novamente"
+                  : "Atualizar salários"}
+              </button>
+            </div>
           </div>
 
           <ConciliacaoSecao

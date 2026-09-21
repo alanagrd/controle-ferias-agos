@@ -4,7 +4,13 @@ import VtCestaClient from "./cesta-client";
 export const dynamic = "force-dynamic";
 
 type ObraRow = { obra: string; funcs_total: number; funcs_atual: number };
-type CestaRow = { id: string; obra: string; valor: number };
+type CestaRow = {
+  id: string;
+  obra: string;
+  valor: number | null;
+  modo: string | null;
+  percentual: number | null;
+};
 
 export default async function VtCestaPage() {
   const supabase = await createClient();
@@ -14,7 +20,7 @@ export default async function VtCestaPage() {
       .from("v_vt_obras")
       .select("obra, funcs_total, funcs_atual")
       .order("obra"),
-    supabase.from("vt_cesta_obra").select("id, obra, valor"),
+    supabase.from("vt_cesta_obra").select("id, obra, valor, modo, percentual"),
   ]);
 
   return (

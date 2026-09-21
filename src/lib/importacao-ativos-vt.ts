@@ -17,6 +17,9 @@ export type LinhaAtivoVt = {
   codigo: string; // sem zero à esquerda, como vem no arquivo
   nome: string;
   funcao: string;
+  /** Salário do arquivo (col. 4). Horista traz valor/hora (ex.: 13,22);
+   *  mensalista traz o mensal (ex.: 2.908,40). Usado no cálculo de cesta 6%. */
+  salario: number | null;
   ccusto: string;
   admissao: string | null;
   clienteCodigo: string;
@@ -29,6 +32,17 @@ function toDateISO(br: string | undefined): string | null {
   if (!m) return null;
   const [, d, mo, y] = m;
   return `${y}-${mo.padStart(2, "0")}-${d.padStart(2, "0")}`;
+}
+
+function toNumberBR(v: string | undefined): number | null {
+  if (v == null) return null;
+  let s = v.trim();
+  if (!s) return null;
+  // formato pt-BR: ponto = milhar, vírgula = decimal ("2.908,40" -> 2908.40)
+  s = s.replace(/[^0-9.,-]/g, "");
+  if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
 }
 
 export async function parseAtivosVtFile(
@@ -62,6 +76,7 @@ export async function parseAtivosVtFile(
       codigo,
       nome,
       funcao: (cols[2] ?? "").trim(),
+      salario: toNumberBR(cols[3]),
       ccusto: (cols[4] ?? "").trim(),
       admissao: toDateISO(cols[5]),
       clienteCodigo: (cols[6] ?? "").trim(),

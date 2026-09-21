@@ -24,10 +24,57 @@ type FuncRow = {
   codigo: string | null;
   nome: string;
   cliente_codigo: string | null;
+  admissao: string | null;
+  salario: number | null;
 };
 type AptRow = { func_comp_id: string; cesta_basica: number | null };
 type LancRow = { func_comp_id: string; motivo: string | null; valor: number };
-type CestaRow = { obra: string; valor: number };
+type CestaRow = {
+  obra: string;
+  valor: number | null;
+  modo: string | null;
+  percentual: number | null;
+};
+
+// Regras de conversão de salário horista → mensal para a cesta de 6%.
+const SALARIO_HORISTA_LIMITE = 50; // acima disso já é salário mensal
+const HORAS_MES = 220;
+
+function calcCestaFunc(
+  reg: CestaRow | undefined,
+  salario: number | null,
+  admissao: string | null,
+  ano: number,
+  mes: number
+): number | null {
+  if (!reg) return null;
+  let base: number | null;
+  if (reg.modo === "salario_pct") {
+    if (salario == null) return null; // sem salário não dá pra calcular 6%
+    const mensal =
+      salario > SALARIO_HORISTA_LIMITE ? salario : salario * HORAS_MES;
+    base = mensal * ((reg.percentual ?? 6) / 100);
+  } else {
+    base = reg.valor;
+  }
+  if (base == null) return null;
+  // Proporcional para quem foi admitido dentro do mês da competência:
+  // (valor cheio / 30) × dias, contando do dia da admissão até o dia 30.
+  if (admissao) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(admissao);
+    if (m) {
+      const ay = Number(m[1]);
+      const am = Number(m[2]);
+      const ad = Number(m[3]);
+      if (ay === ano && am === mes) {
+        const dia = Math.min(ad, 30);
+        const dias = Math.max(0, 30 - dia + 1);
+        base = (base / 30) * dias;
+      }
+    }
+  }
+  return Math.round(base * 100) / 100;
+}
 
 export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as {
@@ -75,7 +122,7 @@ export async function POST(req: NextRequest) {
     fetchAllRows<FuncRow>((from, to) =>
       supabase
         .from("rh_funcionarios")
-        .select("id, codigo, nome, cliente_codigo")
+        .select("id, codigo, nome, cliente_codigo, admissao, salario")
         .order("id")
         .range(from, to)
     ),
@@ -96,7 +143,7 @@ export async function POST(req: NextRequest) {
         .range(from, to)
     ),
     // Cadastro de Cesta Básica por obra (poucas dezenas de linhas).
-    supabase.from("vt_cesta_obra").select("obra, valor"),
+    supabase.from("vt_cesta_obra").select("obra, valor, modo, percentual"),
   ]);
 
   const funcById = new Map((funcionarios ?? []).map((f) => [f.id, f]));
@@ -104,10 +151,10 @@ export async function POST(req: NextRequest) {
     (apontamentos ?? []).map((a) => [a.func_comp_id, a.cesta_basica])
   );
   // Cesta cadastrada por obra (chave normalizada: trim + maiúsculas).
-  const cestaPorObra = new Map<string, number>();
+  const cestaPorObra = new Map<string, CestaRow>();
   ((cestas ?? []) as CestaRow[]).forEach((c) => {
     const k = (c.obra ?? "").trim().toUpperCase();
-    if (k) cestaPorObra.set(k, c.valor);
+    if (k) cestaPorObra.set(k, c);
   });
 
   // Reembolso VT (901) e VR (904) avulsos por func_comp — vêm do sistema.
@@ -164,9 +211,19 @@ export async function POST(req: NextRequest) {
         valorDiario: fc.valor_diario,
         dias: fc.dias_uteis,
         vr: fc.vr_valor,
-        // Cesta vem do cadastro por obra; se a obra não estiver cadastrada,
-        // cai no valor do apontamento (reimportado), senão em branco.
-        cesta: cestaPorObra.get(obraK.toUpperCase()) ?? cestaByFc.get(fc.id) ?? null,
+        // Cesta: cadastro por obra (valor fixo ou 6% do salário), já com
+        // proporcional p/ admitidos no mês. Sem cadastro/salário, cai no
+        // valor do apontamento reimportado; senão em branco.
+        cesta:
+          calcCestaFunc(
+            cestaPorObra.get(obraK.toUpperCase()),
+            f?.salario ?? null,
+            f?.admissao ?? null,
+            comp.ano,
+            comp.mes
+          ) ??
+          cestaByFc.get(fc.id) ??
+          null,
         reembolsoVt: reembVtByFc.get(fc.id) ?? null,
         reembolsoVr: reembVrByFc.get(fc.id) ?? null,
       };
