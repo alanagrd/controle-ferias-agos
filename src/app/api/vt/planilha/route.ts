@@ -58,15 +58,22 @@ function calcCestaFunc(
     base = reg.valor;
   }
   if (base == null) return null;
-  // Proporcional para quem foi admitido dentro do mês da competência:
+  // Proporcional para quem foi admitido no MÊS DO FECHAMENTO DO PONTO, que é o
+  // mês ANTERIOR à competência (a competência Outubro paga o ponto de Setembro).
   // (valor cheio / 30) × dias, contando do dia da admissão até o dia 30.
   if (admissao) {
+    let refAno = ano;
+    let refMes = mes - 1;
+    if (refMes === 0) {
+      refMes = 12;
+      refAno = ano - 1;
+    }
     const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(admissao);
     if (m) {
       const ay = Number(m[1]);
       const am = Number(m[2]);
       const ad = Number(m[3]);
-      if (ay === ano && am === mes) {
+      if (ay === refAno && am === refMes) {
         const dia = Math.min(ad, 30);
         const dias = Math.max(0, 30 - dia + 1);
         base = (base / 30) * dias;
