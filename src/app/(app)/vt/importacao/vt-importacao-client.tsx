@@ -856,8 +856,28 @@ function ApontamentoTab({
   const semFuncionario = conciliadas.filter((c) => !c.funcionario);
   const semNaCompetencia = conciliadas.filter((c) => c.funcionario && !c.funcComp);
 
+  // Dedupe por funcionário: a mesma matrícula pode vir em 2 obras no arquivo
+  // (ex.: transferência no meio do mês). Fica a linha cuja obra do arquivo bate
+  // com a obra selecionada; se nenhuma bater, mantém a primeira. Sem isso, o
+  // upsert quebra com "ON CONFLICT ... cannot affect row a second time".
+  const matchedUnicos = useMemo(() => {
+    const porFuncComp = new Map<string, LinhaConciliada>();
+    for (const c of matched) {
+      const id = c.funcComp!.id;
+      const existente = porFuncComp.get(id);
+      if (!existente) {
+        porFuncComp.set(id, c);
+        continue;
+      }
+      const cBate = (c.linha.obra ?? "").trim() === obraSelecionada;
+      const eBate = (existente.linha.obra ?? "").trim() === obraSelecionada;
+      if (cBate && !eBate) porFuncComp.set(id, c);
+    }
+    return Array.from(porFuncComp.values());
+  }, [matched, obraSelecionada]);
+
   async function aplicarImportacao() {
-    if (matched.length === 0) return;
+    if (matchedUnicos.length === 0) return;
     setApplying(true);
 
     // Valor diário: só atualiza quando a planilha de ponto traz um valor
@@ -868,7 +888,7 @@ function ApontamentoTab({
     // está na planilha de ponto daquele mês).
     let atualizacoesFuncComp = 0;
 
-    for (const c of matched) {
+    for (const c of matchedUnicos) {
       const updates: Record<string, number | null> = {};
       const novoValorDiario =
         colunasEncontradas.valorDiario &&
@@ -892,7 +912,7 @@ function ApontamentoTab({
       }
     }
 
-    const rows = matched.map((c) => ({
+    const rows = matchedUnicos.map((c) => ({
       func_comp_id: c.funcComp!.id,
       h50: c.linha.h50,
       h70: c.linha.h70,
@@ -1018,7 +1038,7 @@ function ApontamentoTab({
                 Prontos para importar
               </p>
               <p className="text-[22px] font-bold mt-1 text-agos-green-dark dark:text-agos-green-light">
-                {matched.length}
+                {matchedUnicos.length}
               </p>
             </div>
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4">
@@ -1085,12 +1105,12 @@ function ApontamentoTab({
             )}
             <button
               onClick={aplicarImportacao}
-              disabled={applying || matched.length === 0 || !obraSelecionada}
+              disabled={applying || matchedUnicos.length === 0 || !obraSelecionada}
               className="ml-auto bg-agos-green hover:bg-agos-green-dark text-white text-sm font-semibold rounded-lg px-4 py-2 disabled:opacity-60"
             >
               {applying
                 ? "Importando..."
-                : `Importar ${matched.length} apontamento(s) de ${obraSelecionada || "..."}`}
+                : `Importar ${matchedUnicos.length} apontamento(s) de ${obraSelecionada || "..."}`}
             </button>
           </div>
         </>

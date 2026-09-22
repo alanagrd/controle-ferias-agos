@@ -23,6 +23,9 @@ import * as XLSX from "xlsx";
  */
 export type LinhaApontamento = {
   matricula: string;
+  /** Obra (centro de custo) da linha, como vem no arquivo — usada para
+   *  desempatar quando a mesma matrícula aparece em 2 obras (transferência). */
+  obra: string | null;
   valorDiario: number | null;
   /** Qtd de dias úteis de VT (coluna Qtd) — o banco recalcula valor_total. */
   dias: number;
@@ -54,7 +57,7 @@ function normalizaHeader(s: string): string {
     .replace(/[^a-z0-9]/g, "");
 }
 
-type CampoNumerico = Exclude<keyof LinhaApontamento, "matricula">;
+type CampoNumerico = Exclude<keyof LinhaApontamento, "matricula" | "obra">;
 
 const HEADER_MATCHERS: Record<CampoNumerico, (c: string) => boolean> = {
   valorDiario: (c) => c.includes("vunitario"),
@@ -158,6 +161,7 @@ export async function parseApontamentoXlsx(
   let headerRowIdx = -1;
   let colMap: Partial<Record<CampoNumerico, number>> = {};
   let matrIdxFinal = -1;
+  let obraIdxFinal = -1;
 
   for (let i = 0; i < Math.min(raw.length, 20); i++) {
     const row = raw[i];
@@ -175,6 +179,7 @@ export async function parseApontamentoXlsx(
     headerRowIdx = i;
     colMap = map;
     matrIdxFinal = matrIdx;
+    obraIdxFinal = normalized.findIndex((c) => c === "obra");
     break;
   }
 
@@ -220,6 +225,10 @@ export async function parseApontamentoXlsx(
 
     linhas.push({
       matricula: String(matrRaw).trim(),
+      obra:
+        obraIdxFinal >= 0
+          ? String(row[obraIdxFinal] ?? "").trim() || null
+          : null,
       valorDiario: colMap.valorDiario != null ? numOuNull(row[colMap.valorDiario]) : null,
       dias: colMap.dias != null ? num(row[colMap.dias]) : 0,
       diasReembolso: colMap.diasReembolso != null ? num(row[colMap.diasReembolso]) : 0,
