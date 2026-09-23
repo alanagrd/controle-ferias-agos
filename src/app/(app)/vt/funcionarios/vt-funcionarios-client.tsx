@@ -179,6 +179,38 @@ export default function VtFuncionariosClient({
     }
   }
 
+  // Dispensa manual SÓ nesta competência (snapshot). Não inativa o cadastro —
+  // a dispensa geral (INATIVO em todos os módulos) continua vindo da importação
+  // de ativos, que detecta por ausência na planilha.
+  async function toggleDispensaMes(r: Row) {
+    if (!competenciaAtual || competenciaAtual.status !== "ABERTA") return;
+    const dispensar = r.fc.status_no_mes === "ATIVO";
+    if (dispensar) {
+      const ok = window.confirm(
+        `Dispensar ${r.f?.nome ?? "este funcionário"} apenas na competência ` +
+          `${nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)}?\n\n` +
+          `Isso NÃO inativa o cadastro — a dispensa geral continua vindo da ` +
+          `importação de ativos.`
+      );
+      if (!ok) return;
+    }
+    const { data, error } = await supabase
+      .from("vt_funcionario_competencia")
+      .update({ status_no_mes: dispensar ? "DISPENSADO" : "ATIVO" })
+      .eq("id", r.fc.id)
+      .select(
+        "id, funcionario_id, competencia_id, obra_snapshot, status_no_mes, tipo_vt, valor_diario, dias_uteis, valor_total, vr_valor"
+      )
+      .single();
+    if (error || !data) {
+      alert(error?.message ?? "Erro ao atualizar a dispensa.");
+      return;
+    }
+    setFuncCompState((prev) =>
+      prev.map((fc) => (fc.id === data.id ? (data as FuncionarioCompetencia) : fc))
+    );
+  }
+
   const totalFiltrado = filtered.reduce((acc, r) => acc + (r.fc.valor_total ?? 0), 0);
   const totalVr = filtered.reduce((acc, r) => acc + (r.fc.vr_valor ?? 0), 0);
 
@@ -482,6 +514,20 @@ export default function VtFuncionariosClient({
                           >
                             Avulso{r.vtAvulso !== 0 || r.vrAvulso !== 0 ? "" : " +"}
                           </button>
+                          {competenciaAtual?.status === "ABERTA" && (
+                            <button
+                              onClick={() => toggleDispensaMes(r)}
+                              className={
+                                r.fc.status_no_mes === "ATIVO"
+                                  ? "text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline"
+                                  : "text-xs font-semibold text-agos-green-dark dark:text-agos-green-light hover:underline"
+                              }
+                            >
+                              {r.fc.status_no_mes === "ATIVO"
+                                ? "Dispensar"
+                                : "Reativar"}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
