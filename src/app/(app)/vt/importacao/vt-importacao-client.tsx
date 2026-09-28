@@ -935,18 +935,55 @@ function ApontamentoTab({
       .from("vt_apontamento")
       .upsert(rows, { onConflict: "func_comp_id" });
 
-    setApplying(false);
     if (error) {
+      setApplying(false);
       setResultado(`Erro ao aplicar: ${error.message}`);
       return;
     }
 
-    setResultado(
-      `${rows.length} apontamento(s) importado(s) para ${obraSelecionada}` +
-        (atualizacoesFuncComp > 0
-          ? ` (${atualizacoesFuncComp} com valor diário/VR atualizado).`
-          : ".")
-    );
+    // Reembolso VR pago pela AGOS (coluna "Vr M.A 904 AGOS") vira lançamento
+    // avulso "Reembolso VR" (cobrado do cliente). Idempotente: substitui os que
+    // vieram de importações anteriores desta obra (origem = "apontamento"), sem
+    // tocar nos lançamentos manuais.
+    let reembolsosVr = 0;
+    const fcIds = matchedUnicos.map((c) => c.funcComp!.id);
+    const { error: errDel } = await supabase
+      .from("vt_lancamentos")
+      .delete()
+      .in("func_comp_id", fcIds)
+      .eq("motivo", "Reembolso VR")
+      .eq("origem", "apontamento");
+    if (!errDel) {
+      // data de referência: último dia do mês do ponto (mês anterior à competência)
+      const pm = competenciaAtual.mes - 1;
+      const py = pm === 0 ? competenciaAtual.ano - 1 : competenciaAtual.ano;
+      const pmes = pm === 0 ? 12 : pm;
+      const dataRef = new Date(Date.UTC(py, pmes, 0)).toISOString().slice(0, 10);
+      const lancRows = matchedUnicos
+        .filter((c) => (c.linha.reembolsoVrAgos ?? 0) > 0)
+        .map((c) => ({
+          func_comp_id: c.funcComp!.id,
+          data: dataRef,
+          valor: c.linha.reembolsoVrAgos,
+          motivo: "Reembolso VR",
+          cobrado_cliente: true,
+          origem: "apontamento",
+        }));
+      if (lancRows.length > 0) {
+        const { error: errLanc } = await supabase
+          .from("vt_lancamentos")
+          .insert(lancRows);
+        if (!errLanc) reembolsosVr = lancRows.length;
+      }
+    }
+
+    setApplying(false);
+    let msg = `${rows.length} apontamento(s) importado(s) para ${obraSelecionada}.`;
+    if (atualizacoesFuncComp > 0)
+      msg += ` ${atualizacoesFuncComp} com valor diário/VR atualizado.`;
+    if (reembolsosVr > 0)
+      msg += ` ${reembolsosVr} reembolso(s) de VR (904) lançado(s).`;
+    setResultado(msg);
   }
 
   return (

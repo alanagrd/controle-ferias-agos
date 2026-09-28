@@ -36,8 +36,11 @@ export type LinhaApontamento = {
   /** Valor de desconto VT já calculado na planilha (coluna Valor Desc VT). */
   valorDesconto: number;
   vrValor: number | null;
-  /** Reembolso de VR ao funcionário (coluna Vr M.A). */
+  /** Reembolso de VR ao funcionário (coluna Vr M.A 274). */
   reembolsoVr: number;
+  /** Reembolso de VR pago pela AGOS (coluna Vr M.A 904 AGOS) — vira
+   *  lançamento avulso "Reembolso VR" na importação do apontamento. */
+  reembolsoVrAgos: number;
   h50: number;
   h70: number;
   h100: number;
@@ -67,8 +70,10 @@ const HEADER_MATCHERS: Record<CampoNumerico, (c: string) => boolean> = {
   valorReembolso: (c) => c.includes("totalma"),
   valorDesconto: (c) => c.includes("valordescvt"),
   vrValor: (c) => /^vr\d*$/.test(c),
-  // "Vr M.A 274" = reembolso de VR; exclui "Vr M.A 904 AGOS" (col AGOS, outra coisa).
+  // "Vr M.A 274" = reembolso de VR (obra); exclui "Vr M.A 904 AGOS".
   reembolsoVr: (c) => c.includes("vrma") && !c.includes("agos"),
+  // "Vr M.A 904 AGOS" = reembolso de VR pago pela AGOS (evento 904).
+  reembolsoVrAgos: (c) => c.includes("vrma") && c.includes("agos"),
   h50: (c) => c.includes("50"),
   h70: (c) => c.includes("70"),
   h100: (c) => c.includes("100"),
@@ -239,6 +244,8 @@ export async function parseApontamentoXlsx(
       valorDesconto: colMap.valorDesconto != null ? num(row[colMap.valorDesconto]) : 0,
       vrValor: colMap.vrValor != null ? numOuNull(row[colMap.vrValor]) : null,
       reembolsoVr: colMap.reembolsoVr != null ? num(row[colMap.reembolsoVr]) : 0,
+      reembolsoVrAgos:
+        colMap.reembolsoVrAgos != null ? num(row[colMap.reembolsoVrAgos]) : 0,
       h50: colMap.h50 != null ? num(row[colMap.h50]) : 0,
       h70: colMap.h70 != null ? num(row[colMap.h70]) : 0,
       h100: colMap.h100 != null ? num(row[colMap.h100]) : 0,
