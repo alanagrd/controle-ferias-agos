@@ -2,10 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 type Modulo = "ferias" | "aso" | "vt" | "certificados" | "holerites";
 
-const MODULE_LINKS: Record<Modulo, { href: string; label: string }[]> = {
+type NavLink = { href: string; label: string };
+type NavGroup = { label: string; children: NavLink[] };
+type NavEntry = NavLink | NavGroup;
+
+function isGroup(e: NavEntry): e is NavGroup {
+  return "children" in e;
+}
+
+const MODULE_LINKS: Record<Modulo, NavEntry[]> = {
   ferias: [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/funcionarios", label: "Funcionários" },
@@ -30,9 +39,14 @@ const MODULE_LINKS: Record<Modulo, { href: string; label: string }[]> = {
     { href: "/certificados/historico", label: "Histórico" },
     { href: "/certificados/modelos", label: "Funções / Modelos" },
     { href: "/certificados/config", label: "Configuração" },
-    { href: "/certificados/epi", label: "Ficha de EPI" },
-    { href: "/certificados/epi-catalogo", label: "Catálogo EPI" },
-    { href: "/certificados/epi-modelos", label: "Modelos EPI" },
+    {
+      label: "EPI",
+      children: [
+        { href: "/certificados/epi", label: "Ficha de EPI" },
+        { href: "/certificados/epi-catalogo", label: "Catálogo EPI" },
+        { href: "/certificados/epi-modelos", label: "Modelos EPI" },
+      ],
+    },
   ],
   holerites: [
     { href: "/holerites/funcionarios", label: "Funcionários" },
@@ -55,6 +69,10 @@ function moduloAtivo(pathname: string | null): Modulo {
   if (pathname?.startsWith("/certificados")) return "certificados";
   if (pathname?.startsWith("/holerites")) return "holerites";
   return "ferias";
+}
+
+function rotaAtiva(pathname: string | null, href: string): boolean {
+  return pathname === href || !!pathname?.startsWith(href + "/");
 }
 
 /** Abas de módulo — barra escura do topo. */
@@ -80,30 +98,100 @@ export function ModuleTabs() {
   );
 }
 
+const linkBase =
+  "px-3 py-2.5 text-[13px] border-b-2 whitespace-nowrap transition-colors ";
+const linkAtivo =
+  "border-agos-green text-agos-charcoal dark:text-white font-semibold";
+const linkInativo =
+  "border-transparent text-slate-500 dark:text-slate-400 hover:text-agos-charcoal dark:hover:text-slate-200 font-medium";
+
+function GrupoNav({
+  grupo,
+  pathname,
+}: {
+  grupo: NavGroup;
+  pathname: string | null;
+}) {
+  const [aberto, setAberto] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const algumAtivo = grupo.children.some((c) => rotaAtiva(pathname, c.href));
+
+  // fecha ao navegar
+  useEffect(() => {
+    setAberto(false);
+  }, [pathname]);
+
+  // fecha ao clicar fora
+  useEffect(() => {
+    if (!aberto) return;
+    const h = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setAberto(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [aberto]);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setAberto((a) => !a)}
+        className={
+          linkBase +
+          "inline-flex items-center gap-1 " +
+          (algumAtivo ? linkAtivo : linkInativo)
+        }
+      >
+        {grupo.label}
+        <span className="text-[9px] leading-none">▾</span>
+      </button>
+      {aberto && (
+        <div className="absolute left-0 top-full z-30 mt-1 min-w-[180px] rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-lg py-1">
+          {grupo.children.map((c) => {
+            const isActive = rotaAtiva(pathname, c.href);
+            return (
+              <Link
+                key={c.href}
+                href={c.href}
+                onClick={() => setAberto(false)}
+                className={
+                  "block px-3 py-2 text-[13px] " +
+                  (isActive
+                    ? "bg-agos-green/10 text-agos-green-dark dark:text-agos-green-light font-semibold"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60")
+                }
+              >
+                {c.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** Sub-navegação do módulo ativo — barra clara. */
 export function ModuleSubNav() {
   const pathname = usePathname();
   const active = moduloAtivo(pathname);
   return (
-    <nav className="flex items-center gap-1 overflow-x-auto -mb-px">
-      {MODULE_LINKS[active].map((link) => {
-        const isActive =
-          pathname === link.href || pathname?.startsWith(link.href + "/");
-        return (
+    <nav className="flex items-center gap-1 flex-wrap">
+      {MODULE_LINKS[active].map((entry) =>
+        isGroup(entry) ? (
+          <GrupoNav key={entry.label} grupo={entry} pathname={pathname} />
+        ) : (
           <Link
-            key={link.href}
-            href={link.href}
+            key={entry.href}
+            href={entry.href}
             className={
-              "px-3 py-2.5 text-[13px] border-b-2 whitespace-nowrap transition-colors " +
-              (isActive
-                ? "border-agos-green text-agos-charcoal dark:text-white font-semibold"
-                : "border-transparent text-slate-500 dark:text-slate-400 hover:text-agos-charcoal dark:hover:text-slate-200 font-medium")
+              linkBase + (rotaAtiva(pathname, entry.href) ? linkAtivo : linkInativo)
             }
           >
-            {link.label}
+            {entry.label}
           </Link>
-        );
-      })}
+        )
+      )}
     </nav>
   );
 }
