@@ -30,6 +30,9 @@ const MODULE_LINKS: Record<Modulo, { href: string; label: string }[]> = {
     { href: "/certificados/historico", label: "Histórico" },
     { href: "/certificados/modelos", label: "Funções / Modelos" },
     { href: "/certificados/config", label: "Configuração" },
+    { href: "/certificados/epi", label: "Ficha de EPI" },
+    { href: "/certificados/epi-catalogo", label: "Catálogo EPI" },
+    { href: "/certificados/epi-modelos", label: "Modelos EPI" },
   ],
   holerites: [
     { href: "/holerites/funcionarios", label: "Funcionários" },

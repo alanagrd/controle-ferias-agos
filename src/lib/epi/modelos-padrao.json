@@ -1,0 +1,9949 @@
+[
+{
+"funcao": "ABASTECEDOR DE INSUMOS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+},
+{
+"qtd": 1,
+"descricao": "RESPIRADOR PURIFICADOR DE AR"
+}
+]
+},
+{
+"funcao": "ADMINISTRATIVO DE OBRAS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AJUDANTE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AJUDANTE DE MUNCK",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AJUDANTE PRÁTICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ALMOXARIFE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ANALISTA ADMINISTRATIVO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ANALISTA DE DP",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ANALISTA DE RH",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ANALISTA DE T.I.",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "APONTADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "APROPRIADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "APROPRIADOR DE CUSTO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ARQUIVISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSESSOR TÉCNICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSISTENTE ADMINISTRATIVO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSISTENTE DE COMPRAS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSISTENTE DE CONTABILIDADE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSISTENTE DE DEPARTAMENTO PESSOAL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSISTENTE DE LOGISTICA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSISTENTE DE MEDIÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSISTENTE DE RH",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSISTENTE DE TI",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ASSISTENTE TÉCNICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "PROTETOR AURICULAR TIPO CONCHA"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA RESPIRATORIA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA ANTIVIBRAÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR ABASTECEDOR DE INSUMOS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+},
+{
+"qtd": 1,
+"descricao": "RESPIRADOR PURIFICADOR DE AR"
+}
+]
+},
+{
+"funcao": "AUXILIAR ADMINISTRATIVO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE ALMOXARIFE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE ARMADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE BOMBEIRO HIDRÁULICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE CARPINTEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE COMPRAS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE CONCRETISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE CONTABILIDADE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE DEPARTAMENTO PESSOAL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE ELETRICISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "FILTRO SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA ELETRICISTA"
+},
+{
+"qtd": 2,
+"descricao": "VESTIMENTA PARA PROTEÇÃO DO TRONCO NR 10"
+},
+{
+"qtd": 2,
+"descricao": "CALÇA ELETRICISTA NR 10"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA PARA ELETRICISTA (PELICA)"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE ENCANADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE ENFERMAGEM",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE ENFERMAGEM DO TRABALHO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE ENGENHARIA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE ESCAVAÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE FATURAMENTO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE FRENTE DE MAQUINA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE INJEÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE LIMPEZA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE MECÂNICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE PATIO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE PERFURATRIZ",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE PINTOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 2,
+"descricao": "MASCARA COM FILTRO PARA PINTURA"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE REBAIXAMENTO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE REBAIXAMENTO DE SOLO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE SEGURANÇA DO TRABALHO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE SERVIÇOS GERAIS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE SOLDADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL PFF2"
+},
+{
+"qtd": 1,
+"descricao": "AVENTAL DE RASPA DE COURO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA 20CM"
+},
+{
+"qtd": 1,
+"descricao": "MASCARA PARA SOLDA DE SEG."
+},
+{
+"qtd": 1,
+"descricao": "CAPUZ DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  RASPA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR FACIAL PARA  SOLDADOR"
+},
+{
+"qtd": 1,
+"descricao": "PERNEIRA DE RASPA"
+},
+{
+"qtd": 1,
+"descricao": "BLUSÃO DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE T.I",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR DE TORNEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR GERAL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR MONTADOR DE TIRANTES",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "AUXILIAR TÉCNICO DE ENGENHARIA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "BOMBEIRO HIDRÁULICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "CARPINTEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "CARPINTEIRO SERRADOR DE OBRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "COMPRADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "CONCRETISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "CONFERENTE DE EXPEDIÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "CONTADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "CONTÍNUO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "CONTÍNUO DE OBRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "CONTROLADOR DE ACESSO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "COPEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "COZINHEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "DIRETOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ELETRICISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "FILTRO SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA ELETRICISTA"
+},
+{
+"qtd": 2,
+"descricao": "VESTIMENTA PARA PROTEÇÃO DO TRONCO NR 10"
+},
+{
+"qtd": 2,
+"descricao": "CALÇA ELETRICISTA NR 10"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA PARA ELETRICISTA (PELICA)"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ELETRICISTA CA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "FILTRO SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA ELETRICISTA"
+},
+{
+"qtd": 2,
+"descricao": "VESTIMENTA PARA PROTEÇÃO DO TRONCO NR 10"
+},
+{
+"qtd": 2,
+"descricao": "CALÇA ELETRICISTA NR 10"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA PARA ELETRICISTA (PELICA)"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ELETRICISTA CC",
+"itens": [
+{
+"qtd": 1,
+"descricao": "FILTRO SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA ELETRICISTA"
+},
+{
+"qtd": 2,
+"descricao": "VESTIMENTA PARA PROTEÇÃO DO TRONCO NR 10"
+},
+{
+"qtd": 2,
+"descricao": "CALÇA ELETRICISTA NR 10"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA PARA ELETRICISTA (PELICA)"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ELETRICISTA DE INSTALAÇÕES",
+"itens": [
+{
+"qtd": 1,
+"descricao": "FILTRO SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA ELETRICISTA"
+},
+{
+"qtd": 2,
+"descricao": "VESTIMENTA PARA PROTEÇÃO DO TRONCO NR 10"
+},
+{
+"qtd": 2,
+"descricao": "CALÇA ELETRICISTA NR 10"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA PARA ELETRICISTA (PELICA)"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ELETRICISTA DE MANUTENÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "FILTRO SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA ELETRICISTA"
+},
+{
+"qtd": 2,
+"descricao": "VESTIMENTA PARA PROTEÇÃO DO TRONCO NR 10"
+},
+{
+"qtd": 2,
+"descricao": "CALÇA ELETRICISTA NR 10"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA PARA ELETRICISTA (PELICA)"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCANADOR INDUSTRIAL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO ADMINISTRATIVO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO DE ATENDIMENTO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO DE OBRA GEOTECNIA SR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO DE OBRA LAMA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO DE OBRAS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO DE PATIO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO DE PINTURA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 2,
+"descricao": "MASCARA COM FILTRO PARA PINTURA"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO DE TURMA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENCARREGADO OBRA GEOTECNIA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENFERMEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENFERMEIRO DO TRABALHO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENGENHEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENGENHEIRO CIVIL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ENGENHEIRO DE SEGURANÇA DO TRABALHO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "FAXINEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "FEITOR DE ARMAÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "FEITOR DE CARPINTARIA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "FEITOR DE OBRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "FEITOR DE PÁTIO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "FEITOR DE REBAIXAMENTO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "GERENTE DE PESSOAL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "GUINCHEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "INJETADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "LABORATORISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "LAVADOR DE MAQUINAS E EQUIPAMENTOS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "LÍDER DE COZINHA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "LÍDER DE SOLDA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL PFF2"
+},
+{
+"qtd": 1,
+"descricao": "AVENTAL DE RASPA DE COURO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA 20CM"
+},
+{
+"qtd": 1,
+"descricao": "MASCARA PARA SOLDA DE SEG."
+},
+{
+"qtd": 1,
+"descricao": "CAPUZ DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  RASPA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR FACIAL PARA  SOLDADOR"
+},
+{
+"qtd": 1,
+"descricao": "PERNEIRA DE RASPA"
+},
+{
+"qtd": 1,
+"descricao": "BLUSÃO DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MANGOTEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MARTELETEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "PROTETOR AURICULAR TIPO CONCHA"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA RESPIRATORIA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA ANTIVIBRAÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MARTELETEIRO ALPINISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "PROTETOR AURICULAR TIPO CONCHA"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA RESPIRATORIA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA ANTIVIBRAÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MARTELETEIRO ALPINISTA LÍDER",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "PROTETOR AURICULAR TIPO CONCHA"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA RESPIRATORIA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA ANTIVIBRAÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MECANICO DE MANUTENÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MECANICO DE MAQUINAS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MECÂNICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFIC. MARTELETEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "PROTETOR AURICULAR TIPO CONCHA"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA RESPIRATORIA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA ANTIVIBRAÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL ABASTECEDOR DE INSUMOS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+},
+{
+"qtd": 1,
+"descricao": "RESPIRADOR PURIFICADOR DE AR"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL CONCRETISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE ALMOXARIFE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE ARMADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE BETONEIRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE BOMBEIRO HIDRÁULICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE CARPINTEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE INJEÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE MARTELETEIRO ALPINISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "PROTETOR AURICULAR TIPO CONCHA"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA RESPIRATORIA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA ANTIVIBRAÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE MONTADOR DE ANDAIME",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE PERFURATRIZ",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE REBAIXAMENTO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL DE SOLDA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL PFF2"
+},
+{
+"qtd": 1,
+"descricao": "AVENTAL DE RASPA DE COURO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA 20CM"
+},
+{
+"qtd": 1,
+"descricao": "MASCARA PARA SOLDA DE SEG."
+},
+{
+"qtd": 1,
+"descricao": "CAPUZ DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  RASPA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR FACIAL PARA  SOLDADOR"
+},
+{
+"qtd": 1,
+"descricao": "PERNEIRA DE RASPA"
+},
+{
+"qtd": 1,
+"descricao": "BLUSÃO DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL ENCANADOR INDUSTRIAL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL MANGOTEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL MECÂNICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL MONTADOR DE TIRANTE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL PEDREIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MEIO OFICIAL PINTOR INDUSTRIAL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 2,
+"descricao": "MASCARA COM FILTRO PARA PINTURA"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MESTRE DE INJEÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MESTRE DE OBRAS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MONTADOR DE ANDAIME",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA EM MALHA PIGMENTADA NA PALMA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MONTADOR DE TIRANTE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MONTADOR ESPECIALISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MOTORISTA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MOTORISTA DE CAMINHÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MOTORISTA DE DIRETORIA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MOTORISTA DE MUNCK",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MOTORISTA DE UTILITÁRIOS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MOTORISTA DIRETORIA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MOTORISTA ESPECIAL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "MOTORISTA OPERADOR MUNCK",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OFICIAL DE REBAIXAMENTO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE BETONEIRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE BOMBA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE CREMALHEIRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE EMPILHADEIRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE ESCAVADEIRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE ESCAVADEIRA TRAINEE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE GRUA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE GUINDASTE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE GUINDASTE APOIO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE GUINDASTE SR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE GUINDASTE TRAINEE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE INJEÇÃO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE MAQUINAS PESADAS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE MÁQUINAS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE MINI GRUA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE PERFURATRIZ",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE PERFURATRIZ GP - SR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE PERFURATRIZ MPP",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE PERFURATRIZ TRAINEE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE REBAIXAMENTO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE RETROESCAVADEIRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME COPMPLETO -REFLETIVO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "OPERADOR DE ROÇADEIRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "PEDREIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "PINTOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 2,
+"descricao": "MASCARA COM FILTRO PARA PINTURA"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "PINTOR INDUSTRIAL",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 2,
+"descricao": "MASCARA COM FILTRO PARA PINTURA"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "PORTEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "PROFISSIONAL LIDER DE OBRA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "PRONTENDEDOR DE TIRANTES",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEÁVEL"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "SERVENTE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "SERVENTE DE LIMPEZA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "SINALEIRO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "MACACÃO IMPERMEALVEL"
+},
+{
+"qtd": 10,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "BOTA IMPERMEAVEL"
+},
+{
+"qtd": 2,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "SOLDADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL PFF2"
+},
+{
+"qtd": 1,
+"descricao": "AVENTAL DE RASPA DE COURO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE RASPA 20CM"
+},
+{
+"qtd": 1,
+"descricao": "MASCARA PARA SOLDA DE SEG."
+},
+{
+"qtd": 1,
+"descricao": "CAPUZ DE PROTEÇÃO"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  RASPA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR FACIAL PARA  SOLDADOR"
+},
+{
+"qtd": 1,
+"descricao": "PERNEIRA DE RASPA"
+},
+{
+"qtd": 1,
+"descricao": "BLUSÃO DE RASPA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "TÉCNICO DE CONTABILIDADE",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 5,
+"descricao": "MASC. SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "TÉCNICO DE EDIFICAÇÕES",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "TÉCNICO DE ENFERMAGEM DO TRABALHO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "TÉCNICO DE OBRAS CIVIS",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "TÉCNICO DE SEGURANÇA DO TRABALHO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "TOPOGRAFO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "TORNEIRO MECÂNICO",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMIFACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE  VAQUETA"
+},
+{
+"qtd": 1,
+"descricao": "CINTURÃO DE SEG. TIPO PARAQUEDISTA E TALABARTES"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE LATEX"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "VIGIA",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+},
+{
+"funcao": "ZELADOR",
+"itens": [
+{
+"qtd": 1,
+"descricao": "PROTETOR SOLAR"
+},
+{
+"qtd": 1,
+"descricao": "OCULOS DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "PROTETOR AURICULAR TIPO PLUGUE"
+},
+{
+"qtd": 1,
+"descricao": "CAPACETE"
+},
+{
+"qtd": 1,
+"descricao": "BOTA DE SEGURANÇA"
+},
+{
+"qtd": 2,
+"descricao": "UNIFORME REFLETIVEL COMPLETO"
+},
+{
+"qtd": 5,
+"descricao": "MASCARA SEMI FACIAL CONTRA PÓ"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE PROTEÇÃO"
+},
+{
+"qtd": 1,
+"descricao": "CREME PROTETOR PARA PELE"
+},
+{
+"qtd": 2,
+"descricao": "LUVA DE NITRILICA"
+}
+]
+}
+]
