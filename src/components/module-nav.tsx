@@ -47,6 +47,13 @@ const MODULE_LINKS: Record<Modulo, NavEntry[]> = {
         { href: "/certificados/epi-modelos", label: "Modelos EPI" },
       ],
     },
+    {
+      label: "Ordem de Serviço",
+      children: [
+        { href: "/certificados/os", label: "Emitir OS" },
+        { href: "/certificados/os-modelos", label: "Modelos OS" },
+      ],
+    },
   ],
   holerites: [
     { href: "/holerites/funcionarios", label: "Funcionários" },
