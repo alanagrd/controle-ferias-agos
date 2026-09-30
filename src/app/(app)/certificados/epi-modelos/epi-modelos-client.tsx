@@ -195,7 +195,7 @@ export default function EpiModelosClient({
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-50 dark:bg-slate-800/60 text-left text-xs text-slate-500 dark:text-slate-400">
-                    <th className="px-3 py-2 font-medium w-16 text-center">Qtde</th>
+                    <th className="px-3 py-2 font-medium w-20 text-center">Qtde</th>
                     <th className="px-3 py-2 font-medium">Descrição do EPI</th>
                     <th className="px-3 py-2 font-medium w-20 text-center">C.A</th>
                     <th className="px-3 py-2 w-10"></th>
@@ -208,19 +208,24 @@ export default function EpiModelosClient({
                       <tr key={i}>
                         <td className="px-3 py-1.5 text-center">
                           <input
-                            type="number"
-                            min={0}
+                            inputMode="numeric"
                             value={it.qtd}
                             onChange={(e) =>
                               setItens((prev) =>
                                 prev.map((x, j) =>
                                   j === i
-                                    ? { ...x, qtd: Number(e.target.value) || 0 }
+                                    ? {
+                                        ...x,
+                                        qtd:
+                                          Number(
+                                            e.target.value.replace(/\D/g, "")
+                                          ) || 0,
+                                      }
                                     : x
                                 )
                               )
                             }
-                            className="input w-14 text-center py-1 text-sm tabular-nums"
+                            className="input w-16 text-center py-1 text-sm tabular-nums"
                           />
                         </td>
                         <td className="px-3 py-1.5 text-slate-800 dark:text-slate-100">
