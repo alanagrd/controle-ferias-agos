@@ -1,6 +1,8 @@
 import type { DadosOs, OsModelo } from "./types";
 
 const LOGO = "/certificados/logo-agos.jpg";
+const ASSINATURA_THIAGO = "/certificados/assinatura-thiago.jpg";
+const ASSINATURA_THIAGO_ASPECT = 354 / 97;
 
 const EMPRESA = "AGOS SERV AUX DA CONSTRUCAO LTDA";
 const CNPJ = "04.113.492/0001-82";
@@ -118,7 +120,10 @@ export async function gerarOrdemServicoPdf(
 
   let y = 12;
 
-  const logo = await loadImageAsDataUrl(LOGO);
+  const [logo, assinThiago] = await Promise.all([
+    loadImageAsDataUrl(LOGO),
+    loadImageAsDataUrl(ASSINATURA_THIAGO),
+  ]);
   if (logo) doc.addImage(logo, "JPEG", ML, 8, 18, 18);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
@@ -227,12 +232,19 @@ export async function gerarOrdemServicoPdf(
   paragrafo(TERMO, { size: 8.5 });
 
   // Local e data + assinaturas
-  novaPagina(38);
+  novaPagina(44);
   y += 6;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.text(fmtExtenso(dados.dataEmissao), ML, y);
-  y += 16;
+  y += 18;
+
+  // Assinatura digitalizada do engenheiro de segurança, sobre a linha dele.
+  if (assinThiago) {
+    const w = 38;
+    const h = w / ASSINATURA_THIAGO_ASPECT;
+    doc.addImage(assinThiago, "JPEG", 156 - w / 2, y - h - 0.5, w, h);
+  }
 
   // Assinatura do funcionário (esquerda) e do engenheiro (direita)
   doc.line(ML, y, ML + 80, y);
