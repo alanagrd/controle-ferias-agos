@@ -89,6 +89,7 @@ export async function gerarFichaEpiPdf(
     ],
     body,
     styles: { fontSize: 8, cellPadding: 1.4, lineColor: [180, 180, 180], lineWidth: 0.1 },
+    alternateRowStyles: { fillColor: [255, 255, 255] },
     headStyles: {
       fillColor: [44, 44, 44],
       textColor: 255,
