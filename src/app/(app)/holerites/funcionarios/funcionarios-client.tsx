@@ -37,6 +37,33 @@ export default function HoleritesFuncionariosClient({
   const [subindo, setSubindo] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [limpando, setLimpando] = useState(false);
+
+  async function limparInativos() {
+    if (
+      !confirm(
+        "Excluir os PDFs de holerites de TODOS os funcionários inativos?\n\n" +
+          "O registro (competência, líquido, obra) é mantido — só o arquivo é " +
+          "removido do Storage, liberando espaço."
+      )
+    )
+      return;
+    setLimpando(true);
+    setMsg(null);
+    setErro(null);
+    try {
+      const res = await fetch("/api/holerites/limpar-inativos", {
+        method: "POST",
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error ?? "Falha na limpeza.");
+      setMsg(`${j.removidos} PDF(s) de inativos removido(s) do Storage.`);
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Falha na limpeza.");
+    } finally {
+      setLimpando(false);
+    }
+  }
   const inputsRef = useRef<Record<string, HTMLInputElement | null>>({});
 
   function irPara(next: { obra?: string; competencia?: string }) {
@@ -111,12 +138,25 @@ export default function HoleritesFuncionariosClient({
 
   return (
     <div className="max-w-4xl">
-      <h2 className="text-xl font-bold text-agos-charcoal dark:text-white mb-1">
-        Holerites por funcionário
-      </h2>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-        Veja quem já tem o holerite do mês e envie manualmente os que faltarem.
-      </p>
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div>
+          <h2 className="text-xl font-bold text-agos-charcoal dark:text-white mb-1">
+            Holerites por funcionário
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Veja quem já tem o holerite do mês e envie manualmente os que
+            faltarem.
+          </p>
+        </div>
+        <button
+          onClick={limparInativos}
+          disabled={limpando}
+          title="Remove do Storage os PDFs de holerites de funcionários inativos (mantém o registro)."
+          className="shrink-0 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg px-3.5 py-2 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-60"
+        >
+          {limpando ? "Limpando…" : "Limpar PDFs de inativos"}
+        </button>
+      </div>
 
       <div className="flex flex-wrap gap-3 mb-4">
         <div>

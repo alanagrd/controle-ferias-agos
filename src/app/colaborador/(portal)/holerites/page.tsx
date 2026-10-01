@@ -11,6 +11,8 @@ export default async function ColaboradorHoleritesPage() {
   const { data } = await supabase
     .from("holerites")
     .select("id, competencia, liquido, obra, storage_path")
+    // não lista holerites cujo PDF foi removido na limpeza de inativos
+    .not("storage_path", "is", null)
     .order("competencia", { ascending: false });
 
   return (
