@@ -35,6 +35,10 @@ const EVENTOS_DESCRICAO: Record<number, string> = {
   191: "Desconto DSR",
   184: "Adicional noturno",
   909: "Prêmio",
+  // Eventos de folha usados pela Geosonda
+  140: "HE Pausa",
+  558: "Atraso",
+  20: "H. Prêmio 50%",
 };
 
 const EVENTOS_TIPO: Record<number, "valor" | "qtd"> = {
@@ -53,6 +57,10 @@ const EVENTOS_TIPO: Record<number, "valor" | "qtd"> = {
   191: "qtd",
   184: "qtd",
   909: "valor",
+  // Geosonda: eventos por quantidade (horas/ocorrências)
+  140: "qtd",
+  558: "qtd",
+  20: "qtd",
 };
 
 /** Eventos que devem ser SEMPRE lançados no CSV, mesmo com valor zero (o
@@ -99,7 +107,7 @@ export function gerarLinhasCsvBitti(
     porEvento.set(l.evento, arr);
   });
 
-  const ordemEventos = [276, 271, 274, 903, 901, 277, 278, 904, 150, 146, 153, 553, 191, 184, 909];
+  const ordemEventos = [276, 271, 274, 903, 901, 277, 278, 904, 150, 146, 153, 553, 191, 184, 909, 140, 558, 20];
 
   const linhas: string[] = [];
   const resumo: ResumoEvento[] = [];
@@ -115,7 +123,7 @@ export function gerarLinhasCsvBitti(
       const qtdCol = l.tipo === "qtd" ? valorFmt : "";
       const valorCol = l.tipo === "valor" ? valorFmt : "";
       linhas.push(
-        `${competenciaAAAAMM};2;1;${l.matricula};0;${evento};${qtdCol};${valorCol};${tail}`
+        `${competenciaAAAAMM};2;1;${l.matricula};0;${String(evento).padStart(3, "0")};${qtdCol};${valorCol};${tail}`
       );
     });
 

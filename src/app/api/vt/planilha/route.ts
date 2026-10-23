@@ -3,8 +3,16 @@ import { createClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all";
 import {
   construirPlanilhaVtBuffer,
+  construirPlanilhaGeosondaBuffer,
   type LinhaPlanilhaVt,
 } from "@/lib/export-planilha-vt";
+
+// Geosonda = cliente código 5 (GEOSONDA SA) + faixa 100–400 ("GEOSONDA - ...").
+function isGeosonda(cod: string | null | undefined): boolean {
+  if (!cod) return false;
+  const n = Number(String(cod).replace(/\D/g, ""));
+  return n === 5 || (n >= 100 && n <= 400);
+}
 
 // exceljs usa APIs do Node (streams); toda a geração — e a coleta dos dados —
 // roda no servidor (rápido/confiável), evitando travar o navegador e o
@@ -87,8 +95,10 @@ export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as {
     competenciaId?: string;
     obra?: string;
+    layout?: "rio" | "geosonda";
   };
   const { competenciaId, obra } = body;
+  const layout = body.layout === "geosonda" ? "geosonda" : "rio";
   if (!competenciaId) {
     return NextResponse.json(
       { error: "competenciaId é obrigatório." },
@@ -205,6 +215,11 @@ export async function POST(req: NextRequest) {
 
   const linhas: LinhaPlanilhaVt[] = (funcComp ?? [])
     .filter((fc) => !obra || (fc.obra_snapshot ?? "").trim() === obra)
+    .filter((fc) => {
+      if (layout !== "geosonda") return true;
+      // Modelo Geosonda: só funcionários de clientes Geosonda (5 / 100–400).
+      return isGeosonda(funcById.get(fc.funcionario_id)?.cliente_codigo);
+    })
     .map((fc) => {
       const f = funcById.get(fc.funcionario_id);
       const obraK = (fc.obra_snapshot ?? "").trim();
@@ -241,7 +256,10 @@ export async function POST(req: NextRequest) {
         a.nome.localeCompare(b.nome, "pt-BR")
     );
 
-  const buf = await construirPlanilhaVtBuffer(comp.ano, comp.mes, linhas);
+  const buf =
+    layout === "geosonda"
+      ? await construirPlanilhaGeosondaBuffer(comp.ano, comp.mes, linhas)
+      : await construirPlanilhaVtBuffer(comp.ano, comp.mes, linhas);
 
   return new NextResponse(buf, {
     headers: {

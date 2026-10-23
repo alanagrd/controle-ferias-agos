@@ -139,6 +139,7 @@ export default function VtImportacaoClient({
         <ExportarPlanilhaTab
           competenciaAtual={competenciaAtual}
           funcComp={funcComp}
+          funcionarios={funcionarios}
         />
       ) : tab === "apontamento" ? (
         <ApontamentoTab
@@ -779,6 +780,10 @@ function ApontamentoTab({
   const supabase = useMemo(() => createClient(), []);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Geosonda: a planilha traz TODAS as obras juntas e eventos de folha próprios
+  // (HE Pausa 140, Atraso 558, H.Prêmio 50% 020). Nesse modo a importação cruza
+  // só por matrícula (sem escolher obra) e lê o layout Geosonda.
+  const [modoGeosonda, setModoGeosonda] = useState(false);
   const [obraSelecionada, setObraSelecionada] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [avisos, setAvisos] = useState<string[]>([]);
@@ -825,10 +830,11 @@ function ApontamentoTab({
       avisos: avisosParser,
       colunasEncontradas: cols,
       abaLida,
-    } = await parseApontamentoXlsx(file, {
-      ano: competenciaAtual.ano,
-      mes: competenciaAtual.mes,
-    });
+    } = await parseApontamentoXlsx(
+      file,
+      { ano: competenciaAtual.ano, mes: competenciaAtual.mes },
+      modoGeosonda ? "geosonda" : "rio"
+    );
     setLinhasArquivo(linhas);
     setAvisos(avisosParser);
     setColunasEncontradas(cols);
@@ -851,8 +857,14 @@ function ApontamentoTab({
   const naObraSelecionada = (c: LinhaConciliada) =>
     (c.funcComp?.obra_snapshot ?? "").trim() === obraSelecionada;
 
-  const matched = conciliadas.filter((c) => c.funcComp && naObraSelecionada(c));
-  const foraDaObra = conciliadas.filter((c) => c.funcComp && !naObraSelecionada(c));
+  // No modo Geosonda importamos a planilha inteira: qualquer funcionário que
+  // esteja na competência entra, independentemente da obra (nada "fora da obra").
+  const matched = conciliadas.filter((c) =>
+    modoGeosonda ? !!c.funcComp : c.funcComp && naObraSelecionada(c)
+  );
+  const foraDaObra = modoGeosonda
+    ? []
+    : conciliadas.filter((c) => c.funcComp && !naObraSelecionada(c));
   const semFuncionario = conciliadas.filter((c) => !c.funcionario);
   const semNaCompetencia = conciliadas.filter((c) => c.funcionario && !c.funcComp);
 
@@ -921,6 +933,10 @@ function ApontamentoTab({
       dsr: c.linha.dsr,
       ad_not: c.linha.adNot,
       premio: c.linha.premio,
+      // eventos de folha Geosonda (0 no layout RIO)
+      he_pausa: c.linha.hePausa,
+      atraso: c.linha.atraso,
+      h_premio50: c.linha.hPremio50,
       dias_reembolso: c.linha.diasReembolso,
       dias_desconto: c.linha.diasDesconto,
       // valores já vêm prontos da planilha (Total M.A / Valor Desc VT) — sem cálculo
@@ -945,8 +961,18 @@ function ApontamentoTab({
     // avulso "Reembolso VR" (cobrado do cliente). Idempotente: substitui os que
     // vieram de importações anteriores desta obra (origem = "apontamento"), sem
     // tocar nos lançamentos manuais.
-    let reembolsosVr = 0;
+    // data de referência: último dia do mês do ponto (mês anterior à competência)
+    const pm = competenciaAtual.mes - 1;
+    const py = pm === 0 ? competenciaAtual.ano - 1 : competenciaAtual.ano;
+    const pmes = pm === 0 ? 12 : pm;
+    const dataRef = new Date(Date.UTC(py, pmes, 0)).toISOString().slice(0, 10);
+
     const fcIds = matchedUnicos.map((c) => c.funcComp!.id);
+
+    // Reembolso VR pago pela AGOS (coluna "Vr M.A 904 AGOS") vira lançamento
+    // avulso "Reembolso VR" (cobrado do cliente). Idempotente: substitui os que
+    // vieram de importações anteriores (origem = "apontamento").
+    let reembolsosVr = 0;
     const { error: errDel } = await supabase
       .from("vt_lancamentos")
       .delete()
@@ -954,11 +980,6 @@ function ApontamentoTab({
       .eq("motivo", "Reembolso VR")
       .eq("origem", "apontamento");
     if (!errDel) {
-      // data de referência: último dia do mês do ponto (mês anterior à competência)
-      const pm = competenciaAtual.mes - 1;
-      const py = pm === 0 ? competenciaAtual.ano - 1 : competenciaAtual.ano;
-      const pmes = pm === 0 ? 12 : pm;
-      const dataRef = new Date(Date.UTC(py, pmes, 0)).toISOString().slice(0, 10);
       const lancRows = matchedUnicos
         .filter((c) => (c.linha.reembolsoVrAgos ?? 0) > 0)
         .map((c) => ({
@@ -977,10 +998,42 @@ function ApontamentoTab({
       }
     }
 
+    // Geosonda: a coluna "Reembolso 901" vem no ponto e, igual ao 901 do RIO,
+    // vira lançamento avulso "Reembolso VT" (cobrado do cliente). Idempotente
+    // por origem "apontamento". (No RIO essa coluna não existe → nada acontece.)
+    let reembolsosVt = 0;
+    const { error: errDelVt } = await supabase
+      .from("vt_lancamentos")
+      .delete()
+      .in("func_comp_id", fcIds)
+      .eq("motivo", "Reembolso VT")
+      .eq("origem", "apontamento");
+    if (!errDelVt) {
+      const lancVtRows = matchedUnicos
+        .filter((c) => (c.linha.reembolso901 ?? 0) > 0)
+        .map((c) => ({
+          func_comp_id: c.funcComp!.id,
+          data: dataRef,
+          valor: c.linha.reembolso901,
+          motivo: "Reembolso VT",
+          cobrado_cliente: true,
+          origem: "apontamento",
+        }));
+      if (lancVtRows.length > 0) {
+        const { error: errLancVt } = await supabase
+          .from("vt_lancamentos")
+          .insert(lancVtRows);
+        if (!errLancVt) reembolsosVt = lancVtRows.length;
+      }
+    }
+
     setApplying(false);
-    let msg = `${rows.length} apontamento(s) importado(s) para ${obraSelecionada}.`;
+    const alvo = modoGeosonda ? "Geosonda (todas as obras)" : obraSelecionada;
+    let msg = `${rows.length} apontamento(s) importado(s) para ${alvo}.`;
     if (atualizacoesFuncComp > 0)
       msg += ` ${atualizacoesFuncComp} com valor diário/VR atualizado.`;
+    if (reembolsosVt > 0)
+      msg += ` ${reembolsosVt} reembolso(s) de VT (901) lançado(s).`;
     if (reembolsosVr > 0)
       msg += ` ${reembolsosVr} reembolso(s) de VR (904) lançado(s).`;
     setResultado(msg);
@@ -989,47 +1042,63 @@ function ApontamentoTab({
   return (
     <div className="space-y-4">
       <p className="text-xs text-slate-500 dark:text-slate-400">
-        {nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)} — planilha de
-        ponto (50%, 70%, 100%, Faltas, DSR, Ad.Not, Prêmio). O arquivo pode trazer
-        outras obras junto (ex.: segmentação de dados do Excel) — só o que for da
-        obra selecionada abaixo é aplicado.
+        {nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)} —{" "}
+        {modoGeosonda
+          ? "planilha Geosonda (todas as obras juntas, eventos 140/558/020). Importa a planilha inteira cruzando só por matrícula — não precisa escolher obra."
+          : "planilha de ponto (50%, 70%, 100%, Faltas, DSR, Ad.Not, Prêmio). O arquivo pode trazer outras obras junto (ex.: segmentação de dados do Excel) — só o que for da obra selecionada abaixo é aplicado."}
       </p>
 
-      <div className="flex flex-col gap-1 max-w-xs">
-        <label className="text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
-          Obra deste apontamento
-        </label>
-        <select
-          value={obraSelecionada}
-          onChange={(e) => setObraSelecionada(e.target.value)}
-          className="input w-full"
-        >
-          <option value="">Selecione a obra...</option>
-          {obras.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </select>
-      </div>
+      <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+        <input
+          type="checkbox"
+          checked={modoGeosonda}
+          onChange={(e) => {
+            setModoGeosonda(e.target.checked);
+            setLinhasArquivo(null);
+            setResultado(null);
+            if (e.target.checked) setObraSelecionada("");
+          }}
+        />
+        Planilha Geosonda (importar tudo, todas as obras)
+      </label>
+
+      {!modoGeosonda && (
+        <div className="flex flex-col gap-1 max-w-xs">
+          <label className="text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Obra deste apontamento
+          </label>
+          <select
+            value={obraSelecionada}
+            onChange={(e) => setObraSelecionada(e.target.value)}
+            className="input w-full"
+          >
+            <option value="">Selecione a obra...</option>
+            {obras.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div
-        onClick={() => obraSelecionada && inputRef.current?.click()}
+        onClick={() => (modoGeosonda || obraSelecionada) && inputRef.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
-          if (!obraSelecionada) return;
+          if (!modoGeosonda && !obraSelecionada) return;
           const file = e.dataTransfer.files?.[0];
           if (file) handleFile(file);
         }}
         className={`border-2 border-dashed rounded-xl p-10 text-center transition bg-white dark:bg-slate-900 ${
-          obraSelecionada
+          modoGeosonda || obraSelecionada
             ? "border-slate-300 dark:border-slate-700 cursor-pointer hover:border-agos-green"
             : "border-slate-200 dark:border-slate-800 opacity-50 cursor-not-allowed"
         }`}
       >
         <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-          {obraSelecionada
+          {modoGeosonda || obraSelecionada
             ? "Arraste a planilha de ponto ou clique para selecionar"
             : "Selecione a obra acima antes de subir o arquivo"}
         </p>
@@ -1041,7 +1110,7 @@ function ApontamentoTab({
           type="file"
           accept=".xlsx,.xls"
           className="hidden"
-          disabled={!obraSelecionada}
+          disabled={!modoGeosonda && !obraSelecionada}
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) handleFile(file);
@@ -1142,12 +1211,20 @@ function ApontamentoTab({
             )}
             <button
               onClick={aplicarImportacao}
-              disabled={applying || matchedUnicos.length === 0 || !obraSelecionada}
+              disabled={
+                applying ||
+                matchedUnicos.length === 0 ||
+                (!modoGeosonda && !obraSelecionada)
+              }
               className="ml-auto bg-agos-green hover:bg-agos-green-dark text-white text-sm font-semibold rounded-lg px-4 py-2 disabled:opacity-60"
             >
               {applying
                 ? "Importando..."
-                : `Importar ${matchedUnicos.length} apontamento(s) de ${obraSelecionada || "..."}`}
+                : `Importar ${matchedUnicos.length} apontamento(s) de ${
+                    modoGeosonda
+                      ? "Geosonda (todas as obras)"
+                      : obraSelecionada || "..."
+                  }`}
             </button>
           </div>
         </>
@@ -1163,36 +1240,63 @@ function ApontamentoTab({
 function ExportarPlanilhaTab({
   competenciaAtual,
   funcComp,
+  funcionarios,
 }: {
   competenciaAtual: Competencia;
   funcComp: FuncCompLite[];
+  funcionarios: FuncionarioLite[];
 }) {
   const [obraSelecionada, setObraSelecionada] = useState("");
+  const [modoGeosonda, setModoGeosonda] = useState(false);
   const [gerando, setGerando] = useState(false);
   const [resultado, setResultado] = useState<string | null>(null);
+
+  // Geosonda = cliente código 5 (GEOSONDA SA) + faixa 100–400.
+  const geosondaFuncIds = useMemo(() => {
+    const ids = new Set<string>();
+    funcionarios.forEach((f) => {
+      const n = f.cliente_codigo
+        ? Number(String(f.cliente_codigo).replace(/\D/g, ""))
+        : NaN;
+      if (n === 5 || (n >= 100 && n <= 400)) ids.add(f.id);
+    });
+    return ids;
+  }, [funcionarios]);
+
+  const funcCompVisivel = useMemo(
+    () =>
+      modoGeosonda
+        ? funcComp.filter((fc) => geosondaFuncIds.has(fc.funcionario_id))
+        : funcComp,
+    [funcComp, modoGeosonda, geosondaFuncIds]
+  );
 
   const obras = useMemo(
     () =>
       Array.from(
-        new Set(funcComp.map((fc) => (fc.obra_snapshot ?? "").trim()).filter(Boolean))
+        new Set(
+          funcCompVisivel.map((fc) => (fc.obra_snapshot ?? "").trim()).filter(Boolean)
+        )
       ).sort((a, b) => a.localeCompare(b, "pt-BR")),
-    [funcComp]
+    [funcCompVisivel]
   );
 
   const qtdAtivos = useMemo(
     () =>
-      funcComp.filter(
+      funcCompVisivel.filter(
         (fc) =>
           fc.status_no_mes === "ATIVO" &&
           (!obraSelecionada || (fc.obra_snapshot ?? "").trim() === obraSelecionada)
       ).length,
-    [funcComp, obraSelecionada]
+    [funcCompVisivel, obraSelecionada]
   );
 
   async function handleGerar() {
     setGerando(true);
     setResultado(null);
-    const sufixo = obraSelecionada ? ` ${obraSelecionada}` : "";
+    const sufixo = `${modoGeosonda ? " GEOSONDA" : ""}${
+      obraSelecionada ? ` ${obraSelecionada}` : ""
+    }`;
     try {
       const res = await fetch("/api/vt/planilha", {
         method: "POST",
@@ -1200,6 +1304,7 @@ function ExportarPlanilhaTab({
         body: JSON.stringify({
           competenciaId: competenciaAtual.id,
           obra: obraSelecionada || undefined,
+          layout: modoGeosonda ? "geosonda" : "rio",
         }),
       });
       if (!res.ok) {
@@ -1233,12 +1338,24 @@ function ExportarPlanilhaTab({
           Planilha de VT para as obras
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Gera a planilha no formato de sempre (VT RIO), já preenchida com os
-          funcionários ativos, valor diário, VR, Cesta e dias — para os ADMs das
-          obras preencherem o apontamento. Depois é só reimportar na aba
-          Apontamento. As colunas que a obra preenche vêm destacadas em amarelo.
+          {modoGeosonda
+            ? "Gera a planilha no layout Geosonda (colunas 140/558/020 etc.), só com os funcionários dos clientes Geosonda (5 e 100–400), já preenchida com valor diário, dias e Reembolso 901 — para os ADMs preencherem o apontamento e você reimportar na aba Apontamento (modo Geosonda). As colunas a preencher vêm em amarelo."
+            : "Gera a planilha no formato de sempre (VT RIO), já preenchida com os funcionários ativos, valor diário, VR, Cesta e dias — para os ADMs das obras preencherem o apontamento. Depois é só reimportar na aba Apontamento. As colunas que a obra preenche vêm destacadas em amarelo."}
         </p>
       </div>
+
+      <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+        <input
+          type="checkbox"
+          checked={modoGeosonda}
+          onChange={(e) => {
+            setModoGeosonda(e.target.checked);
+            setObraSelecionada("");
+            setResultado(null);
+          }}
+        />
+        Modelo Geosonda (layout e colunas específicas)
+      </label>
 
       <div className="flex flex-wrap items-end gap-3">
         <div className="flex flex-col gap-1">
@@ -1347,7 +1464,7 @@ function ExportarBittiTab({
         supabase
           .from("vt_apontamento")
           .select(
-            "func_comp_id, valor_reembolso, valor_desconto, cesta_basica, reembolso_vr, h50, h70, h100, faltas, dsr, ad_not, premio"
+            "func_comp_id, valor_reembolso, valor_desconto, cesta_basica, reembolso_vr, h50, h70, h100, faltas, dsr, ad_not, premio, he_pausa, atraso, h_premio50"
           )
           .in("func_comp_id", funcCompIds),
         supabase
@@ -1422,6 +1539,10 @@ function ExportarBittiTab({
       add(191, matricula, apt?.dsr);
       add(184, matricula, apt?.ad_not);
       add(909, matricula, apt?.premio);
+      // Eventos de folha da Geosonda (ignorados/zerados nas obras RIO)
+      add(140, matricula, apt?.he_pausa);
+      add(558, matricula, apt?.atraso);
+      add(20, matricula, apt?.h_premio50);
       add(901, matricula, reembolsoVtPorFuncComp.get(fc.id));
       add(904, matricula, reembolsoVrPorFuncComp.get(fc.id));
     });

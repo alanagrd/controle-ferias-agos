@@ -150,3 +150,116 @@ export async function construirPlanilhaVtBuffer(
   const buf = await wb.xlsx.writeBuffer();
   return buf as ArrayBuffer;
 }
+
+// ---------------------------------------------------------------------------
+// Variante Geosonda
+// ---------------------------------------------------------------------------
+// Layout próprio da Geosonda (20 colunas, A..T). Os cabeçalhos replicam a
+// planilha real para que a reimportação (modo "geosonda" em importacao-vt.ts)
+// case as colunas pelo código do evento embutido. Não tem VR nem Cesta.
+// Pré-preenchido pelo sistema: Cod, Obra, Matr, Nome, V.Unitário, Qtd e
+// Reembolso 901 (lançamento avulso). O restante do apontamento fica em branco
+// (destacado em âmbar) para a obra preencher. "Deebito" é ignorado (sempre 0).
+const HEADERS_GEO = [
+  "Cod", "Obra", "Matr", "Nome", "V. Unitario", "Qtd", "Total VT  276",
+  "Sabados", "Total M.A  271", "QTD Desc  VT", "Valor Desc  VT 903",
+  "Reembolso  901", "FALTAS\n553", "Deebito", "50%\n150", "100%\n153",
+  "HE PAUSA\n140", "AD. NOT\n184", "ATRASO\n558", "H.PREMIO \n50%\n020",
+];
+
+const WIDTHS_GEO = [
+  11, 25, 11, 40, 14, 9, 16, 10, 16, 11, 16, 16, 11, 10, 10, 10, 12, 11, 11, 13,
+];
+
+// 1-based. Monetárias: V.Unit(5), Total VT(7), Total M.A(9), Valor Desc(11),
+// Reembolso 901(12). Dias inteiros: Qtd(6), Sabados(8), QTD Desc(10).
+const COLS_MOEDA_GEO = new Set([5, 7, 9, 11, 12]);
+const COLS_INT_GEO = new Set([6, 8, 10]);
+// Colunas que a obra preenche (âmbar). Reembolso 901(12) vem do sistema;
+// Deebito(14) é ignorado — nenhum dos dois entra aqui.
+const COLS_PREENCHER_GEO = new Set([8, 10, 13, 15, 16, 17, 18, 19, 20]);
+
+export async function construirPlanilhaGeosondaBuffer(
+  ano: number,
+  mes: number,
+  linhas: LinhaPlanilhaVt[]
+): Promise<ArrayBuffer> {
+  const ExcelJSmod = (await import("exceljs")).default;
+  const wb = new ExcelJSmod.Workbook();
+  const nomeAba = `PARA ${MES_NOMES[mes - 1]} ${ano}`;
+  const ws = wb.addWorksheet(nomeAba, {
+    views: [{ state: "frozen", xSplit: 4, ySplit: 6 }],
+  });
+
+  WIDTHS_GEO.forEach((w, i) => (ws.getColumn(i + 1).width = w));
+
+  const last = 6 + Math.max(linhas.length, 1);
+
+  // --- Totais no topo ---
+  const totais: [string, string, boolean][] = [
+    ["TOTAL FUNCIONÁRIOS", `COUNTA(D7:D${last})`, false],
+    ["TOTAL VALE TRANSPORTE", `SUM(G7:G${last})`, true],
+    ["TOTAL REEMBOLSO VT", `SUM(I7:I${last})`, true],
+  ];
+  totais.forEach(([label, formula, moeda], idx) => {
+    const r = idx + 1;
+    ws.mergeCells(r, 1, r, 2);
+    const lc = ws.getCell(r, 1);
+    lc.value = label;
+    lc.font = { bold: true, size: 10 };
+    lc.alignment = { horizontal: "right", vertical: "middle" };
+    const vc = ws.getCell(r, 3);
+    vc.value = { formula };
+    vc.font = { bold: true, size: 10 };
+    if (moeda) vc.numFmt = "#,##0.00";
+  });
+
+  // --- Título ---
+  ws.mergeCells(1, 5, 4, 11);
+  const tc = ws.getCell(1, 5);
+  tc.value = `CONTROLE DE VALE TRANSPORTE — GEOSONDA\n${nomeAba}`;
+  tc.font = { bold: true, size: 15, color: { argb: AZUL } };
+  tc.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
+
+  // --- Cabeçalho (linha 6) ---
+  const hr = ws.getRow(6);
+  HEADERS_GEO.forEach((h, i) => {
+    const cell = hr.getCell(i + 1);
+    cell.value = h;
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: AZUL } };
+    cell.font = { bold: true, color: { argb: "FFFFFFFF" }, size: 9 };
+    cell.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
+    cell.border = bordaFina();
+  });
+  hr.height = 34;
+
+  // --- Dados (linha 7+) ---
+  linhas.forEach((ln, i) => {
+    const r = 7 + i;
+    const row = ws.getRow(r);
+    row.getCell(1).value = ln.cod;
+    row.getCell(2).value = ln.obra;
+    row.getCell(3).value = ln.matricula ? Number(ln.matricula) : null;
+    row.getCell(4).value = ln.nome;
+    row.getCell(5).value = ln.valorDiario;
+    row.getCell(6).value = ln.dias;
+    row.getCell(7).value = { formula: `E${r}*F${r}` }; // Total VT 276
+    row.getCell(9).value = { formula: `E${r}*H${r}` }; // Total M.A 271 (V.Unit x Sabados)
+    row.getCell(11).value = { formula: `E${r}*J${r}` }; // Valor Desc VT 903 (V.Unit x QTD Desc)
+    row.getCell(12).value = ln.reembolsoVt; // Reembolso 901 (sistema)
+
+    for (let c = 1; c <= 20; c++) {
+      const cell = row.getCell(c);
+      cell.border = bordaFina();
+      if (COLS_MOEDA_GEO.has(c)) cell.numFmt = "#,##0.00";
+      else if (COLS_INT_GEO.has(c)) cell.numFmt = "0";
+      if (COLS_PREENCHER_GEO.has(c))
+        cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: AMBAR } };
+    }
+  });
+
+  ws.autoFilter = { from: { row: 6, column: 1 }, to: { row: 6, column: 20 } };
+
+  const buf = await wb.xlsx.writeBuffer();
+  return buf as ArrayBuffer;
+}

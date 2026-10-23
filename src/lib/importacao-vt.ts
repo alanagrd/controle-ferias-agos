@@ -48,6 +48,16 @@ export type LinhaApontamento = {
   dsr: number;
   adNot: number;
   premio: number;
+  /** HE PAUSA (evento 140) — só aparece no layout Geosonda. */
+  hePausa: number;
+  /** ATRASO (evento 558) — só aparece no layout Geosonda. */
+  atraso: number;
+  /** H.PRÊMIO 50% (evento 020) — só aparece no layout Geosonda. */
+  hPremio50: number;
+  /** Reembolso VT (evento 901). No RIO vem de lançamento avulso; na Geosonda
+   *  vem como coluna do ponto e, na importação, vira lançamento avulso
+   *  "Reembolso VT" (mesmo tratamento do 904 -> Reembolso VR). */
+  reembolso901: number;
   /** Valor da Cesta Básica (R$) — coluna "Cesta Básica" da planilha. */
   cestaBasica: number | null;
 };
@@ -62,7 +72,12 @@ function normalizaHeader(s: string): string {
 
 type CampoNumerico = Exclude<keyof LinhaApontamento, "matricula" | "obra">;
 
-const HEADER_MATCHERS: Record<CampoNumerico, (c: string) => boolean> = {
+/** Layout da planilha de ponto. "rio" é o padrão histórico (VT_RIO); "geosonda"
+ *  tem eventos de folha próprios (140/558/020) e casa colunas pelo código do
+ *  evento embutido no cabeçalho, já que "H.PRÊMIO 50%" colidiria com "50%". */
+export type ModoApontamento = "rio" | "geosonda";
+
+const HEADER_MATCHERS: Partial<Record<CampoNumerico, (c: string) => boolean>> = {
   valorDiario: (c) => c.includes("vunitario"),
   dias: (c) => c === "qtd",
   diasReembolso: (c) => c.includes("sabados"),
@@ -82,6 +97,27 @@ const HEADER_MATCHERS: Record<CampoNumerico, (c: string) => boolean> = {
   adNot: (c) => c.includes("adnot") || c.includes("adicionalnoturno") || c.includes("adnoturno"),
   premio: (c) => c.includes("premio") || c.includes("premios"),
   cestaBasica: (c) => c.includes("cesta"),
+};
+
+// Geosonda: os cabeçalhos trazem o código do evento (ex.: "50%\n150",
+// "HE PAUSA\n140", "H.PREMIO 50%\n020"), então casamos pelo código — isso
+// evita a colisão de "H.PRÊMIO 50%" com "50%"/"Prêmio" do matcher RIO.
+// A coluna "Deebito" (débito, sempre 0) e "Chamada Débitos" são ignoradas.
+const HEADER_MATCHERS_GEOSONDA: Partial<Record<CampoNumerico, (c: string) => boolean>> = {
+  valorDiario: (c) => c.includes("vunitario"),
+  dias: (c) => c === "qtd",
+  diasReembolso: (c) => c.includes("sabados"),
+  diasDesconto: (c) => c.includes("qtddescvt"),
+  valorReembolso: (c) => c.includes("totalma") || c.includes("271"),
+  valorDesconto: (c) => c.includes("valordescvt") || c.includes("903"),
+  reembolso901: (c) => c.includes("reembolso") && c.includes("901"),
+  faltas: (c) => c.includes("falta") || c.includes("553"),
+  h50: (c) => c.includes("150"),
+  h100: (c) => c.includes("153"),
+  hePausa: (c) => c.includes("hepausa") || c.includes("140"),
+  adNot: (c) => c.includes("adnot") || c.includes("184"),
+  atraso: (c) => c.includes("atraso") || c.includes("558"),
+  hPremio50: (c) => c.includes("hpremio") || c.includes("020"),
 };
 
 const MATRICULA_ALIASES = ["matr", "matricula"];
@@ -146,13 +182,18 @@ function escolheAba(
  * cabeçalho). */
 export async function parseApontamentoXlsx(
   file: File,
-  competenciaHint?: { ano: number; mes: number }
+  competenciaHint?: { ano: number; mes: number },
+  modo: ModoApontamento = "rio"
 ): Promise<{
   linhas: LinhaApontamento[];
   avisos: string[];
   colunasEncontradas: Partial<Record<CampoNumerico, boolean>>;
   abaLida: string;
 }> {
+  const matchers =
+    modo === "geosonda" ? HEADER_MATCHERS_GEOSONDA : HEADER_MATCHERS;
+  const campos = Object.keys(matchers) as CampoNumerico[];
+
   const buf = await file.arrayBuffer();
   const wb = XLSX.read(buf, { type: "array" });
   const { nomeAba, sheet } = escolheAba(wb, competenciaHint);
@@ -176,8 +217,10 @@ export async function parseApontamentoXlsx(
     if (matrIdx === -1) continue;
 
     const map: Partial<Record<CampoNumerico, number>> = {};
-    (Object.keys(HEADER_MATCHERS) as CampoNumerico[]).forEach((key) => {
-      const idx = normalized.findIndex((c) => HEADER_MATCHERS[key](c));
+    campos.forEach((key) => {
+      const matcher = matchers[key];
+      if (!matcher) return;
+      const idx = normalized.findIndex((c) => matcher(c));
       if (idx !== -1) map[key] = idx;
     });
 
@@ -199,9 +242,7 @@ export async function parseApontamentoXlsx(
     };
   }
 
-  const faltando = (Object.keys(HEADER_MATCHERS) as CampoNumerico[]).filter(
-    (k) => colMap[k] === undefined
-  );
+  const faltando = campos.filter((k) => colMap[k] === undefined);
   if (faltando.length > 0) {
     avisos.push(
       `Colunas não encontradas (tratadas como zero/em branco): ${faltando.join(", ")}.`
@@ -253,6 +294,10 @@ export async function parseApontamentoXlsx(
       dsr: colMap.dsr != null ? num(row[colMap.dsr]) : 0,
       adNot: colMap.adNot != null ? num(row[colMap.adNot]) : 0,
       premio: colMap.premio != null ? num(row[colMap.premio]) : 0,
+      hePausa: colMap.hePausa != null ? num(row[colMap.hePausa]) : 0,
+      atraso: colMap.atraso != null ? num(row[colMap.atraso]) : 0,
+      hPremio50: colMap.hPremio50 != null ? num(row[colMap.hPremio50]) : 0,
+      reembolso901: colMap.reembolso901 != null ? num(row[colMap.reembolso901]) : 0,
       cestaBasica: colMap.cestaBasica != null ? numOuNull(row[colMap.cestaBasica]) : null,
     });
   }
@@ -268,6 +313,10 @@ export async function parseApontamentoXlsx(
       valorReembolso: colMap.valorReembolso !== undefined,
       valorDesconto: colMap.valorDesconto !== undefined,
       vrValor: colMap.vrValor !== undefined,
+      hePausa: colMap.hePausa !== undefined,
+      atraso: colMap.atraso !== undefined,
+      hPremio50: colMap.hPremio50 !== undefined,
+      reembolso901: colMap.reembolso901 !== undefined,
     },
     abaLida: nomeAba,
   };

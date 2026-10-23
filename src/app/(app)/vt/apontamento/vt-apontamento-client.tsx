@@ -31,6 +31,9 @@ type ApontamentoLite = Pick<
   | "dsr"
   | "ad_not"
   | "premio"
+  | "he_pausa"
+  | "atraso"
+  | "h_premio50"
   | "dias_reembolso"
   | "dias_desconto"
   | "valor_reembolso"
@@ -113,6 +116,9 @@ export default function VtApontamentoClient({
       a.dsr ||
       a.ad_not ||
       a.premio ||
+      a.he_pausa ||
+      a.atraso ||
+      a.h_premio50 ||
       a.dias_reembolso ||
       a.dias_desconto
     );
@@ -286,6 +292,9 @@ export default function VtApontamentoClient({
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">DSR</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Ad.Not</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Prêmio</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">HE Pausa</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Atraso</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">H.Prêmio 50%</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Valor reembolso</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">Valor desconto</th>
                 <th className="py-2.5 px-3 font-medium whitespace-nowrap text-right">VR</th>
@@ -330,6 +339,15 @@ export default function VtApontamentoClient({
                   <td className="py-2 px-3 text-right text-agos-green-dark dark:text-agos-green-light">
                     {fmtNum(r.a?.premio)}
                   </td>
+                  <td className="py-2 px-3 text-right text-slate-700 dark:text-slate-300">
+                    {fmtNum(r.a?.he_pausa)}
+                  </td>
+                  <td className="py-2 px-3 text-right text-slate-700 dark:text-slate-300">
+                    {fmtNum(r.a?.atraso)}
+                  </td>
+                  <td className="py-2 px-3 text-right text-agos-green-dark dark:text-agos-green-light">
+                    {fmtNum(r.a?.h_premio50)}
+                  </td>
                   <td className="py-2 px-3 text-right text-agos-green-dark dark:text-agos-green-light">
                     {r.a?.valor_reembolso ? fmtMoeda(r.a.valor_reembolso) : "—"}
                   </td>
@@ -352,7 +370,7 @@ export default function VtApontamentoClient({
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={16} className="py-4 px-3 text-slate-500 dark:text-slate-400">
+                  <td colSpan={19} className="py-4 px-3 text-slate-500 dark:text-slate-400">
                     Nenhum funcionário encontrado com esse filtro.
                   </td>
                 </tr>

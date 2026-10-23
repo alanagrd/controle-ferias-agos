@@ -135,6 +135,12 @@ export type ApontamentoVt = {
   dsr: number;
   ad_not: number;
   premio: number;
+  /** HE PAUSA (evento 140) — layout Geosonda. */
+  he_pausa: number;
+  /** ATRASO (evento 558) — layout Geosonda. */
+  atraso: number;
+  /** H.PRÊMIO 50% (evento 020) — layout Geosonda. */
+  h_premio50: number;
   /** Dias de reembolso VT (Sabados, ou Total M.A quando Sabados vem vazio). */
   dias_reembolso: number;
   /** Dias de desconto VT (QTD Desc VT) — usado no cálculo do fechamento. */

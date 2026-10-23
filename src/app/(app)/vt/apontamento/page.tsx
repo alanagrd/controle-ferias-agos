@@ -31,6 +31,9 @@ type ApontamentoLite = Pick<
   | "dsr"
   | "ad_not"
   | "premio"
+  | "he_pausa"
+  | "atraso"
+  | "h_premio50"
   | "dias_reembolso"
   | "dias_desconto"
   | "valor_reembolso"
@@ -95,7 +98,7 @@ export default async function VtApontamentoPage({
       supabase
         .from("vt_apontamento")
         .select(
-          "id, func_comp_id, h50, h70, h100, faltas, dsr, ad_not, premio, dias_reembolso, dias_desconto, valor_reembolso, valor_desconto, cesta_basica, reembolso_vr, arquivo_origem"
+          "id, func_comp_id, h50, h70, h100, faltas, dsr, ad_not, premio, he_pausa, atraso, h_premio50, dias_reembolso, dias_desconto, valor_reembolso, valor_desconto, cesta_basica, reembolso_vr, arquivo_origem"
         )
         .order("id")
         .range(from, to)
