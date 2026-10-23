@@ -54,10 +54,6 @@ export type LinhaApontamento = {
   atraso: number;
   /** H.PRÊMIO 50% (evento 020) — só aparece no layout Geosonda. */
   hPremio50: number;
-  /** Reembolso VT (evento 901). No RIO vem de lançamento avulso; na Geosonda
-   *  vem como coluna do ponto e, na importação, vira lançamento avulso
-   *  "Reembolso VT" (mesmo tratamento do 904 -> Reembolso VR). */
-  reembolso901: number;
   /** Valor da Cesta Básica (R$) — coluna "Cesta Básica" da planilha. */
   cestaBasica: number | null;
 };
@@ -110,7 +106,8 @@ const HEADER_MATCHERS_GEOSONDA: Partial<Record<CampoNumerico, (c: string) => boo
   diasDesconto: (c) => c.includes("qtddescvt"),
   valorReembolso: (c) => c.includes("totalma") || c.includes("271"),
   valorDesconto: (c) => c.includes("valordescvt") || c.includes("903"),
-  reembolso901: (c) => c.includes("reembolso") && c.includes("901"),
+  // A coluna "Reembolso 901" NÃO é mapeada de propósito: o 901 vem dos
+  // lançamentos avulsos (cards) do mês; importá-la aqui duplicaria.
   faltas: (c) => c.includes("falta") || c.includes("553"),
   h50: (c) => c.includes("150"),
   h100: (c) => c.includes("153"),
@@ -297,7 +294,6 @@ export async function parseApontamentoXlsx(
       hePausa: colMap.hePausa != null ? num(row[colMap.hePausa]) : 0,
       atraso: colMap.atraso != null ? num(row[colMap.atraso]) : 0,
       hPremio50: colMap.hPremio50 != null ? num(row[colMap.hPremio50]) : 0,
-      reembolso901: colMap.reembolso901 != null ? num(row[colMap.reembolso901]) : 0,
       cestaBasica: colMap.cestaBasica != null ? numOuNull(row[colMap.cestaBasica]) : null,
     });
   }
@@ -316,7 +312,6 @@ export async function parseApontamentoXlsx(
       hePausa: colMap.hePausa !== undefined,
       atraso: colMap.atraso !== undefined,
       hPremio50: colMap.hPremio50 !== undefined,
-      reembolso901: colMap.reembolso901 !== undefined,
     },
     abaLida: nomeAba,
   };

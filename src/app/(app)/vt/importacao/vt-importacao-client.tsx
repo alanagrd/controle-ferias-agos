@@ -998,42 +998,15 @@ function ApontamentoTab({
       }
     }
 
-    // Geosonda: a coluna "Reembolso 901" vem no ponto e, igual ao 901 do RIO,
-    // vira lançamento avulso "Reembolso VT" (cobrado do cliente). Idempotente
-    // por origem "apontamento". (No RIO essa coluna não existe → nada acontece.)
-    let reembolsosVt = 0;
-    const { error: errDelVt } = await supabase
-      .from("vt_lancamentos")
-      .delete()
-      .in("func_comp_id", fcIds)
-      .eq("motivo", "Reembolso VT")
-      .eq("origem", "apontamento");
-    if (!errDelVt) {
-      const lancVtRows = matchedUnicos
-        .filter((c) => (c.linha.reembolso901 ?? 0) > 0)
-        .map((c) => ({
-          func_comp_id: c.funcComp!.id,
-          data: dataRef,
-          valor: c.linha.reembolso901,
-          motivo: "Reembolso VT",
-          cobrado_cliente: true,
-          origem: "apontamento",
-        }));
-      if (lancVtRows.length > 0) {
-        const { error: errLancVt } = await supabase
-          .from("vt_lancamentos")
-          .insert(lancVtRows);
-        if (!errLancVt) reembolsosVt = lancVtRows.length;
-      }
-    }
+    // A coluna "Reembolso 901" da planilha Geosonda NÃO é importada: o 901 já
+    // vem dos lançamentos avulsos (cards) feitos durante o mês. É só um espelho
+    // na planilha — importá-la duplicaria o que já está no sistema.
 
     setApplying(false);
     const alvo = modoGeosonda ? "Geosonda (todas as obras)" : obraSelecionada;
     let msg = `${rows.length} apontamento(s) importado(s) para ${alvo}.`;
     if (atualizacoesFuncComp > 0)
       msg += ` ${atualizacoesFuncComp} com valor diário/VR atualizado.`;
-    if (reembolsosVt > 0)
-      msg += ` ${reembolsosVt} reembolso(s) de VT (901) lançado(s).`;
     if (reembolsosVr > 0)
       msg += ` ${reembolsosVr} reembolso(s) de VR (904) lançado(s).`;
     setResultado(msg);
