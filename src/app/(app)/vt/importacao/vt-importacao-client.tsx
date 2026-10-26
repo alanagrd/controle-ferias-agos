@@ -1382,10 +1382,23 @@ function ExportarBittiTab({
   const supabase = useMemo(() => createClient(), []);
 
   const [obraSelecionada, setObraSelecionada] = useState("");
+  const [modoGeosonda, setModoGeosonda] = useState(false);
   const [avisos, setAvisos] = useState<string[]>([]);
   const [gerando, setGerando] = useState(false);
   const [resumo, setResumo] = useState<ResumoEvento[] | null>(null);
   const [totalFuncionarios, setTotalFuncionarios] = useState<number | null>(null);
+
+  // Geosonda = cliente código 5 (GEOSONDA SA) + faixa 100–400.
+  const geosondaFuncIds = useMemo(() => {
+    const ids = new Set<string>();
+    funcionarios.forEach((f) => {
+      const n = f.cliente_codigo
+        ? Number(String(f.cliente_codigo).replace(/\D/g, ""))
+        : NaN;
+      if (n === 5 || (n >= 100 && n <= 400)) ids.add(f.id);
+    });
+    return ids;
+  }, [funcionarios]);
 
   // A competência do Bitti é o mês de fechamento da folha (mês corrente), que é
   // o mês ANTERIOR ao da competência de VT — ela é nomeada "PARA <mês seguinte>".
@@ -1410,7 +1423,7 @@ function ExportarBittiTab({
   }, [funcionarios]);
 
   async function handleGerar() {
-    if (!obraSelecionada) return;
+    if (!modoGeosonda && !obraSelecionada) return;
     setGerando(true);
     setAvisos([]);
     setResumo(null);
@@ -1418,40 +1431,71 @@ function ExportarBittiTab({
 
     // Só ATIVO na competência: dispensados no mês (mesmo com VR/valores
     // residuais no snapshot) não entram no fechamento de folha do Bitti.
-    const funcCompDaObra = funcComp.filter(
-      (fc) =>
-        (fc.obra_snapshot ?? "").trim() === obraSelecionada &&
-        fc.status_no_mes === "ATIVO"
-    );
+    // Modo Geosonda: toda a Geosonda de uma vez (clientes 5/100–400), sem obra.
+    const funcCompDaObra = funcComp.filter((fc) => {
+      if (fc.status_no_mes !== "ATIVO") return false;
+      return modoGeosonda
+        ? geosondaFuncIds.has(fc.funcionario_id)
+        : (fc.obra_snapshot ?? "").trim() === obraSelecionada;
+    });
 
     if (funcCompDaObra.length === 0) {
-      setAvisos([`Nenhum funcionário encontrado na obra "${obraSelecionada}" nesta competência.`]);
+      setAvisos([
+        modoGeosonda
+          ? "Nenhum funcionário Geosonda ativo nesta competência."
+          : `Nenhum funcionário encontrado na obra "${obraSelecionada}" nesta competência.`,
+      ]);
       setGerando(false);
       return;
     }
 
     const funcCompIds = funcCompDaObra.map((fc) => fc.id);
 
-    const [{ data: apontamentos, error: errApt }, { data: lancamentos, error: errLanc }] =
-      await Promise.all([
-        supabase
-          .from("vt_apontamento")
-          .select(
-            "func_comp_id, valor_reembolso, valor_desconto, cesta_basica, reembolso_vr, h50, h70, h100, faltas, dsr, ad_not, premio, he_pausa, atraso, h_premio50"
-          )
-          .in("func_comp_id", funcCompIds),
-        supabase
-          .from("vt_lancamentos")
-          .select("func_comp_id, motivo, valor")
-          .in("func_comp_id", funcCompIds),
-      ]);
-
-    if (errApt || errLanc) {
-      setAvisos([
-        `Erro ao buscar dados: ${errApt?.message ?? errLanc?.message}`,
-      ]);
-      setGerando(false);
-      return;
+    // Busca em lotes: no modo Geosonda são centenas de func_comp e um `.in()`
+    // único estouraria o tamanho da URL.
+    type AptRow = {
+      func_comp_id: string;
+      valor_reembolso: number | null;
+      valor_desconto: number | null;
+      cesta_basica: number | null;
+      reembolso_vr: number | null;
+      h50: number | null;
+      h70: number | null;
+      h100: number | null;
+      faltas: number | null;
+      dsr: number | null;
+      ad_not: number | null;
+      premio: number | null;
+      he_pausa: number | null;
+      atraso: number | null;
+      h_premio50: number | null;
+    };
+    type LancRow = { func_comp_id: string; motivo: string | null; valor: number };
+    const apontamentos: AptRow[] = [];
+    const lancamentos: LancRow[] = [];
+    const CHUNK = 150;
+    for (let i = 0; i < funcCompIds.length; i += CHUNK) {
+      const slice = funcCompIds.slice(i, i + CHUNK);
+      const [{ data: aData, error: errApt }, { data: lData, error: errLanc }] =
+        await Promise.all([
+          supabase
+            .from("vt_apontamento")
+            .select(
+              "func_comp_id, valor_reembolso, valor_desconto, cesta_basica, reembolso_vr, h50, h70, h100, faltas, dsr, ad_not, premio, he_pausa, atraso, h_premio50"
+            )
+            .in("func_comp_id", slice),
+          supabase
+            .from("vt_lancamentos")
+            .select("func_comp_id, motivo, valor")
+            .in("func_comp_id", slice),
+        ]);
+      if (errApt || errLanc) {
+        setAvisos([`Erro ao buscar dados: ${errApt?.message ?? errLanc?.message}`]);
+        setGerando(false);
+        return;
+      }
+      if (aData) apontamentos.push(...(aData as AptRow[]));
+      if (lData) lancamentos.push(...(lData as LancRow[]));
     }
 
     const apontamentoPorFuncComp = new Map(
@@ -1535,7 +1579,9 @@ function ExportarBittiTab({
 
     baixarCsvBitti(
       linhas,
-      `bitti_${obraSelecionada.replace(/\s+/g, "_")}_${competenciaAAAAMM}.csv`
+      `bitti_${
+        modoGeosonda ? "GEOSONDA" : obraSelecionada.replace(/\s+/g, "_")
+      }_${competenciaAAAAMM}.csv`
     );
 
     setResumo(resumoGerado);
@@ -1548,26 +1594,46 @@ function ExportarBittiTab({
       <p className="text-xs text-slate-500 dark:text-slate-400">
         {nomeCompetencia(competenciaAtual.ano, competenciaAtual.mes)} — gera o CSV de
         importação de eventos do Bitti (competência {competenciaAAAAMM}) a partir dos
-        dados já lançados no sistema para a obra escolhida.
+        dados já lançados no sistema
+        {modoGeosonda
+          ? " para todos os funcionários Geosonda (clientes 5 e 100–400), de uma vez."
+          : " para a obra escolhida."}
       </p>
 
-      <div className="flex flex-col gap-1 max-w-xs">
-        <label className="text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
-          Obra
-        </label>
-        <select
-          value={obraSelecionada}
-          onChange={(e) => setObraSelecionada(e.target.value)}
-          className="input w-full"
-        >
-          <option value="">Selecione a obra...</option>
-          {obras.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
-        </select>
-      </div>
+      <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+        <input
+          type="checkbox"
+          checked={modoGeosonda}
+          onChange={(e) => {
+            setModoGeosonda(e.target.checked);
+            setObraSelecionada("");
+            setAvisos([]);
+            setResumo(null);
+            setTotalFuncionarios(null);
+          }}
+        />
+        Toda a Geosonda (todas as obras num arquivo só)
+      </label>
+
+      {!modoGeosonda && (
+        <div className="flex flex-col gap-1 max-w-xs">
+          <label className="text-[11.5px] uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Obra
+          </label>
+          <select
+            value={obraSelecionada}
+            onChange={(e) => setObraSelecionada(e.target.value)}
+            className="input w-full"
+          >
+            <option value="">Selecione a obra...</option>
+            {obras.map((o) => (
+              <option key={o} value={o}>
+                {o}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {avisos.length > 0 && (
         <div className="rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950 p-3 text-xs text-amber-700 dark:text-amber-400">
@@ -1579,16 +1645,20 @@ function ExportarBittiTab({
 
       <button
         onClick={handleGerar}
-        disabled={gerando || !obraSelecionada}
+        disabled={gerando || (!modoGeosonda && !obraSelecionada)}
         className="bg-agos-green hover:bg-agos-green-dark text-white text-sm font-semibold rounded-lg px-4 py-2 disabled:opacity-60"
       >
-        {gerando ? "Gerando..." : "Gerar e baixar CSV"}
+        {gerando
+          ? "Gerando..."
+          : modoGeosonda
+          ? "Gerar e baixar CSV (toda a Geosonda)"
+          : "Gerar e baixar CSV"}
       </button>
 
       {resumo && totalFuncionarios != null && (
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
           <div className="px-4 py-2.5 text-xs font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
-            {totalFuncionarios} funcionário(s) na obra · CSV gerado com sucesso
+            {totalFuncionarios} funcionário(s) {modoGeosonda ? "na Geosonda" : "na obra"} · CSV gerado com sucesso
           </div>
           <table className="w-full text-sm">
             <tbody>
