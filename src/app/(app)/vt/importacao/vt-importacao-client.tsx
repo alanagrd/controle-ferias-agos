@@ -1540,8 +1540,9 @@ function ExportarBittiTab({
       add(271, matricula, apt?.valor_reembolso);
       add(274, matricula, apt?.reembolso_vr);
       add(903, matricula, apt?.valor_desconto);
-      // Cesta Básica (278): sempre lançada, mesmo com valor 0 (vira "278;;0").
-      if (matricula) {
+      // Cesta Básica (278): sempre lançada (mesmo zerada) nas obras RIO; a
+      // Geosonda não tem cesta, então não emite o 278.
+      if (!modoGeosonda && matricula) {
         linhasEvento.push({
           matricula,
           evento: 278,
