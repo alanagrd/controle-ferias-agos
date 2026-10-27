@@ -186,32 +186,11 @@ export async function POST(req: NextRequest) {
       reembVrByFc.set(l.func_comp_id, (reembVrByFc.get(l.func_comp_id) ?? 0) + l.valor);
   });
 
-  // Cod do cliente por obra = código mais frequente entre os funcionários da
-  // obra (dentro de uma obra o cliente é o mesmo; normaliza divergências).
-  const codPorObra = new Map<string, string>();
-  {
-    const cont = new Map<string, Map<string, number>>();
-    (funcComp ?? []).forEach((fc) => {
-      const obraK = (fc.obra_snapshot ?? "").trim();
-      const f = funcById.get(fc.funcionario_id);
-      const cod = f?.cliente_codigo ? String(Number(f.cliente_codigo)) : null;
-      if (!obraK || !cod) return;
-      const m = cont.get(obraK) ?? new Map<string, number>();
-      m.set(cod, (m.get(cod) ?? 0) + 1);
-      cont.set(obraK, m);
-    });
-    cont.forEach((m, obraK) => {
-      let best = "";
-      let bestC = -1;
-      m.forEach((c, cod) => {
-        if (c > bestC) {
-          bestC = c;
-          best = cod;
-        }
-      });
-      if (best) codPorObra.set(obraK, best);
-    });
-  }
+  // Cod do cliente = o `cliente_codigo` do PRÓPRIO funcionário, que já vem
+  // emparelhado com a obra no arquivo de ativos (colunas COD CLIENTE e
+  // C.CUSTO). Nada de "votar" por obra: quando o cadastro está certo, todos
+  // da obra têm o mesmo código; quando alguém está miscadastrado, ele aparece
+  // como está — alerta visível para corrigir na fonte, em vez de mascarado.
 
   const linhas: LinhaPlanilhaVt[] = (funcComp ?? [])
     .filter((fc) => !obra || (fc.obra_snapshot ?? "").trim() === obra)
@@ -224,9 +203,7 @@ export async function POST(req: NextRequest) {
       const f = funcById.get(fc.funcionario_id);
       const obraK = (fc.obra_snapshot ?? "").trim();
       return {
-        cod:
-          codPorObra.get(obraK) ??
-          (f?.cliente_codigo ? String(Number(f.cliente_codigo)) : null),
+        cod: f?.cliente_codigo ? String(Number(f.cliente_codigo)) : null,
         obra: fc.obra_snapshot,
         matricula: f?.codigo ? String(Number(f.codigo)) : null,
         nome: f?.nome ?? "",
