@@ -19,8 +19,17 @@ import { fmtDate } from "@/lib/status";
 
 type FuncionarioLite = Pick<
   Funcionario,
-  "id" | "codigo" | "nome" | "obra" | "status" | "cliente_razao_social"
+  | "id"
+  | "codigo"
+  | "nome"
+  | "obra"
+  | "status"
+  | "cliente_razao_social"
+  | "cliente_codigo"
 >;
+
+/** Cliente resolvido para uma obra (código + razão social). */
+type ObraCliente = { codigo: string; razao: string };
 
 type LancamentoLite = Pick<
   LancamentoVt,
@@ -65,6 +74,7 @@ export default function VtFuncionariosClient({
   const router = useRouter();
 
   const [funcCompState, setFuncCompState] = useState(funcComp);
+  const [funcionariosState, setFuncionariosState] = useState(funcionarios);
   const [lancamentosState, setLancamentosState] = useState(lancamentos);
 
   const [busca, setBusca] = useState("");
@@ -82,9 +92,37 @@ export default function VtFuncionariosClient({
 
   const funcionariosPorId = useMemo(() => {
     const map = new Map<string, FuncionarioLite>();
-    funcionarios.forEach((f) => map.set(f.id, f));
+    funcionariosState.forEach((f) => map.set(f.id, f));
     return map;
-  }, [funcionarios]);
+  }, [funcionariosState]);
+
+  // Cliente de cada obra = cliente dominante entre os ativos que já estão nela
+  // (código + razão vêm emparelhados do arquivo de ativos). Usado para alinhar
+  // o cadastro do funcionário quando ele é transferido de obra no meio do mês.
+  const obraClienteMap = useMemo(() => {
+    const cont = new Map<string, Map<string, ObraCliente & { n: number }>>();
+    funcionariosState.forEach((f) => {
+      if (f.status !== "ATIVO") return;
+      const obra = (f.obra ?? "").trim();
+      const codigo = (f.cliente_codigo ?? "").trim();
+      if (!obra || !codigo) return;
+      const razao = (f.cliente_razao_social ?? "").trim();
+      const chave = `${codigo}|${razao}`;
+      const m = cont.get(obra) ?? new Map<string, ObraCliente & { n: number }>();
+      const cur = m.get(chave) ?? { codigo, razao, n: 0 };
+      cur.n += 1;
+      m.set(chave, cur);
+      cont.set(obra, m);
+    });
+    const map = new Map<string, ObraCliente>();
+    cont.forEach((m, obra) => {
+      const best = Array.from(m.values()).reduce<
+        (ObraCliente & { n: number }) | null
+      >((acc, v) => (!acc || v.n > acc.n ? v : acc), null);
+      if (best) map.set(obra, { codigo: best.codigo, razao: best.razao });
+    });
+    return map;
+  }, [funcionariosState]);
 
   const lancamentosPorFuncComp = useMemo(() => {
     const map = new Map<string, LancamentoLite[]>();
@@ -573,11 +611,26 @@ export default function VtFuncionariosClient({
         <EditFuncCompModal
           row={editRow}
           supabase={supabase}
+          obraClienteMap={obraClienteMap}
           onClose={() => setEditRow(null)}
-          onSaved={(updated) => {
+          onSaved={(updated, clienteUpdate) => {
             setFuncCompState((prev) =>
               prev.map((fc) => (fc.id === updated.id ? updated : fc))
             );
+            if (clienteUpdate) {
+              setFuncionariosState((prev) =>
+                prev.map((f) =>
+                  f.id === clienteUpdate.funcionarioId
+                    ? {
+                        ...f,
+                        obra: clienteUpdate.obra,
+                        cliente_codigo: clienteUpdate.cliente_codigo,
+                        cliente_razao_social: clienteUpdate.cliente_razao_social,
+                      }
+                    : f
+                )
+              );
+            }
             setEditRow(null);
           }}
         />
@@ -1335,13 +1388,23 @@ function CamposCompetencia({
 function EditFuncCompModal({
   row,
   supabase,
+  obraClienteMap,
   onClose,
   onSaved,
 }: {
   row: Row;
   supabase: ReturnType<typeof createClient>;
+  obraClienteMap: Map<string, ObraCliente>;
   onClose: () => void;
-  onSaved: (updated: FuncionarioCompetencia) => void;
+  onSaved: (
+    updated: FuncionarioCompetencia,
+    clienteUpdate?: {
+      funcionarioId: string;
+      obra: string;
+      cliente_codigo: string;
+      cliente_razao_social: string;
+    }
+  ) => void;
 }) {
   const [obra, setObra] = useState(row.fc.obra_snapshot ?? "");
   const [tipoVt, setTipoVt] = useState(row.fc.tipo_vt);
@@ -1352,6 +1415,14 @@ function EditFuncCompModal({
   const [vrValor, setVrValor] = useState(row.fc.vr_valor?.toString() ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Cliente que a obra escolhida deveria ter, e se difere do cadastro atual.
+  const obraTrim = obra.trim();
+  const clienteResolvido = obraTrim ? obraClienteMap.get(obraTrim) : undefined;
+  const clienteDifere =
+    !!clienteResolvido &&
+    (clienteResolvido.codigo !== (row.f?.cliente_codigo ?? "").trim() ||
+      clienteResolvido.razao !== (row.f?.cliente_razao_social ?? "").trim());
 
   async function handleSave() {
     setLoading(true);
@@ -1372,12 +1443,49 @@ function EditFuncCompModal({
       )
       .single();
 
-    setLoading(false);
     if (err || !data) {
+      setLoading(false);
       setError(err?.message ?? "Erro ao salvar.");
       return;
     }
-    onSaved(data as FuncionarioCompetencia);
+
+    // Alinha o cadastro do funcionário ao cliente da obra escolhida (código +
+    // razão), para não ficar com o cliente da obra anterior após transferência.
+    let clienteUpdate:
+      | {
+          funcionarioId: string;
+          obra: string;
+          cliente_codigo: string;
+          cliente_razao_social: string;
+        }
+      | undefined;
+    if (row.f && clienteResolvido && clienteDifere) {
+      const { error: errF } = await supabase
+        .from("rh_funcionarios")
+        .update({
+          obra: obraTrim,
+          cliente_codigo: clienteResolvido.codigo,
+          cliente_razao_social: clienteResolvido.razao,
+        })
+        .eq("id", row.f.id);
+      if (errF) {
+        setLoading(false);
+        setError(
+          "VT salvo, mas falhou ao atualizar o cliente no cadastro: " +
+            errF.message
+        );
+        return;
+      }
+      clienteUpdate = {
+        funcionarioId: row.f.id,
+        obra: obraTrim,
+        cliente_codigo: clienteResolvido.codigo,
+        cliente_razao_social: clienteResolvido.razao,
+      };
+    }
+
+    setLoading(false);
+    onSaved(data as FuncionarioCompetencia, clienteUpdate);
   }
 
   return (
@@ -1403,8 +1511,36 @@ function EditFuncCompModal({
             <input
               value={obra}
               onChange={(e) => setObra(e.target.value)}
+              list="obras-conhecidas"
               className="input w-full"
             />
+            <datalist id="obras-conhecidas">
+              {Array.from(obraClienteMap.keys())
+                .sort((a, b) => a.localeCompare(b, "pt-BR"))
+                .map((o) => (
+                  <option key={o} value={o} />
+                ))}
+            </datalist>
+            {obraTrim &&
+              (clienteResolvido ? (
+                <span className="mt-1 block text-[11px] text-slate-500 dark:text-slate-400">
+                  Cliente: {" "}
+                  <strong className="text-slate-700 dark:text-slate-200">
+                    {clienteResolvido.razao || clienteResolvido.codigo}
+                  </strong>
+                  {clienteDifere && (
+                    <span className="text-emerald-600 dark:text-emerald-400">
+                      {" "}
+                      — será atualizado no cadastro ao salvar
+                    </span>
+                  )}
+                </span>
+              ) : (
+                <span className="mt-1 block text-[11px] text-amber-600 dark:text-amber-400">
+                  Cliente não encontrado para esta obra — o cliente atual será
+                  mantido.
+                </span>
+              ))}
           </label>
           <div className="grid grid-cols-2 gap-3">
             <label className="block">
