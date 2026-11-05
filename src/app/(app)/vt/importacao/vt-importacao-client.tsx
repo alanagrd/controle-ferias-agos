@@ -361,6 +361,28 @@ function ConciliacaoAtivosTab({
         return;
       }
       funcionarioId = novo.id;
+    } else {
+      // Já existe no cadastro (ex.: afastado/dispensado que voltou no arquivo).
+      // Reativa e atualiza os dados do arquivo — sem isto o funcionário entrava
+      // na competência mas ficava INATIVO no cadastro (sumia da lista de ativos).
+      const { error: errReativa } = await supabase
+        .from("rh_funcionarios")
+        .update({
+          status: "ATIVO",
+          obra: item.linha.ccusto || null,
+          cargo: item.linha.funcao || null,
+          admissao: item.linha.admissao,
+          salario: item.linha.salario,
+          cliente_codigo: item.linha.clienteCodigo
+            ? item.linha.clienteCodigo.replace(/\D/g, "").padStart(6, "0")
+            : null,
+          cliente_razao_social: item.linha.cliente,
+        })
+        .eq("id", funcionarioId);
+      if (errReativa) {
+        setResultado(`Erro ao reativar ${item.linha.nome}: ${errReativa.message}`);
+        return;
+      }
     }
 
     const { error: errFc } = await supabase
