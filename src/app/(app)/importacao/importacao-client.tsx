@@ -100,6 +100,7 @@ export default function ImportacaoClient({
   const [aplicandoPeriodo, setAplicandoPeriodo] = useState<string | null>(
     null
   );
+  const [aplicandoTodosPeriodos, setAplicandoTodosPeriodos] = useState(false);
 
   const empresaByNome = useMemo(
     () =>
@@ -378,6 +379,39 @@ export default function ImportacaoClient({
     }
     setPeriodosResolvidos((prev) => new Set(prev).add(key));
     setAplicandoPeriodo(null);
+  }
+
+  // Cria TODOS os períodos pendentes de uma vez (um único insert em lote) —
+  // evita ter que clicar "Criar este período" um por um.
+  async function aplicarTodosPeriodos() {
+    if (!analise || analise.periodosAAtualizar.length === 0) return;
+    const pendentes = analise.periodosAAtualizar;
+    setAplicandoTodosPeriodos(true);
+    const payload = pendentes.map((p) => ({
+      funcionario_id: p.funcionario.id,
+      inicio: p.linha.periodoInicio,
+      fim: p.linha.periodoFim,
+      dias_direito: 30,
+      data_limite: p.linha.dataLimite,
+    }));
+    const { data, error } = await supabase
+      .from("rh_periodos_aquisitivos")
+      .insert(payload)
+      .select();
+    if (error) {
+      alert("Erro ao criar os períodos: " + error.message);
+      setAplicandoTodosPeriodos(false);
+      return;
+    }
+    if (data) {
+      setDbPeriodos((prev) => [...prev, ...(data as PeriodoBasico[])]);
+    }
+    setPeriodosResolvidos((prev) => {
+      const next = new Set(prev);
+      pendentes.forEach((p) => next.add(csvKey(p.linha)));
+      return next;
+    });
+    setAplicandoTodosPeriodos(false);
   }
 
   async function aplicar() {
@@ -686,16 +720,29 @@ export default function ImportacaoClient({
           </div>
 
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
-              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                Períodos a atualizar
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-3xl">
-                Funcionário já cadastrado, mas a planilha traz um período
-                aquisitivo com início diferente de tudo que já está no
-                sistema para ele. Confirme um por vez — isso não apaga nem
-                altera períodos existentes, só adiciona o novo.
-              </p>
+            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  Períodos a atualizar
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-3xl">
+                  Funcionário já cadastrado, mas a planilha traz um período
+                  aquisitivo com início diferente de tudo que já está no
+                  sistema para ele. Crie um por um, ou todos de uma vez — isso
+                  não apaga nem altera períodos existentes, só adiciona o novo.
+                </p>
+              </div>
+              {analise.periodosAAtualizar.length > 0 && (
+                <button
+                  disabled={aplicandoTodosPeriodos}
+                  onClick={aplicarTodosPeriodos}
+                  className="shrink-0 text-xs rounded-lg bg-emerald-600 px-3 py-1.5 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+                >
+                  {aplicandoTodosPeriodos
+                    ? "Criando..."
+                    : `Criar todos (${analise.periodosAAtualizar.length})`}
+                </button>
+              )}
             </div>
             <div className="max-h-96 overflow-y-auto">
               {analise.periodosAAtualizar.length === 0 ? (
@@ -747,7 +794,7 @@ export default function ImportacaoClient({
                           </td>
                           <td className="py-1.5 px-3">
                             <button
-                              disabled={aplicando}
+                              disabled={aplicando || aplicandoTodosPeriodos}
                               onClick={() =>
                                 aplicarPeriodo(p.funcionario.id, p.linha)
                               }
