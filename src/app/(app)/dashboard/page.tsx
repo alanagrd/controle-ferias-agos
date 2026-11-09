@@ -10,6 +10,7 @@ type DashFuncionario = {
   nome: string;
   status: StatusFuncionario;
   cliente_razao_social: string | null;
+  obra: string | null;
 };
 
 type DashPeriodo = {
@@ -28,7 +29,7 @@ export default async function DashboardPage() {
       supabase
         .from("rh_funcionarios")
         // Só ativos: dispensados/inativos não entram nos vencimentos do dashboard.
-        .select("id, nome, status, cliente_razao_social")
+        .select("id, nome, status, cliente_razao_social, obra")
         .eq("status", "ATIVO")
         .order("id")
         .range(from, to)

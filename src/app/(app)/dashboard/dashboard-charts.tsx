@@ -37,7 +37,14 @@ type FuncionarioLite = {
   nome: string;
   status: StatusFuncionario;
   cliente_razao_social: string | null;
+  obra: string | null;
 };
+
+/** Afastado/abandono: a obra (centro de custo) contém "AFASTAD" ou "ABANDON".
+ *  Esse pessoal naturalmente fica com férias vencidas, então separamos. */
+function isAfastado(obra: string | null | undefined): boolean {
+  return !!obra && /AFASTAD|ABANDON/i.test(obra);
+}
 
 type PeriodoLite = {
   id: string;
@@ -82,6 +89,8 @@ export default function DashboardClient({
     ).size;
 
     let vencidos = 0;
+    let vencidosAfastados = 0;
+    let vencidosTrabalhando = 0;
     let prox7 = 0;
     let prox30 = 0;
     let prox60 = 0;
@@ -111,7 +120,11 @@ export default function DashboardClient({
 
       statusCount[statusKey] = (statusCount[statusKey] || 0) + 1;
 
-      if (statusKey === "VENCIDO") vencidos++;
+      if (statusKey === "VENCIDO") {
+        vencidos++;
+        if (isAfastado(f.obra)) vencidosAfastados++;
+        else vencidosTrabalhando++;
+      }
 
       const dias = daysBetween(p.data_limite);
       if (dias >= 0 && dias <= 7 && p.saldo > 0) prox7++;
@@ -135,6 +148,8 @@ export default function DashboardClient({
     return {
       ativos,
       vencidos,
+      vencidosAfastados,
+      vencidosTrabalhando,
       prox7,
       prox30,
       prox60,
@@ -177,7 +192,16 @@ export default function DashboardClient({
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Kpi label="Funcionários ativos" value={stats.ativos} tone="default" />
-        <Kpi label="Períodos vencidos" value={stats.vencidos} tone="danger" />
+        <Kpi
+          label="Períodos vencidos"
+          value={stats.vencidosTrabalhando}
+          tone="danger"
+          sub={`+ ${stats.vencidosAfastados.toLocaleString(
+            "pt-BR"
+          )} afastados/abandono (${stats.vencidos.toLocaleString(
+            "pt-BR"
+          )} no total)`}
+        />
         <Kpi label="Vencem em 30 dias" value={stats.prox30} tone="danger" />
         <Kpi label="Vencem em 60 dias" value={stats.prox60} tone="warn" />
       </div>
@@ -277,10 +301,12 @@ function Kpi({
   label,
   value,
   tone,
+  sub,
 }: {
   label: string;
   value: number;
   tone: "default" | "warn" | "danger";
+  sub?: string;
 }) {
   const toneClass =
     tone === "danger"
@@ -296,6 +322,11 @@ function Kpi({
       <p className={`text-[26px] font-bold mt-1.5 ${toneClass}`}>
         {value.toLocaleString("pt-BR")}
       </p>
+      {sub && (
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">
+          {sub}
+        </p>
+      )}
     </div>
   );
 }
