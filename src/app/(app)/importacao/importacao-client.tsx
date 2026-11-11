@@ -34,6 +34,15 @@ export type PeriodoBasico = {
   data_limite: string;
 };
 
+// Um período que a planilha quer incluir ("NOVO") ou corrigir ("ATUALIZAR"
+// = mesmo início, mas fim/data limite divergentes do que está salvo).
+type PeriodoPendente = {
+  funcionario: FuncionarioBasico;
+  linha: LinhaFerias;
+  periodoAtual: PeriodoBasico | null;
+  tipo: "NOVO" | "ATUALIZAR";
+};
+
 function csvKey(r: LinhaFerias): string {
   return `${r.codigo}||${r.nomeChave}`;
 }
@@ -223,11 +232,7 @@ export default function ImportacaoClient({
     // período existente, é um período novo/diferente que a planilha está
     // reportando e ainda não está no banco.
     const novosKeys = new Set(novosACadastrar.map((r) => csvKey(r)));
-    const periodosAAtualizar: {
-      funcionario: FuncionarioBasico;
-      linha: LinhaFerias;
-      periodoAtual: PeriodoBasico | null;
-    }[] = [];
+    const periodosAAtualizar: PeriodoPendente[] = [];
     linhasFerias.forEach((r) => {
       const key = csvKey(r);
       if (excludedCsvKeys.has(key)) return;
@@ -247,14 +252,32 @@ export default function ImportacaoClient({
       const periodosDoFuncionario = dbPeriodos
         .filter((p) => p.funcionario_id === funcionario!.id)
         .sort((a, b) => (a.inicio < b.inicio ? 1 : -1));
-      const jaTemEssePeriodo = periodosDoFuncionario.some(
+      // casa pelo início: se a planilha traz o mesmo início, o período já
+      // existe — mas ainda precisamos conferir se o FIM ou a DATA LIMITE
+      // mudaram em relação ao que está salvo.
+      const existente = periodosDoFuncionario.find(
         (p) => p.inicio === r.periodoInicio
       );
-      if (jaTemEssePeriodo) return;
+      if (existente) {
+        const fimDif = !!r.periodoFim && existente.fim !== r.periodoFim;
+        const limiteDif =
+          !!r.dataLimite && existente.data_limite !== r.dataLimite;
+        if (fimDif || limiteDif) {
+          periodosAAtualizar.push({
+            funcionario,
+            linha: r,
+            periodoAtual: existente,
+            tipo: "ATUALIZAR",
+          });
+        }
+        return;
+      }
+      // início não existe no sistema → período realmente novo
       periodosAAtualizar.push({
         funcionario,
         linha: r,
         periodoAtual: periodosDoFuncionario[0] ?? null,
+        tipo: "NOVO",
       });
     });
 
@@ -355,57 +378,115 @@ export default function ImportacaoClient({
     setResolvendoDivergencia(null);
   }
 
-  async function aplicarPeriodo(funcionarioId: string, linha: LinhaFerias) {
-    const key = csvKey(linha);
+  async function aplicarPeriodo(p: PeriodoPendente) {
+    const key = csvKey(p.linha);
     setAplicandoPeriodo(key);
-    const { data, error } = await supabase
-      .from("rh_periodos_aquisitivos")
-      .insert({
-        funcionario_id: funcionarioId,
-        inicio: linha.periodoInicio,
-        fim: linha.periodoFim,
-        dias_direito: 30,
-        data_limite: linha.dataLimite,
-      })
-      .select()
-      .single();
-    if (error) {
-      alert("Erro ao criar período: " + error.message);
-      setAplicandoPeriodo(null);
-      return;
-    }
-    if (data) {
-      setDbPeriodos((prev) => [...prev, data as PeriodoBasico]);
+    if (p.tipo === "ATUALIZAR" && p.periodoAtual) {
+      // corrige fim e data limite do período que já existe
+      const { data, error } = await supabase
+        .from("rh_periodos_aquisitivos")
+        .update({
+          fim: p.linha.periodoFim,
+          data_limite: p.linha.dataLimite,
+        })
+        .eq("id", p.periodoAtual.id)
+        .select()
+        .single();
+      if (error) {
+        alert("Erro ao atualizar período: " + error.message);
+        setAplicandoPeriodo(null);
+        return;
+      }
+      if (data) {
+        setDbPeriodos((prev) =>
+          prev.map((x) =>
+            x.id === (data as PeriodoBasico).id ? (data as PeriodoBasico) : x
+          )
+        );
+      }
+    } else {
+      const { data, error } = await supabase
+        .from("rh_periodos_aquisitivos")
+        .insert({
+          funcionario_id: p.funcionario.id,
+          inicio: p.linha.periodoInicio,
+          fim: p.linha.periodoFim,
+          dias_direito: 30,
+          data_limite: p.linha.dataLimite,
+        })
+        .select()
+        .single();
+      if (error) {
+        alert("Erro ao criar período: " + error.message);
+        setAplicandoPeriodo(null);
+        return;
+      }
+      if (data) {
+        setDbPeriodos((prev) => [...prev, data as PeriodoBasico]);
+      }
     }
     setPeriodosResolvidos((prev) => new Set(prev).add(key));
     setAplicandoPeriodo(null);
   }
 
-  // Cria TODOS os períodos pendentes de uma vez (um único insert em lote) —
-  // evita ter que clicar "Criar este período" um por um.
+  // Aplica TODOS os períodos pendentes de uma vez: cria os novos (insert em
+  // lote) e corrige os divergentes (update um a um) — evita clicar um por um.
   async function aplicarTodosPeriodos() {
     if (!analise || analise.periodosAAtualizar.length === 0) return;
     const pendentes = analise.periodosAAtualizar;
     setAplicandoTodosPeriodos(true);
-    const payload = pendentes.map((p) => ({
-      funcionario_id: p.funcionario.id,
-      inicio: p.linha.periodoInicio,
-      fim: p.linha.periodoFim,
-      dias_direito: 30,
-      data_limite: p.linha.dataLimite,
-    }));
-    const { data, error } = await supabase
-      .from("rh_periodos_aquisitivos")
-      .insert(payload)
-      .select();
-    if (error) {
-      alert("Erro ao criar os períodos: " + error.message);
-      setAplicandoTodosPeriodos(false);
-      return;
+
+    const novos = pendentes.filter((p) => p.tipo === "NOVO");
+    const atualizar = pendentes.filter(
+      (p) => p.tipo === "ATUALIZAR" && p.periodoAtual
+    );
+
+    if (novos.length) {
+      const payload = novos.map((p) => ({
+        funcionario_id: p.funcionario.id,
+        inicio: p.linha.periodoInicio,
+        fim: p.linha.periodoFim,
+        dias_direito: 30,
+        data_limite: p.linha.dataLimite,
+      }));
+      const { data, error } = await supabase
+        .from("rh_periodos_aquisitivos")
+        .insert(payload)
+        .select();
+      if (error) {
+        alert("Erro ao criar os períodos: " + error.message);
+        setAplicandoTodosPeriodos(false);
+        return;
+      }
+      if (data) {
+        setDbPeriodos((prev) => [...prev, ...(data as PeriodoBasico[])]);
+      }
     }
-    if (data) {
-      setDbPeriodos((prev) => [...prev, ...(data as PeriodoBasico[])]);
+
+    for (const p of atualizar) {
+      const { data, error } = await supabase
+        .from("rh_periodos_aquisitivos")
+        .update({
+          fim: p.linha.periodoFim,
+          data_limite: p.linha.dataLimite,
+        })
+        .eq("id", p.periodoAtual!.id)
+        .select()
+        .single();
+      if (error) {
+        alert("Erro ao atualizar período: " + error.message);
+        setAplicandoTodosPeriodos(false);
+        return;
+      }
+      if (data) {
+        setDbPeriodos((prev) =>
+          prev.map((x) =>
+            x.id === (data as PeriodoBasico).id ? (data as PeriodoBasico) : x
+          )
+        );
+      }
     }
+
     setPeriodosResolvidos((prev) => {
       const next = new Set(prev);
       pendentes.forEach((p) => next.add(csvKey(p.linha)));
@@ -726,10 +807,19 @@ export default function ImportacaoClient({
                   Períodos a atualizar
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-3xl">
-                  Funcionário já cadastrado, mas a planilha traz um período
-                  aquisitivo com início diferente de tudo que já está no
-                  sistema para ele. Crie um por um, ou todos de uma vez — isso
-                  não apaga nem altera períodos existentes, só adiciona o novo.
+                  Funcionário já cadastrado, e a planilha traz um período
+                  aquisitivo que o sistema ainda não tem — ou um período com o
+                  mesmo início, mas com <strong>fim</strong> ou{" "}
+                  <strong>data limite</strong> diferente do que está salvo.{" "}
+                  <span className="text-emerald-700 dark:text-emerald-400">
+                    Criar
+                  </span>{" "}
+                  adiciona o período novo;{" "}
+                  <span className="text-amber-700 dark:text-amber-400">
+                    Atualizar
+                  </span>{" "}
+                  corrige o fim e a data limite do período existente (não mexe
+                  nos gozos já lançados).
                 </p>
               </div>
               {analise.periodosAAtualizar.length > 0 && (
@@ -739,8 +829,8 @@ export default function ImportacaoClient({
                   className="shrink-0 text-xs rounded-lg bg-emerald-600 px-3 py-1.5 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
                 >
                   {aplicandoTodosPeriodos
-                    ? "Criando..."
-                    : `Criar todos (${analise.periodosAAtualizar.length})`}
+                    ? "Aplicando..."
+                    : `Aplicar todos (${analise.periodosAAtualizar.length})`}
                 </button>
               )}
             </div>
@@ -774,15 +864,35 @@ export default function ImportacaoClient({
                           className="border-t border-slate-100 dark:border-slate-800"
                         >
                           <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">
-                            {p.funcionario.nome}
+                            <div className="flex items-center gap-1.5">
+                              <span>{p.funcionario.nome}</span>
+                              <span
+                                className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full ${
+                                  p.tipo === "ATUALIZAR"
+                                    ? "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400"
+                                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400"
+                                }`}
+                              >
+                                {p.tipo === "ATUALIZAR" ? "corrigir" : "novo"}
+                              </span>
+                            </div>
                           </td>
                           <td className="py-1.5 px-3 text-slate-700 dark:text-slate-300">
                             {p.funcionario.cliente_razao_social || "–"}
                           </td>
                           <td className="py-1.5 px-3 text-slate-500 dark:text-slate-400">
-                            {p.periodoAtual
-                              ? `${fmtDate(p.periodoAtual.inicio)} – ${fmtDate(p.periodoAtual.fim)}`
-                              : "nenhum"}
+                            {p.periodoAtual ? (
+                              <>
+                                {fmtDate(p.periodoAtual.inicio)} –{" "}
+                                {fmtDate(p.periodoAtual.fim)}
+                                <span className="text-slate-400 dark:text-slate-500">
+                                  {" "}
+                                  (limite {fmtDate(p.periodoAtual.data_limite)})
+                                </span>
+                              </>
+                            ) : (
+                              "nenhum"
+                            )}
                           </td>
                           <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">
                             {fmtDate(p.linha.periodoInicio)} –{" "}
@@ -795,12 +905,16 @@ export default function ImportacaoClient({
                           <td className="py-1.5 px-3">
                             <button
                               disabled={aplicando || aplicandoTodosPeriodos}
-                              onClick={() =>
-                                aplicarPeriodo(p.funcionario.id, p.linha)
-                              }
+                              onClick={() => aplicarPeriodo(p)}
                               className="text-xs rounded-lg border border-slate-300 dark:border-slate-700 px-2 py-1 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50"
                             >
-                              {aplicando ? "Criando..." : "Criar este período"}
+                              {aplicando
+                                ? p.tipo === "ATUALIZAR"
+                                  ? "Atualizando..."
+                                  : "Criando..."
+                                : p.tipo === "ATUALIZAR"
+                                  ? "Atualizar período"
+                                  : "Criar este período"}
                             </button>
                           </td>
                         </tr>
