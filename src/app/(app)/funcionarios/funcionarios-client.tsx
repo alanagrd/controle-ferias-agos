@@ -780,6 +780,7 @@ function FuncionarioModal({
   const [showNovoLancamento, setShowNovoLancamento] = useState<string | null>(
     null
   );
+  const [editandoPeriodo, setEditandoPeriodo] = useState<string | null>(null);
 
   const loadLancamentos = useCallback(
     async (periodoId: string) => {
@@ -1079,6 +1080,17 @@ function FuncionarioModal({
                           Saldo: {p.saldo} dias ({PERIODO_STATUS_LABEL[statusKey]})
                         </span>
                         <button
+                          onClick={() =>
+                            setEditandoPeriodo(
+                              editandoPeriodo === p.id ? null : p.id
+                            )
+                          }
+                          title="Editar datas do período"
+                          className="text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200"
+                        >
+                          ✎
+                        </button>
+                        <button
                           onClick={() => handleDeletePeriodo(p.id)}
                           title="Excluir período aquisitivo"
                           className="text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400"
@@ -1086,6 +1098,23 @@ function FuncionarioModal({
                           ✕
                         </button>
                       </div>
+
+                      {editandoPeriodo === p.id && (
+                        <EditarPeriodoForm
+                          periodo={p}
+                          onCancel={() => setEditandoPeriodo(null)}
+                          onSaved={async () => {
+                            setEditandoPeriodo(null);
+                            const { data: refreshed } = await supabase
+                              .from("v_rh_periodos")
+                              .select(
+                                "id, funcionario_id, inicio, fim, dias_direito, data_limite, dias_gozados, saldo, status"
+                              )
+                              .eq("funcionario_id", funcionario.id);
+                            onPeriodosChanged((refreshed as VPeriodo[]) ?? []);
+                          }}
+                        />
+                      )}
 
                       <div className="mt-2 pl-2 border-l-2 border-slate-100 dark:border-slate-800 space-y-1">
                         {(lancamentos[p.id] ?? []).map((l) => (
@@ -1130,6 +1159,96 @@ function FuncionarioModal({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function EditarPeriodoForm({
+  periodo,
+  onCancel,
+  onSaved,
+}: {
+  periodo: VPeriodo;
+  onCancel: () => void;
+  onSaved: () => void | Promise<void>;
+}) {
+  const supabase = useMemo(() => createClient(), []);
+  const [inicio, setInicio] = useState(periodo.inicio);
+  const [fim, setFim] = useState(periodo.fim);
+  const [dataLimite, setDataLimite] = useState(periodo.data_limite);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSave() {
+    if (!inicio || !fim || !dataLimite) {
+      setError("Preencha início, fim e data limite.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    const { error } = await supabase
+      .from("rh_periodos_aquisitivos")
+      .update({ inicio, fim, data_limite: dataLimite })
+      .eq("id", periodo.id);
+    setSaving(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    await onSaved();
+  }
+
+  return (
+    <div className="flex flex-wrap items-end gap-2 mt-2 bg-slate-50 dark:bg-slate-800 rounded-lg p-2">
+      <div>
+        <label className="block text-[10px] text-slate-500 dark:text-slate-400">
+          Início
+        </label>
+        <input
+          type="date"
+          value={inicio}
+          onChange={(e) => setInicio(e.target.value)}
+          className="text-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded px-1.5 py-1"
+        />
+      </div>
+      <div>
+        <label className="block text-[10px] text-slate-500 dark:text-slate-400">
+          Fim
+        </label>
+        <input
+          type="date"
+          value={fim}
+          onChange={(e) => setFim(e.target.value)}
+          className="text-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded px-1.5 py-1"
+        />
+      </div>
+      <div>
+        <label className="block text-[10px] text-slate-500 dark:text-slate-400">
+          Data limite
+        </label>
+        <input
+          type="date"
+          value={dataLimite}
+          onChange={(e) => setDataLimite(e.target.value)}
+          className="text-xs border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded px-1.5 py-1"
+        />
+      </div>
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="text-xs bg-agos-green text-white rounded px-2 py-1 disabled:opacity-50"
+      >
+        {saving ? "Salvando..." : "Salvar"}
+      </button>
+      <button
+        onClick={onCancel}
+        className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+      >
+        Cancelar
+      </button>
+      {error && (
+        <p className="text-xs text-red-600 dark:text-red-400 w-full">{error}</p>
+      )}
     </div>
   );
 }
