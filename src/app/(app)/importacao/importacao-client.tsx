@@ -36,15 +36,52 @@ export type PeriodoBasico = {
 
 // Um período que a planilha quer incluir ("NOVO") ou corrigir ("ATUALIZAR"
 // = mesmo início, mas fim/data limite divergentes do que está salvo).
+// `origem` diz se veio do período ATUAL (PER.AQUI) ou do PRÓXIMO (PROX.PER)
+// da planilha — uma mesma linha pode gerar os dois.
 type PeriodoPendente = {
   funcionario: FuncionarioBasico;
   linha: LinhaFerias;
   periodoAtual: PeriodoBasico | null;
   tipo: "NOVO" | "ATUALIZAR";
+  origem: "ATUAL" | "PROXIMO";
+  inicioAlvo: string;
+  fimAlvo: string | null;
+  dataLimiteAlvo: string | null;
 };
 
 function csvKey(r: LinhaFerias): string {
   return `${r.codigo}||${r.nomeChave}`;
+}
+
+// Chave única por pendente (funcionário + origem do período), já que uma
+// linha da planilha pode render um pendente do período atual e outro do
+// próximo ao mesmo tempo.
+function pendenteKey(p: PeriodoPendente): string {
+  return `${csvKey(p.linha)}||${p.origem}`;
+}
+
+// A planilha não traz a data limite do PRÓXIMO período. Estimamos aplicando
+// ao fim do próximo o mesmo intervalo (fim → data limite) do período atual
+// daquele funcionário. É só um valor provisório: quando o próximo período
+// virar o "atual" numa importação futura, a conferência de fim/data limite
+// corrige para o valor real da planilha.
+function estimaDataLimiteProximo(linha: LinhaFerias): string | null {
+  if (!linha.proxPeriodoFim) return null;
+  const proxFim = new Date(linha.proxPeriodoFim + "T00:00:00");
+  if (linha.periodoFim && linha.dataLimite) {
+    const fimAtual = new Date(linha.periodoFim + "T00:00:00");
+    const limiteAtual = new Date(linha.dataLimite + "T00:00:00");
+    const offsetDias = Math.round(
+      (limiteAtual.getTime() - fimAtual.getTime()) / 86400000
+    );
+    if (offsetDias > 0) {
+      proxFim.setDate(proxFim.getDate() + offsetDias);
+      return proxFim.toISOString().slice(0, 10);
+    }
+  }
+  // fallback: 11 meses após o fim do próximo período
+  proxFim.setMonth(proxFim.getMonth() + 11);
+  return proxFim.toISOString().slice(0, 10);
 }
 
 function fmtDate(iso: string | null): string {
@@ -236,9 +273,7 @@ export default function ImportacaoClient({
     linhasFerias.forEach((r) => {
       const key = csvKey(r);
       if (excludedCsvKeys.has(key)) return;
-      if (periodosResolvidos.has(key)) return;
       if (novosKeys.has(key)) return; // já tratado como "novo a cadastrar"
-      if (!r.periodoInicio) return;
       let funcionario = r.codigo
         ? dbFuncionarios.find((f) => f.codigo === r.codigo)
         : undefined;
@@ -252,33 +287,66 @@ export default function ImportacaoClient({
       const periodosDoFuncionario = dbPeriodos
         .filter((p) => p.funcionario_id === funcionario!.id)
         .sort((a, b) => (a.inicio < b.inicio ? 1 : -1));
-      // casa pelo início: se a planilha traz o mesmo início, o período já
-      // existe — mas ainda precisamos conferir se o FIM ou a DATA LIMITE
-      // mudaram em relação ao que está salvo.
-      const existente = periodosDoFuncionario.find(
-        (p) => p.inicio === r.periodoInicio
-      );
-      if (existente) {
-        const fimDif = !!r.periodoFim && existente.fim !== r.periodoFim;
-        const limiteDif =
-          !!r.dataLimite && existente.data_limite !== r.dataLimite;
-        if (fimDif || limiteDif) {
+
+      // ---- período ATUAL (PER.AQUI) ----
+      if (r.periodoInicio && !periodosResolvidos.has(`${key}||ATUAL`)) {
+        // casa pelo início: se a planilha traz o mesmo início, o período já
+        // existe — mas ainda conferimos se o FIM ou a DATA LIMITE mudaram.
+        const existente = periodosDoFuncionario.find(
+          (p) => p.inicio === r.periodoInicio
+        );
+        if (existente) {
+          const fimDif = !!r.periodoFim && existente.fim !== r.periodoFim;
+          const limiteDif =
+            !!r.dataLimite && existente.data_limite !== r.dataLimite;
+          if (fimDif || limiteDif) {
+            periodosAAtualizar.push({
+              funcionario,
+              linha: r,
+              periodoAtual: existente,
+              tipo: "ATUALIZAR",
+              origem: "ATUAL",
+              inicioAlvo: existente.inicio,
+              fimAlvo: r.periodoFim,
+              dataLimiteAlvo: r.dataLimite,
+            });
+          }
+        } else {
+          // início não existe no sistema → período realmente novo
           periodosAAtualizar.push({
             funcionario,
             linha: r,
-            periodoAtual: existente,
-            tipo: "ATUALIZAR",
+            periodoAtual: periodosDoFuncionario[0] ?? null,
+            tipo: "NOVO",
+            origem: "ATUAL",
+            inicioAlvo: r.periodoInicio,
+            fimAlvo: r.periodoFim,
+            dataLimiteAlvo: r.dataLimite,
           });
         }
-        return;
       }
-      // início não existe no sistema → período realmente novo
-      periodosAAtualizar.push({
-        funcionario,
-        linha: r,
-        periodoAtual: periodosDoFuncionario[0] ?? null,
-        tipo: "NOVO",
-      });
+
+      // ---- próximo período (PROX.PER) ----
+      // a planilha sempre traz o próximo período; criamos quando ele ainda
+      // não está no sistema. Exige fim e data limite estimável (NOT NULL).
+      if (r.proxPeriodoInicio && !periodosResolvidos.has(`${key}||PROXIMO`)) {
+        const jaExiste = periodosDoFuncionario.some(
+          (p) => p.inicio === r.proxPeriodoInicio
+        );
+        const dataLimiteAlvo = estimaDataLimiteProximo(r);
+        if (!jaExiste && r.proxPeriodoFim && dataLimiteAlvo) {
+          periodosAAtualizar.push({
+            funcionario,
+            linha: r,
+            periodoAtual: null,
+            tipo: "NOVO",
+            origem: "PROXIMO",
+            inicioAlvo: r.proxPeriodoInicio,
+            fimAlvo: r.proxPeriodoFim,
+            dataLimiteAlvo,
+          });
+        }
+      }
     });
 
     return {
@@ -379,15 +447,15 @@ export default function ImportacaoClient({
   }
 
   async function aplicarPeriodo(p: PeriodoPendente) {
-    const key = csvKey(p.linha);
+    const key = pendenteKey(p);
     setAplicandoPeriodo(key);
     if (p.tipo === "ATUALIZAR" && p.periodoAtual) {
       // corrige fim e data limite do período que já existe
       const { data, error } = await supabase
         .from("rh_periodos_aquisitivos")
         .update({
-          fim: p.linha.periodoFim,
-          data_limite: p.linha.dataLimite,
+          fim: p.fimAlvo,
+          data_limite: p.dataLimiteAlvo,
         })
         .eq("id", p.periodoAtual.id)
         .select()
@@ -409,10 +477,10 @@ export default function ImportacaoClient({
         .from("rh_periodos_aquisitivos")
         .insert({
           funcionario_id: p.funcionario.id,
-          inicio: p.linha.periodoInicio,
-          fim: p.linha.periodoFim,
+          inicio: p.inicioAlvo,
+          fim: p.fimAlvo,
           dias_direito: 30,
-          data_limite: p.linha.dataLimite,
+          data_limite: p.dataLimiteAlvo,
         })
         .select()
         .single();
@@ -444,10 +512,10 @@ export default function ImportacaoClient({
     if (novos.length) {
       const payload = novos.map((p) => ({
         funcionario_id: p.funcionario.id,
-        inicio: p.linha.periodoInicio,
-        fim: p.linha.periodoFim,
+        inicio: p.inicioAlvo,
+        fim: p.fimAlvo,
         dias_direito: 30,
-        data_limite: p.linha.dataLimite,
+        data_limite: p.dataLimiteAlvo,
       }));
       const { data, error } = await supabase
         .from("rh_periodos_aquisitivos")
@@ -467,8 +535,8 @@ export default function ImportacaoClient({
       const { data, error } = await supabase
         .from("rh_periodos_aquisitivos")
         .update({
-          fim: p.linha.periodoFim,
-          data_limite: p.linha.dataLimite,
+          fim: p.fimAlvo,
+          data_limite: p.dataLimiteAlvo,
         })
         .eq("id", p.periodoAtual!.id)
         .select()
@@ -489,7 +557,7 @@ export default function ImportacaoClient({
 
     setPeriodosResolvidos((prev) => {
       const next = new Set(prev);
-      pendentes.forEach((p) => next.add(csvKey(p.linha)));
+      pendentes.forEach((p) => next.add(pendenteKey(p)));
       return next;
     });
     setAplicandoTodosPeriodos(false);
@@ -565,23 +633,42 @@ export default function ImportacaoClient({
       criados = payload.length;
 
       // novos funcionários já chegam com o período aquisitivo informado
-      // pela planilha, não vazio
+      // pela planilha (atual + próximo), não vazio
       if (inseridos) {
         const periodosPayload = inseridos
-          .map((f, idx) => {
+          .flatMap((f, idx) => {
             const r = linhasPayload[idx];
-            if (!r || !r.periodoInicio || !r.periodoFim || !r.dataLimite) {
-              return null;
+            if (!r) return [];
+            const linhas: {
+              funcionario_id: string;
+              inicio: string;
+              fim: string;
+              dias_direito: number;
+              data_limite: string;
+            }[] = [];
+            // período atual (PER.AQUI)
+            if (r.periodoInicio && r.periodoFim && r.dataLimite) {
+              linhas.push({
+                funcionario_id: f.id as string,
+                inicio: r.periodoInicio,
+                fim: r.periodoFim,
+                dias_direito: 30,
+                data_limite: r.dataLimite,
+              });
             }
-            return {
-              funcionario_id: f.id as string,
-              inicio: r.periodoInicio,
-              fim: r.periodoFim,
-              dias_direito: 30,
-              data_limite: r.dataLimite,
-            };
-          })
-          .filter((p): p is NonNullable<typeof p> => p !== null);
+            // próximo período (PROX.PER) — data limite estimada
+            const proxLimite = estimaDataLimiteProximo(r);
+            if (r.proxPeriodoInicio && r.proxPeriodoFim && proxLimite) {
+              linhas.push({
+                funcionario_id: f.id as string,
+                inicio: r.proxPeriodoInicio,
+                fim: r.proxPeriodoFim,
+                dias_direito: 30,
+                data_limite: proxLimite,
+              });
+            }
+            return linhas;
+          });
         if (periodosPayload.length) {
           const { error: periodoError } = await supabase
             .from("rh_periodos_aquisitivos")
@@ -807,19 +894,20 @@ export default function ImportacaoClient({
                   Períodos a atualizar
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-3xl">
-                  Funcionário já cadastrado, e a planilha traz um período
-                  aquisitivo que o sistema ainda não tem — ou um período com o
-                  mesmo início, mas com <strong>fim</strong> ou{" "}
-                  <strong>data limite</strong> diferente do que está salvo.{" "}
+                  Períodos que a planilha traz e o sistema ainda não reflete:
+                  o <strong>atual</strong> (PER.AQUI) ou o{" "}
+                  <strong>próximo</strong> (PROX.PER) do funcionário.{" "}
                   <span className="text-emerald-700 dark:text-emerald-400">
                     Criar
                   </span>{" "}
-                  adiciona o período novo;{" "}
+                  adiciona o período que falta;{" "}
                   <span className="text-amber-700 dark:text-amber-400">
                     Atualizar
                   </span>{" "}
-                  corrige o fim e a data limite do período existente (não mexe
-                  nos gozos já lançados).
+                  corrige o fim e a data limite de um período existente. Não
+                  apaga períodos nem mexe nos gozos/pagamentos já lançados. A
+                  data limite do próximo período é estimada (a planilha não a
+                  informa) e se corrige sozinha quando ele virar o atual.
                 </p>
               </div>
               {analise.periodosAAtualizar.length > 0 && (
@@ -856,8 +944,9 @@ export default function ImportacaoClient({
                   </thead>
                   <tbody>
                     {analise.periodosAAtualizar.map((p) => {
-                      const key = csvKey(p.linha);
+                      const key = pendenteKey(p);
                       const aplicando = aplicandoPeriodo === key;
+                      const ehProximo = p.origem === "PROXIMO";
                       return (
                         <tr
                           key={key}
@@ -874,6 +963,15 @@ export default function ImportacaoClient({
                                 }`}
                               >
                                 {p.tipo === "ATUALIZAR" ? "corrigir" : "novo"}
+                              </span>
+                              <span
+                                className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full ${
+                                  ehProximo
+                                    ? "bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-400"
+                                    : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                                }`}
+                              >
+                                {ehProximo ? "próximo" : "atual"}
                               </span>
                             </div>
                           </td>
@@ -895,11 +993,11 @@ export default function ImportacaoClient({
                             )}
                           </td>
                           <td className="py-1.5 px-3 text-slate-900 dark:text-slate-100">
-                            {fmtDate(p.linha.periodoInicio)} –{" "}
-                            {fmtDate(p.linha.periodoFim)}
+                            {fmtDate(p.inicioAlvo)} – {fmtDate(p.fimAlvo)}
                             <span className="text-slate-400 dark:text-slate-500">
                               {" "}
-                              (limite {fmtDate(p.linha.dataLimite)})
+                              (limite {fmtDate(p.dataLimiteAlvo)}
+                              {ehProximo ? ", estimada" : ""})
                             </span>
                           </td>
                           <td className="py-1.5 px-3">
