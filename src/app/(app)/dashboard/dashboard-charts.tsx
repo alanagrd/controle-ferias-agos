@@ -190,7 +190,9 @@ export default function DashboardClient({
     const base = stats.detalhes;
     const arr =
       janela === "VENCIDOS"
-        ? base.filter((d) => d.statusKey === "VENCIDO")
+        ? // vencidos: fora os afastados/abandono (batem com o card de
+          // "Períodos vencidos", que conta só quem está trabalhando)
+          base.filter((d) => d.statusKey === "VENCIDO" && !d.afastado)
         : base.filter((d) => {
             const n = Number(janela);
             return d.dias >= 0 && d.dias <= n && d.saldo > 0;
